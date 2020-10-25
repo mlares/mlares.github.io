@@ -1,6 +1,10 @@
 ---
-layout: "home"
+layout: "tag"
 title: BIO
 ---
 
-bla bla
+I was born in Alta Gracia, Argentina, and made my PhD in the Universidad Nacional de Córdoba, Argentina.
+
+
+
+

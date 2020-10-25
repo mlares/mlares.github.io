@@ -1,6 +1,5 @@
 ---
-layout: "home"
-title: BIO
+layout: "tag"
+title: OUTREACH
 ---
 
-bla bla

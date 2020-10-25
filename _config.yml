@@ -23,9 +23,9 @@ name                     : "Marcelo Lares"
 description              : "My personal homepage"
 url                      : "https://mlares.github.io"
 baseurl                  : # the subpath of your site, e.g. "/blog"
-repository               : # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
-teaser                   : # path of fallback teaser image, e.g. "/assets/images/500x300.png"
-logo                     : "/assets/images/face.png"
+repository               : "mlares/"
+teaser                   : # "/assets/images/face.png" 
+logo                     : # "/assets/images/face.png"
 masthead_title           : # overrides the website title displayed in the masthead, use " " for no title
 # breadcrumbs            : false # true, false (default)
 words_per_minute         : 200
@@ -94,39 +94,39 @@ analytics:
 # Site Author
 author:
   name             : "Marcelo Lares"
-  avatar           : # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
-  bio              : "Astrophysicist"
+  avatar           : "/assets/images/face.png"
+  bio              : "Astronophycisist"
   location         : "Córdoba, Argentina"
-  email            :
+  email            : marcelo.lares@unc.edu.ar
   links:
-    - label: "Email"
-      icon: "fas fa-fw fa-envelope-square"
-      # url: "mailto:marcelo.lares@unc.edu.ar"
+   # - label: "Email"
+   # icon: "fas fa-fw fa-envelope-square"
+   #   url: "mailto:marcelo.lares@unc.edu.ar"
     - label: "Website"
-      icon: "fas fa-fw fa-link"
-      # url: "https://your-website.com"
+      # icon: "fas fa-fw fa-link"
+      url: "https://mlares.github.io"
     - label: "Twitter"
-      icon: "fab fa-fw fa-twitter-square"
-      # url: "https://twitter.com/"
+      # icon: "fab fa-fw fa-twitter-square"
+      url: "https://twitter.com/LaresMarcelo"
     - label: "GitHub"
-      icon: "fab fa-fw fa-github"
-      # url: "https://github.com/mlares"
+      # icon: "fab fa-fw fa-github"
+      url: "https://github.com/mlares"
 
 # Site Footer
 footer:
   links:
     - label: "Twitter"
       icon: "fab fa-fw fa-twitter-square"
-      # url:
+      url: https://twitter.com/LaresMarcelo
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
-      # url:
-    - label: "GitLab"
-      icon: "fab fa-fw fa-gitlab"
-      # url:
+      url: https://github.com/mlares
     - label: "Bitbucket"
       icon: "fab fa-fw fa-bitbucket"
-      # url:
+      url: https://bitbucket.org/mhlares/
+    - label: "YouTube"
+      icon: "fab fa-fw fa-youtube"
+      url: https://www.youtube.com/channel/UCpCwXO9WVBior1uW3xYF5Ww
 
 
 # Reading Files
@@ -194,10 +194,10 @@ sass:
 
 
 # Outputting
-permalink: /:categories/:title/
-paginate: 5 # amount of posts to show
-paginate_path: /page:num/
-timezone: # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+# permalink: /:categories/:title/
+# paginate: 5 # amount of posts to show
+# paginate_path: /page:num/
+# timezone: # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 
 
 # Plugins (previously gems:)
@@ -265,14 +265,14 @@ defaults:
       layout: single
       author_profile: true
 
-      #  # _posts
-      #  - scope:
-      #      path: ""
-      #      type: posts
-      #    values:
-      #      layout: single
-      #      author_profile: true
-      #      read_time: true
-      #      comments: # true
-      #      share: true
-      #      related: true
+      #   # _posts
+      #   - scope:
+      #       path: ""
+      #       type: posts
+      #     values:
+      #       layout: single
+      #       author_profile: true
+      #       read_time: true
+      #       comments: # true
+      #       share: true
+      #       related: true
