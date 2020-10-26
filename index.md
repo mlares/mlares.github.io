@@ -10,3 +10,15 @@ My primary research interest is the analysis of
 astronomical data, mainly using Big Data and statistical learning
 tools, to learn about the processes that shape the structures we see
 in the universe at many different scales.
+
+My topics of interest:
+
+- Astrostatistics
+- Astroinformatics
+- The transient universe
+- Multimessenger astronomy
+- Visualization and data storytelling
+- Reproducible science
+- Reliable software development
+
+
