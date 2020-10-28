@@ -34,4 +34,9 @@
   {% for script in site.head_scripts %}
     <script src="{{ script | relative_url }}"></script>
   {% endfor %}
+
+  {% if site.tags != "" %}
+     {% include collecttags.html %}
+  {% endif %}
+
 {% endif %}
