@@ -102,15 +102,15 @@ author:
    # - label: "Email"
    # icon: "fas fa-fw fa-envelope-square"
    #   url: "mailto:marcelo.lares@unc.edu.ar"
-    - label: "Website"
-      # icon: "fas fa-fw fa-link"
-      url: "https://mlares.github.io"
     - label: "Twitter"
       # icon: "fab fa-fw fa-twitter-square"
       url: "https://twitter.com/LaresMarcelo"
     - label: "GitHub"
       # icon: "fab fa-fw fa-github"
       url: "https://github.com/mlares"
+    - label: "LinkedIn"
+      # icon: "fab fa-fw fa-linkedin"
+      url: "https://ar.linkedin.com/in/marcelo-lares-a4532831"
 
 # Site Footer
 footer:
