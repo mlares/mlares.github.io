@@ -3,7 +3,7 @@ layout: "tag"
 title: CV
 ---
 
-[My CV (PDF)](../documents/cv.pdf)
+[My CV (english, PDF)](../documents/cv.pdf)
 
-[My CV (html)](cv_page)
+[My CV (english, html)](cv_page)
 
