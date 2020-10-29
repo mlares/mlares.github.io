@@ -1,16 +1,16 @@
 # main links
 main:
-  - title: "Bio"
-    url: pages/bio
   - title: "Blog"
-    url: pages/blog
+    url: _pages/blog
   - title: "Research"
-    url: pages/research
+    url: _pages/research
+  - title: "Teaching"
+    url: _pages/teaching
   - title: "Outreach"
-    url: pages/outreach
-  - title: "CV"
-    url: pages/cv
+    url: _pages/outreach
   - title: "channels"
-    url: pages/channels
+    url: _pages/channels
+  - title: "CV"
+    url: _pages/cv
 
 

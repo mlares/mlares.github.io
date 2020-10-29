@@ -18,11 +18,12 @@ My topics of interest:
 
 - Astrostatistics
 - Astroinformatics
-- The transient universe
+- Large scale structure of the universe
+- The transient universe (time domain astronomy)
 - Multimessenger astronomy
 - Visualization and data storytelling
-- Reproducible science
-- Reliable software development
+- Reproducible science, reliable scientific software development
+
 
 I am a member of the [TOROS](http://cam.unc.edu.ar/index.php/toros/), [OTHER](https://blog.ucc.edu.ar/other/) and [ARCOVID19](https://ivco19.github.io/) projects.
 

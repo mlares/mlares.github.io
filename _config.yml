@@ -132,8 +132,8 @@ footer:
 # Reading Files
 include:
   - .htaccess
-exclude:
   - _pages
+exclude:
   - "*.sublime-project"
   - "*.sublime-workspace"
   - vendor
