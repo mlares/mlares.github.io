@@ -41,7 +41,7 @@ title: OUTREACH
 - [AMERICA MAGAZINE](https://www.americamagazine.org/politics-society/2020/08/26/can-et-call-anyone-jesuit-astronomer-studies-intragalactic)
 - [CATHOLIC NEWS SERVICE](https://www.catholicnews.com/can-et-call-anyone-jesuit-astronomer-studies-intragalactic-possibilities/)
 - [Entrevista Radio de la Universidad Nacional de Mar del Plata]()
-
+- [Agencia Iberoamericana para la difusión de la ciencia y la tecnología](https://www.dicyt.com/noticias/por-que-todavia-no-hemos-contactado-civilizaciones-extraterrestres)
 
 
 ## Other outreach activities
