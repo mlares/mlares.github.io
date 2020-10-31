@@ -3,6 +3,10 @@ layout: single
 title:  "Start guide for mkvirtualenv"
 date:   2020-10-15
 taggs: español resources
+excerpt: "Virtualenvwrapper to make a conda-like working environment [...]"
+header:
+  overlay_image: /assets/images/banner2.png
+  overlay_filter: 0.5
 ---
 
 Esta es una guía para el uso de entornos virtules con

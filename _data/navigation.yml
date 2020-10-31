@@ -12,5 +12,7 @@ main:
     url: _pages/channels
   - title: "CV"
     url: _pages/cv
+  - title: "Utils"
+    url: _pages/utils
 
 

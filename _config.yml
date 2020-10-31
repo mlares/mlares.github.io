@@ -95,7 +95,7 @@ analytics:
 author:
   name             : "Marcelo Lares"
   avatar           : "/assets/images/face.png"
-  bio              : "Astrophycisist"
+  bio              : "Astrophycisist, data scientist"
   location         : "Córdoba, Argentina"
   email            : marcelo.lares@unc.edu.ar
   links:
@@ -265,14 +265,17 @@ defaults:
       layout: single
       author_profile: true
 
-      #   # _posts
-      #   - scope:
-      #       path: ""
-      #       type: posts
-      #     values:
-      #       layout: single
-      #       author_profile: true
-      #       read_time: true
-      #       comments: # true
-      #       share: true
-      #       related: true
+  # _posts
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: single
+      author_profile: true
+      read_time: false
+      comments: true
+      share: true
+      related: true
+    header:
+      overlay_image: /assets/images/banner1.png
+      overlay_filter: 0.5

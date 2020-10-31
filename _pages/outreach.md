@@ -3,18 +3,13 @@ layout: "tag"
 title: OUTREACH
 ---
  
-## Large-scale structure of the universe
-
+### Large-scale structure of the universe
 - [Nature news](https://www.nature.com/news/vast-cosmic-voids-merge-like-soap-bubbles-1.18583) "Vast cosmic voids merge like soap bubbles", 2015-10-15
 
-
-## Black holes and gravitational waves
-
+### Black holes and gravitational waves
 - [Entrevista](https://www.youtube.com/watch?v=Dqv-MQRAw5k) Noticias UNSa, 2018-04-11
- 
 
-
-## ARCOVID19
+### ARCOVID19
 
 - [Proyecto Arcovid19: Herramientas para ayudar a entender y combatir el Coronavirus](https://rdu.unc.edu.ar/handle/11086/15722)
 - [El virus de la curiosidad](https://oac.unc.edu.ar/2020/04/04/proyecto-arcovid19-herramientas-para-ayudar-a-entender-y-combatir-el-coronavirus/)
@@ -24,7 +19,7 @@ title: OUTREACH
 
  
 
-## Search for extraterrestrial life
+### Search for extraterrestrial life
 
 - [Entrevista](https://www.ivoox.com/entrevista-a-marcelo-lares-audios-mp3_rf_35998980_1.html) Radio Nacional Mendoza, 2019-05-18.  Un nuevo estudio sugiere que una civilización avanzada podría haber construido un dispositivo capaz de comunicarse a enormes distancias utilizando ondas de gravedad.
 - [Conferencia - OTHER](https://www.youtube.com/watch?v=6GcPweF5omU&feature=youtu.be).  Conferencia sobre "¿Por qué aún no hemos contactado con civilizaciones extraterrestres?", 2020-10-07
@@ -44,8 +39,12 @@ title: OUTREACH
 - [Agencia Iberoamericana para la difusión de la ciencia y la tecnología](https://www.dicyt.com/noticias/por-que-todavia-no-hemos-contactado-civilizaciones-extraterrestres)
 
 
-## Other outreach activities
+### Other outreach activities
 
 - [Astroscratchathon](https://oac.unc.edu.ar/2020/09/17/llega-el-astro-scratchathon/)
 - [Instituto Villada, Córdoba](https://www.youtube.com/watch?v=220-0c5ahhw)
 
+# Transference
+
+- [IncluitAI](https://twitter.com/i/status/1202656042313756672)
+- [CONICET - OVT](https://www.conicet.gov.ar/new_scp/detalle.php?keywords=LAres%2Bmarcelo&id=26990&convenios=yes)
