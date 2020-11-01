@@ -3,16 +3,13 @@ layout: "tag"
 title: Marcelo Lares | Currículum Vitae
 ---
 
+**Villa Carlos Paz – Córdoba – Argentina**
+**+54 9351 5430898 • marcelo.lares@unc.edu.ar •
+[www.mlares.space](http://www.mlares.space)**
 
-#### Puerto Pirámide 63, Villa Carlos Paz – Córdoba – Argentina
+#### Academia
 
-## +54 9351 5430898 • marcelo.lares@unc.edu.ar • www.mlares.space
-
-Ph.D. on Astronomy
-
-## Education
-
-### Academia...........................................................................................................................
+---
 
 + **Ph.D. in Astronomy**
 _National University of Córdoba, Argentina 2003–_
@@ -27,20 +24,24 @@ a research project in astronomy in a minimum of five years)
 _Técnico químico, Alta Gracia–Córdoba 1991–_
 Best score, flag escort
 
-## Current position
+#### Current position
 
 Researcher at CONICET, Argentina and Assistant Professor at Universidad Nacional de Córdoba.
 Member of the IAU, the AAA (Argentine Astronomial Asociation), the TOROS project and the OTHER project.
 
 ## Publications
 
-### Ph.D. Thesis......................................................................................................................
+#### Ph.D. Thesis
+
+---
 
 - **Low luminosity galaxy satellites**
   2004, PhD thesis, Universidad Nacional de Córdoba
   Advisor: Diego Garcia Lambas.
 
-### Articles on indexed journals..................................................................................................
+#### Articles on indexed journals
+
+---
 
 - **Monte Carlo estimation of the probability of causal contacts between communicating civilizations**
 2020, International Journal of Astrobiology , 19(5):393–
@@ -202,7 +203,9 @@ R E González, M Lares, D G Lambas, and C Valotto.
 M Lares, D G Lambas, and A G Sánchez.
 
 
-### Articles with large collaborations..........................................................................................
+#### Articles with large collaborations
+
+---
 
 - **TOROS optical follow-up of the advanced LIGO-VIRGO O2 second observational campaign**
 2020, Monthly Notices of the Royal Astronomical Society , 493(2):2207–
@@ -231,7 +234,9 @@ B. P. Abbott, R. Abbott, T. D. Abbott, and et al.
 (as a member of the TOROS collaboration)
 
 
-### Refereed articles on Conferences...........................................................................................
+#### Refereed articles on Conferences
+
+---
 
 - **Orientation of galactic disks around Illustris voids**
     2018, _Boletín de la Asociación Argentina de Astronomía, vol. 60, p.130-132_ , 60:130–
@@ -261,8 +266,6 @@ uestas de divulgación**
 - **Percepción del tamaño de la Luna**
     2012, _Boletín de la Asociación Argentina de Astronomía, vol.55, p.509-513_ , 55:509–
     M Lares.
-
-
 - **Superestructuras y las propiedades del clustering de galaxias brillantes**
 2012, Boletín de la Asociación Argentina de Astronomía, vol.55, p.373-377 , 55:373–
 C Y Yaryura, M Lares, H E Luparello, D J Paz, D G Lambas, N Padilla, and M A Sgró.
@@ -311,7 +314,9 @@ An updated list of my publications can be found in my ORCID profile:
 https://orcid.org/0000-0001-8180-
 
 
-### Technical developments.......................................................................................................
+#### Technical developments
+
+---
 
 - **AEGIS: Academic Exam Generator for Interchange and Shuffe**
     2020, page https://github.com/mlares/aegis
@@ -349,7 +354,9 @@ https://github.com/mlares
 
 ## Teaching Activities
 
-### Teaching positions..............................................................................................................
+#### Teaching positions
+
+---
 
 + OAC FAMAF-UNC
 
@@ -363,51 +370,80 @@ https://github.com/mlares
 
 ## Mentoring
 
-### Students............................................................................................................................
+#### Students
 
-+ **Daza Perilla, Vanessa Universidad Nacional de Córdoba – Argentina**
+---
+
++ **Daza Perilla, Vanessa. Universidad Nacional de Córdoba – Argentina**
 _Ph.D. program, Facultad de Matemática, Astronomía y Física 2017–_
 Machine learning detection of transient and periodic objects
 
-+ **Dávila Kurbán, Federico Universidad Nacional de Córdoba – Argentina**
++ **Dávila Kurbán, Federico. Universidad Nacional de Córdoba – Argentina**
 _Ph.D. program, Facultad de Matemática, Astronomía y Física 2017–_
 The internal structure of cosmic voids
 
-+ **Luparello, Heliana Universidad Nacional de Córdoba – Argentina**
++ **Luparello, Heliana. Universidad Nacional de Córdoba – Argentina**
 _graduate program, Facultad de Matemática, Astronomía y Física 2017–_
 The largest structures in the Universe
 
+
 ## Evaluation
 
-### Peer-review........................................................................................................................
+#### Peer-review
+
+---
 
 + **reviewer**
    + _Montly Notices of the Royal Astronomical Society 2020_
    + _Astronomy and Astrophysics 2004_
    + _BAAA 2017_
 
-### Scientific organizing Comitees..............................................................................................
+#### Scientific organizing Comitees
+
+---
 
 + **FoF2018 Córdoba**
 _Friends of friends meeting 2018_
 https://www.fof.oac.unc.ar/
 
+
+#### Evaluation
+
+- Peer-review evaluation for CONICET research career positions.
+
+- Member of evaluation committees for evaluation of teaching
+  positions, Universidad Nacional de Córdoba
+
+- Member of Thesis evaluation tribunals
+
+- Member of master degree final work evaluation tribunals
+
+- Evaluation of I+D projects, Secyt, UNC (2016)
+
+- Comisiones asesoras de doctorado
+
 ## Service
 
-### Editorial............................................................................................................................
+#### Editorial
+
+---
 
 + **Boletín de la Asociación Argentina de Astronomía AAA** _Technical Editor, Argentina 2011-_ [http://www.astronomiaargentina.org.ar/boletin_aaa](http://www.astronomiaargentina.org.ar/boletin_aaa)
 
 + **3rd. stellar astrophysics meeting AAA** _Technical Editor, Argentina 2017_
 [http://jae2016.oac.uncor.edu/](http://jae2016.oac.uncor.edu/)
 
-### Local organizing Comitees...................................................................................................
+#### Local organizing Comitees
+
+---
 
 **FoF2018 Córdoba** _Friends of friends meeting (head of the LOC) 2018_ https://www.fof.oac.unc.ar/
 
 ## Grants
 
-### Projects.............................................................................................................................
+#### Projects
+
+---
 
 + **Soporte a la Decisión ante Covid-19 UNDEFI** _Codirección de Proyecto., (Aprobado por la Resolución Rectoral UNDEF 114/2020). 05/20–04/_ Monto del financiamiento:$150_._ 000 Ejecutado por CRUC-IUA - Universidad de la Defensa Nacional 
 + **Estudios estadisticos y dinámicos de la estructura en gran escala del universo** _PI: Diego Garcia Lambas, PICT-2015-3098 2017–_ AR$ 630000 ANPCyT 
@@ -429,7 +465,9 @@ https://www.fof.oac.unc.ar/
 + **Propiedades de la Distribución de Satélites en Galaxias Simuladas** _PI: Mario Abadi 2005–_ AR$ 10000 UNC–Secyt 
 + LENAC. Latinamerican European Network for Astrophysics and Cosmology PI: Carlos Frenk 2004– EUR 950000 LENAC–EU
 
-### Organization of Meetings.....................................................................................................
+#### Organization of Meetings
+
+---
 
 + **FoF Meeting 2018 ICTP** _PI: Diego Garcia Lambas, Conferencia anual del IATE-OAC-CONICET. 04/_ EUR 2000 ICTP
 + **FoF Meeting 2018 AAA** _PI: Marcelo Lares 04/_ ARS 37500 AAA
@@ -438,7 +476,9 @@ https://www.fof.oac.unc.ar/
 
 ## Outreach
 
-### Science Outreach................................................................................................................
+#### Science Outreach
+
+---
 
 + **OAC general public conferences Speaker** _Conference, OAC 2018, 2017, 2015_ + **Night of the museums Organizer, speaker** _Conference, organizer, OAC 2019, 2018, 2017_ 
 + **ScientificAmerican Press** _, Want to Talk to Aliens? Try Changing the Technological Channel beyond Radio, by Adam Mann 29/04/_ 
@@ -448,7 +488,9 @@ https://www.fof.oac.unc.ar/
 + **BIAAA Editor** _Informative bulletin of the Argentine Astronomy Asociation 2008-_ 
 + **EABA - OAC Visitor guide** _Summer seasons at astrophysical station, guided tours to schools 2003-_
 
-### Media, interviews................................................................................................................
+#### Media, interviews
+
+---
 
 + **Como es la tecnología con la que se analizan los escenarios post-cuarentena. Periferia** _Press note 29/04/_ Argentina
 + **Investigadores del OAC proponen herramientas para entender el coronavirus. Prensa UNC** _Press Release, Córdoba 11/04/_ Argentina
@@ -465,7 +507,9 @@ https://www.fof.oac.unc.ar/
 + **Radio de la Universidad Nacional de Mar del Plata** _Interview 9/_ Argentina 
 + **Convenios de cooperación entre la UNSa y proyectos astronómicos en Salta General public** _Conference 12/_ Argentina
 
-### Community and social services.............................................................................................
+#### Community and social services
+
+---
 
 + **Project ARCOVID19 –** _https: // ivco19. github. io/_ Member of the multidisciplinary group Arcovid19, aimed at designing tools for decision support in the context of the SARS–COVID 19 pandemic. The team also worked on public outreach and participated on several seminars and meetings about the topic.  
 + **Industry Outreach** I participated in several collaborations with the industry, including two "high level technological services" certificated by the outreach office of the CONICET.  
@@ -491,14 +535,13 @@ Location: Córdoba, Argentina
 Date: 2012, 2013, 2014, 2015, 2016, 2017, 2018
 (organizer) and 2019.
 Role: Attendee, speaker
-+ Name: AAA thematic Workshops
++ Name: **AAA thematic Workshops**
 Type: Workshop
 Location:
 Date: Astronomía Teórica en Argentina: Problemas
 y Perspectivas (2007), 2011
 Role: Attendee
-+ Name: SCS PIRE Summer School on the Large
-Scale Structure-CMB connection
++ Name: **SCS PIRE Summer School on the Large Scale Structure-CMB connection**
 Type: School
 Location: Chile
 Date: 2006
@@ -521,22 +564,17 @@ Type: Workshop
 Location: Santiago, Chile
 Date:
 Role: Attendee
-+ Name: MPA/ ESO/ MPE/ USM Joint Astron-
-omy Conference: Open Questions in Cosmol-
-ogy: the first Billion years
++ Name: **MPA/ ESO/ MPE/ USM Joint Astronomy Conference: Open Questions in Cosmology: the first Billion years**
 Type: Conference
 Location: Garching, Germany
 Date: 2005
 Role: Attendee
-+ Name: Advanced Chilean School: First Large
-Scale Structures in the Universe and their evo-
-lution
++ Name: **Advanced Chilean School: First Large Scale Structures in the Universe and their evolution**
 Type: School
 Location: Santiago, Chile
 Date: 2004
 Role: Attendee
-+ Name: Fifth J.J. Giambiagi Winter School of
-Physics: Precision Cosmology
++ Name: **Fifth J.J. Giambiagi Winter School of Physics: Precision Cosmology**
 Type: School
 Location: Buenos Aires, Argentina
 Date: 2003
@@ -547,6 +585,6 @@ Role: Attendee
 + Programming Languages: Python, R, Fortran
 + Spanish: Native – English: Conversational.
 + Computational tools and technical skills: git, continuous integration (TravisCI), OpenMP, python scientific libraries,
-readthedocs, shell programming, Latex, HPC, parallel programming, machine learning
+readthedocs, shell programming, Latex, HPC, parallel programming, machine learning, HTML.
 
 

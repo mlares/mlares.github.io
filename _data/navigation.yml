@@ -15,4 +15,25 @@ main:
   - title: "Utils"
     url: _pages/utils
 
+smain:
+  - title: "Blog"
+    url: _pages/blog
+  - title: "Research"
+    url: _pages/research
+  - title: "Teaching"
+    url: _pages/teaching
+  - title: "Outreach"
+    url: _pages/outreach
+  - title: "channels"
+    url: _pages/channels
+  - title: "CV"
+    url: _pages/cv
+  - title: "Utils"
+    url: _pages/utils
+    children:
+      - title: "Child Link 1"
+        url: /child-1-page-url/
+      - title: "Child Link 2"
+        url: /child-2-page-url/
 
+ 
