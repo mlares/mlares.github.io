@@ -43,8 +43,32 @@ title: OUTREACH
 
 - [Astroscratchathon](https://oac.unc.edu.ar/2020/09/17/llega-el-astro-scratchathon/)
 - [Instituto Villada, Córdoba](https://www.youtube.com/watch?v=220-0c5ahhw)
+- [FoF Meeting 2018](https://www.youtube.com/watch?v=TeeWq9NZvek&feature=youtu.be)
 
 # Transference
 
 - [IncluitAI](https://twitter.com/i/status/1202656042313756672)
 - [CONICET - OVT](https://www.conicet.gov.ar/new_scp/detalle.php?keywords=LAres%2Bmarcelo&id=26990&convenios=yes)
+- Curso de actualización curricular, "Astronomía en la enseñanza
+  secundaria", OAC, 2011-2012
+
+# Public talks
+
+- OAC, 2015-12-04, Ciclo de Conferencias del OAC, "Superestructuras y vacíos cósmicos: el destino del universo escrito en la gran red cósmica"
+- OAC, 2017-06-02, Ciclo de Conferencias del OAC, "Impacto de la
+  astronomía en la vida cotidiana"
+- OAC, 2018-12-07, Ciclo de Conferencias del OAC, "9 de cada 10 astrónomos no
+  confían en las encuestas: notas de la realidad desde una
+  perspectiva astronómica"
+- OAC, 2019-11, Noche de los Museos, "Diálogos"
+  (organizador y expositor).
+- OAC, 2018-11, Noche de los Museos, "Preguntale a un astrónomo"
+  (conferencia interactiva).
+- OAC, 2016-11, Noche de los Museos, "Preguntale a un astrónomo"
+  (conferencia interactiva).
+
+
+
+
+
+
