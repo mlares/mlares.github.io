@@ -23,6 +23,15 @@ Other courses (previous years):
 - Introducción a la Física
 - Álgebra II
 
+Invited lectures:
+
+- Elementos de astronomía, Dante Minniti, UAB, 2020
+- Curvas de luz en estrellas binarias y
+efectos en los tiempos de tránsitos, Luciana Gramajo, UNC, 2020 
+[(slides)]({% link _pages/talks/2020-11-02-binarias.md %})
+
+ 
+
 
 ## Students
 

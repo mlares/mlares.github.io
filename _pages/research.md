@@ -39,13 +39,19 @@ civilizations in the Galaxy [(slides & video)]({% link _pages/talks/2020-08-21-i
 
 ## Software projects
 
-- HEARSAY (PI)
-- AEGIS (PI)
-- PINNACLE (PI)
+- [HEARSAY](https://hearsay.readthedocs.io/en/latest/) (PI)
+- [AEGIS](https://aegis.readthedocs.io/en/latest/) (PI)
+- [PINNACLE](https://pinnacle.readthedocs.io/en/latest/) (PI)
 - CORRAL
 - PROPERIMAGE
 - GRISPY
 - TORITOS PIPELINE
+- DockerHub: [arunalum/phoebe](https://hub.docker.com/r/arunalum/phoebe)
+
+### Open science profiles
+
+- Mendeley
+- SlideShare
 
 ## Affiliations
 
