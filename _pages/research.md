@@ -18,6 +18,7 @@ An updated list of my publications can be found on my profiles from:
 
 - IATE, 2020-08-21, Probability of causal contacts between intelligent
 civilizations in the Galaxy [(slides & video)]({% link _pages/talks/2020-08-21-iate.md %})
+- CONAE, 2020-06-05, "Herramientas para el soporte de decisiones frente a la pandemia de COVID19" [(slides)]({% link _pages/talks/2020-06-05-arcovid19.md %})
 - IATE, 2019-10-24, "t-SNE" [(slides)]({% link _pages/talks/2019-10-24-tSNE.md %})
 - AAA, 2016-09-16, San Juan, Arg., "The sparkling Universe: coherent motions of cosmic voids"
 - AAA, 2016-09-16, San Juan, Arg., "The sparkling Universe: cosmic void clumps"
@@ -25,8 +26,6 @@ civilizations in the Galaxy [(slides & video)]({% link _pages/talks/2020-08-21-i
 - AAA, 2013-09-19, Tandil, Arg., "Una nueva aproximación al estudio de cúmulos estelares basada en la aplicación de la estadística bayesiana"
 - AAA, 2012-09-19, Mar del Plata, Arg., "Propiedades de galaxias y su relación con el ambiente en gran escala"
 - AAA, 2009-09-24, La Plata, Arg., "Propiedades estadísticas de galaxias centrales y satélites débiles en cúmulos"
-
-
 
 
 

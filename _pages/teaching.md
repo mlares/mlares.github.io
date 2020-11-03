@@ -25,7 +25,7 @@ Other courses (previous years):
 
 Invited lectures:
 
-- Elementos de astronomía, Dante Minniti, UAB, 2020
+- Elementos de astronomía, Dante Minniti, UAB, 2020 [(slides + videos)]({% link _pages/talks/2020-10-06-multimessenger.md %})
 - Curvas de luz en estrellas binarias y
 efectos en los tiempos de tránsitos, Luciana Gramajo, UNC, 2020 
 [(slides + video + notebooks)]({% link _pages/talks/2020-11-02-binarias.md %})
