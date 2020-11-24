@@ -2,6 +2,7 @@
 layout: "tag"
 title: OUTREACH
 ---
+
  
 ### Large-scale structure of the universe
 - [Nature news](https://www.nature.com/news/vast-cosmic-voids-merge-like-soap-bubbles-1.18583) "Vast cosmic voids merge like soap bubbles", 2015-10-15
@@ -66,6 +67,64 @@ title: OUTREACH
   (conferencia interactiva).
 - OAC, 2016-11, Noche de los Museos, "Preguntale a un astrónomo"
   (conferencia interactiva).
+
+
+
+# Altmetrics: most commented papers
+
+<script type='text/javascript' src='https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js'></script>
+
+
+<div style="width: 100%; overflow: hidden;">
+<div style="float: left" data-badge-popover="right" data-badge-type="donut" data-doi="10.1017/S147355042000018X" data-hide-no-mentions="true" class="altmetric-embed"> </div>
+<div>Monte Carlo estimation of the probability of causal contacts between communicating civilizations</div>
+</div>
+
+<div style="width: 100%; overflow: hidden;">
+<div style="float: left" data-badge-popover="right" data-badge-type="donut" data-doi="10.1093/mnras/staa732" data-hide-no-mentions="true" class="altmetric-embed"></div> 
+<div>Spatial correlations of extended cosmological structures</div>
+</div>
+
+<div style="width: 100%; overflow: hidden;">
+<div style="float: left" data-badge-popover="right" data-badge-type="donut" data-doi="10.1016/j.ascom.2019.05.002" data-hide-no-mentions="true" class="altmetric-embed"></div> 
+<div>Machine learning on difference image analysis: A comparison of methods for transient detection</div>
+</div>
+
+<div style="width: 100%; overflow: hidden;">
+<div style="float: left" data-badge-popover="right" data-badge-type="donut" data-doi="10.1016/j.ascom.2017.07.003" data-hide-no-mentions="true" class="altmetric-embed"></div> 
+<div>Corral framework: Trustworthy and fully functional data intensive parallel astronomical pipelines</div>
+</div>
+
+<div style="width: 100%; overflow: hidden;">
+<div style="float: left" data-badge-popover="right" data-badge-type="donut" data-doi="10.1093/mnrasl/slv151" data-hide-no-mentions="true" class="altmetric-embed"></div> 
+<div>The sparkling Universe: the coherent motions of cosmic voids</div>
+</div>
+
+
+Papers with large collaborations:
+
+<div style="width: 100%; overflow: hidden;">
+<div style="float: left" data-badge-popover="right" data-badge-type="donut" data-doi="10.1093/MNRAS/STZ3634" data-hide-no-mentions="true" class="altmetric-embed"></div>  
+<div>TOROS Optical follow-up of the Advanced LIGO-VIRGO O2 second observational campaign</div>
+</div>
+
+<div style="width: 100%; overflow: hidden;">
+<div style="float: left" data-badge-popover="right" data-badge-type="donut" data-doi="10.3847/2041-8213/AA9060" data-hide-no-mentions="true" class="altmetric-embed"></div>  
+<div>Observations of the First Electromagnetic Counterpart to a Gravitational-wave Source by the TOROS Collaboration</div>
+</div>
+
+<div style="width: 100%; overflow: hidden;">
+<div style="float: left" data-badge-popover="right" data-badge-type="donut" data-doi="10.3847/2041-8213/AA91C9" data-hide-no-mentions="true" class="altmetric-embed"></div>  
+<div>Multi-messenger Observations of a Binary Neutron Star Merger</div>
+</div>
+
+<div style="width: 100%; overflow: hidden;">
+<div style="float: left" data-badge-popover="right" data-badge-type="donut" data-doi="10.3847/2041-8205/826/1/L13" data-hide-no-mentions="true" class="altmetric-embed"></div>  
+<div>Localization and broadband follow-up of the gravitational-wave transient GW150914</div>
+</div>
+
+
+
 
 
 

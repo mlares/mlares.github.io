@@ -4,7 +4,7 @@ title: Marcelo Lares | Currículum Vitae
 ---
 
 **Villa Carlos Paz – Córdoba – Argentina**
-**+54 9351 5430898 • marcelo.lares@unc.edu.ar •
+**• marcelo.lares@unc.edu.ar •
 [www.mlares.space](http://www.mlares.space)**
 
 #### Academia

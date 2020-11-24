@@ -25,9 +25,9 @@ Other courses (previous years):
 
 Invited lectures:
 
-- Elementos de astronomía, Dante Minniti, UAB, 2020 [(slides + videos)]({% link _pages/talks/2020-10-06-multimessenger.md %})
-- Curvas de luz en estrellas binarias y
-efectos en los tiempos de tránsitos, Luciana Gramajo, UNC, 2020 
+- "The transient universe qnd the TOROS project", Materia: Elementos de astronomía, Titular: Dante Minniti, Universidad Andrés Bello, 2020 [(slides + videos)]({% link _pages/talks/2020-10-06-multimessenger.md %})
+- "Fundamentos teóricos de las cadenas de Markov Monte Carlo", Materia: Curvas de luz en estrellas binarias y
+efectos en los tiempos de tránsitos, Titular: Luciana Gramajo, Universidad Nacional de Córdoba, 2020 
 [(slides + video + notebooks)]({% link _pages/talks/2020-11-02-binarias.md %})
 
  
@@ -40,7 +40,7 @@ Perilla and Federico Dávila Kurbán.
 
 ## Books
 
-- La Astronomía y su enseñanza en la Educación Secundaria, Cap. 8 [PDF](https://openlibra.com/es/book/download/la-astronomia-y-su-ensenanza-en-la-educacion-secundaria)
+- La Astronomía y su enseñanza en la Educación Secundaria, Cap. 8 [(PDF)](https://openlibra.com/es/book/download/la-astronomia-y-su-ensenanza-en-la-educacion-secundaria)
 
 
 ## Evaluation
@@ -69,6 +69,10 @@ Perilla and Federico Dávila Kurbán.
    - Federico Dávila Kurbán
    - Vanessa Daza Perilla
    - Germán Alfaro
+
+# Tools
+
+[My Geogebra profile](https://www.geogebra.org/u/mlares)
 
 
 
