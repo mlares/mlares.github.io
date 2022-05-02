@@ -1,0 +1,73 @@
+Data scrub
+============
+
+El procedimiento de ETL se realiza en la carpeta [root]/src/etl.
+
+Hay archivos separados para procesar los datos en los tres ejes de
+valor: 
+
+- deuda
+- pagos
+- interacciones
+
+El procesamiento de deuda se realiza con las funciones del módulo :mod:`pipeline_deuda`, que contiene los siguientes pasos:
+
++--------------------------------------+-------------------------------------+
+| funcion                              | tarea                               |
++======================================+=====================================+
+| :func:`pipeline_deuda.step_00_read`  | Leer los datos del archivo de excel |
++--------------------------------------+-------------------------------------+
+| :func:`pipeline_deuda.step_01`       | Eliminar datos redundantes          |
++--------------------------------------+-------------------------------------+
+| :func:`pipeline_deuda.step_02`       | Categorizar                         |
++--------------------------------------+-------------------------------------+
+| :func:`pipeline_deuda.step_03`       | Categorizr variables binarias       |
++--------------------------------------+-------------------------------------+
+| :func:`pipeline_deuda.step_04`       | Verficar / corregir fechas          |
++--------------------------------------+-------------------------------------+
+| :func:`pipeline_deuda.load`          | Cargar la base de datos             |
++--------------------------------------+-------------------------------------+
+
+
+El procesamiento de los datos de interacciones se realiza con las funciones del módulo :mod:`pipeline_interacciones`, que contiene los siguientes pasos:
+
++----------------------------------------------+-------------------------------------+
+| funcion                                      | tarea                               |
++==============================================+=====================================+
+| :func:`pipeline_interacciones.step_00_read`  | Leer los datos del archivo de excel |
++----------------------------------------------+-------------------------------------+
+| :func:`pipeline_interacciones.step_01`       | Eliminar datos redundantes          |
++----------------------------------------------+-------------------------------------+
+| :func:`pipeline_interacciones.step_02`       | Categorizar                         |
++----------------------------------------------+-------------------------------------+
+| :func:`pipeline_interacciones.step_03`       | Categorizr variables binarias       |
++----------------------------------------------+-------------------------------------+
+| :func:`pipeline_interacciones.step_04`       | Verficar / corregir fechas          |
++----------------------------------------------+-------------------------------------+
+| :func:`pipeline_interacciones.load`          | Cargar la base de datos             |
++----------------------------------------------+-------------------------------------+
+
+
+El procesamiento de los datos de pagos se realiza en dos niveles, con las funciones del módulo :mod:`pipeline_pagos`, que contiene los siguientes pasos:
+
+
++----------------------------------------------+-------------------------------------+
+| funcion                                      | tarea                               |
++==============================================+=====================================+
+| :func:`pipeline_interacciones.step_00_read`  | Leer los datos del archivo de excel |
++----------------------------------------------+-------------------------------------+
+| :func:`pipeline_interacciones.step_01`       | Eliminar datos redundantes          |
++----------------------------------------------+-------------------------------------+
+| :func:`pipeline_interacciones.step_02`       | Categorizar                         |
++----------------------------------------------+-------------------------------------+
+| :func:`pipeline_interacciones.step_03`       | Categorizr variables binarias       |
++----------------------------------------------+-------------------------------------+
+| :func:`pipeline_interacciones.step_04`       | Verficar / corregir fechas          |
++----------------------------------------------+-------------------------------------+
+| :func:`pipeline_interacciones.load`          | Cargar la base de datos             |
++----------------------------------------------+-------------------------------------+
+
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

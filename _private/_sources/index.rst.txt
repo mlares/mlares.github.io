@@ -1,0 +1,99 @@
+.. rentas-gc documentation master file, created by
+   sphinx-quickstart on Tue Feb  8 07:44:40 2022.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+######################
+rentas-gc / docs
+######################
+
+This is the documentation for the rentas-gc project.
+It is written in both spanish and english. Code documentation
+is mostly in english, and the description of the procedure is mostly
+in spanish.
+
+
+****************************
+Data science considerations
+****************************
+
+Los pasos del proyecto están organizados de la siguiente manera (OSEMN pipeline):
+
+- Obtener los datos
+- Scrub
+- Explorar y visualizar, encontrar patrones y tendencias
+- Modelar para obtener capacidad de predicción
+- Interpretar
+
+Problema de negocio: predecir la cantidad de días de atraso de una obligación
+contribuyentes.
+
+************
+Pipeline
+************
+
+This is a set of tools aimed at exploring interactively using differente data processing and model pipelines. We also generate some 
+tools to assess model performace and to evaluate and visualize models
+
+In order to reproduce the results of this project, the following steps must be followed:
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Steps in the pipeline:
+
+   data
+   eda
+   etl
+   models_forecasting
+   models_clustering
+
+It must be noticed that this is not a formal automated pipeline but a set of interactive explorations of data and models aimed at analyzing the viability of the dataset to get useful business insights.
+
+The steps in the analysis can be separated as follows:
+
+    1. Data preparation and feature engineering
+    2. Model selection
+    3. Hyperparameter fitting
+    4. Model assessment and validation
+    5. Visualizations and search for insights
+
+Each step has several options that were tested in the process. The combination of the different strategies for each step gives rise to different pipelines.
+
+The different steps are connected through data files as follows:
+
+
+===== ========================================= ===============================================
+Step   Task                                     Data files
+===== ========================================= ===============================================
+1      Data preparation and feature engineering   df_1hot.pk, df_OrdEncoder.pk, df_EmbLayer.pk
+2      Model selection                            -
+3      Hyperparameter fitting                     final_model.json
+4      Model assessment and validation            -
+5      Visualizations and search for insights     -
+===== ========================================= ===============================================
+
+
+
+***********************
+Software modules
+***********************
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Modules:
+
+   etl/pipeline_deuda  
+   etl/pipeline_pagos
+   etl/pipeline_interacciones  
+   experiments/utils
+
+
+
+*********************
+Indices and tables
+*********************
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

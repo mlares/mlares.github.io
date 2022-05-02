@@ -1,0 +1,38 @@
+Data aquisition
+===================
+
+
+Processing levels
+----------------------
+
+
+Los datos se organizan en diferentes niveles de acuerdo a la cantidad de procesamiento
+que tuvieron a partir de los datos crudos.
+
+Nivel 0
+:Los datos de nivel cero son los datos crudos tal como son registrados con los mecanismos y herramientas (automáticos) previstos para tal fin.
+
+Nivel 1
+:Los datos han sido leidos de sus fuentes originales y han sido organizados en tablas, con algunos procedimientos de limpieza de datos y de estandarización de formatos.  
+
+Nivel 2A
+:Los datos han sido filtrados, limpiados, y tansformados según criterios de negocio. Se seleccionaron algunos campos y se construyeron nuevos features para realizar experimentos de predicción.  
+
+Nivel 2B
+:Los datos han sido filtrados, limpiados, y tansformados según criterios de negocio. Se seleccionaron algunos campos y se construyeron nuevos features para realizar experimentos de clustering.
+
+\item[Nivel 3] Datos filtrados o seleccionados para un fin específico.  
+
+Los datos crudos están en una `carpeta compartida de Drive
+<https://drive.google.com/drive/u/1/folders/1-xckfSChCHwNQw-FOCKLSbsB5_46Ich8>`_.
+Los datos se ingresan en el nivel 1.
+
+
+Description of data files
+-----------------------------
+
+
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

@@ -1,0 +1,7 @@
+Functions in pipeline_pagos
+============================
+
+.. automodule:: pipeline_pagos
+        :members:
+        :undoc-members:
+        :show-inheritance:

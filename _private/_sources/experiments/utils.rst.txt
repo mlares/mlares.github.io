@@ -1,0 +1,7 @@
+Functions in utils
+====================
+
+.. automodule:: mytools
+        :members:
+        :undoc-members:
+        :show-inheritance:
