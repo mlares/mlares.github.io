@@ -1,0 +1,381 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Functions in utils &#8212; rentas-gc 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Functions in pipeline_interacciones" href="../etl/pipeline_interacciones.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-mytools">
+<span id="functions-in-utils"></span><h1>Functions in utils<a class="headerlink" href="#module-mytools" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="mytools.MidpointNormalize">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mytools.</span></span><span class="sig-name descname"><span class="pre">MidpointNormalize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">midpoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mytools.html#MidpointNormalize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mytools.MidpointNormalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.colors.Normalize</span></code></p>
+<p>Tools to plot a color bar with the midpoint specified.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mytools.adf_test">
+<span class="sig-prename descclassname"><span class="pre">mytools.</span></span><span class="sig-name descname"><span class="pre">adf_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeseries</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mytools.html#adf_test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mytools.adf_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs Dickey-Fuller test (a.k.a. ADF test).</p>
+<p>ADF test es a statistical test to check for stationarity of a series
+the null hypothesis in ADF test is the series is not stationary.
+if p-value is above than a predefined alpha level (Typically
+0.05), you cannot reject the null hypothesis.
+So the series is NOT stationary</p>
+<p>Prints out the result.</p>
+<p>timeseries: ndarray</p>
+<p>None</p>
+<p>So overall what this means to us is, if a series is stationary
+according to the KPSS test by setting regression=’ct’ and is not
+stationary according to the ADF test, it means the series is
+stationary around a deterministic trend and so is fairly easy to
+model this series and produce fairly accurate forecasts</p>
+<p>Let us understand the different types of stationarities and how to
+interpret the results of the above tests.</p>
+<p><strong>Strict Stationary:</strong> A strict stationary series satisfies the
+mathematical definition of a stationary process. For a strict
+stationary series, the mean, variance and covariance are not the
+function of time. The aim is to convert a non-stationary series
+into a strict stationary series for making predictions.</p>
+<p><strong>Trend Stationary:</strong> A series that has no unit root but exhibits
+a trend is referred to as a trend stationary series. Once the
+trend is removed, the resulting series will be strict stationary.
+The KPSS test classifies a series as stationary on the absence of
+unit root. This means that the series can be strict stationary or
+trend stationary.</p>
+<p><strong>Difference Stationary:</strong> A time series that can be made strict
+stationary by differencing falls under difference stationary. ADF
+test is also known as a difference stationarity test.</p>
+<p>Case 1: Both tests conclude that the series is not stationary -&gt;
+series is not stationary</p>
+<p>Case 2: Both tests conclude that the series is stationary -&gt;
+series is stationary</p>
+<p>Case 3: KPSS = stationary and ADF = not stationary  -&gt; trend
+stationary, remove the trend to make series strict stationary</p>
+<p>Case 4: KPSS = not stationary and ADF = stationary -&gt; difference
+stationary, use differencing to make series stationary</p>
+<p>See more in:
+<a class="reference external" href="https://www.analyticsvidhya.com/blog/2018/09/non-stationary-time-series-python/">https://www.analyticsvidhya.com/blog/2018/09/non-stationary-time-series-python/</a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mytools.bayesian_blocks">
+<span class="sig-prename descclassname"><span class="pre">mytools.</span></span><span class="sig-name descname"><span class="pre">bayesian_blocks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mytools.html#bayesian_blocks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mytools.bayesian_blocks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bayesian Blocks Implementation</p>
+<p>By Jake Vanderplas.  License: BSD
+Based on algorithm outlined in
+<a class="reference external" href="http://adsabs.harvard.edu/abs/2012arXiv1207.5578S">http://adsabs.harvard.edu/abs/2012arXiv1207.5578S</a></p>
+<dl class="simple">
+<dt>t<span class="classifier">ndarray, length N</span></dt><dd><p>data to be histogrammed</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>bins<span class="classifier">ndarray</span></dt><dd><p>array containing the (N+1) bin edges</p>
+</dd>
+</dl>
+<p>This is an incomplete implementation: it may fail for some
+datasets.  Alternate fitness functions and prior forms can
+be found in the paper listed above.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mytools.clustering_metrics">
+<span class="sig-prename descclassname"><span class="pre">mytools.</span></span><span class="sig-name descname"><span class="pre">clustering_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">P</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C_centroids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_memberships</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_mean</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mytools.html#clustering_metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mytools.clustering_metrics" title="Permalink to this definition">¶</a></dt>
+<dd><p>P: particles
+C_centroinds: centroids of clusters
+P_membership: memberships of particles in clusters (correlative numbers starting from 0)</p>
+<p>wg_var: within groups variability
+bg_var: beween groups variability
+ex_var: fraction of explanined variance
+distor: distortion</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mytools.get_next_exp_id">
+<span class="sig-prename descclassname"><span class="pre">mytools.</span></span><span class="sig-name descname"><span class="pre">get_next_exp_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">series</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mytools.html#get_next_exp_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mytools.get_next_exp_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the ID of the next experiment in the series</p>
+<p>When experiments are performed and named after the following
+convention:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>experiment series</p></li>
+<li><p>experiment number</p></li>
+<li><p>experiment realization</p></li>
+</ul>
+</div></blockquote>
+<p>For instance, the experiment series AAA and number 1 generates
+AAA_01, and several instances are saved by mlflow under the same
+ID.  This function returns just the number. The last used number 
+is searched in the corresponding directory, then increased by 1, 
+and returned as the next number.</p>
+<p>series: string, name of the series (usually a three letter
+sequence)</p>
+<p>An integer number representing the next set of experiments in the
+series</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mytools.get_run_name">
+<span class="sig-prename descclassname"><span class="pre">mytools.</span></span><span class="sig-name descname"><span class="pre">get_run_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mytools.html#get_run_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mytools.get_run_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the name of the present run under experiment_name</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mytools.is_outlier">
+<span class="sig-prename descclassname"><span class="pre">mytools.</span></span><span class="sig-name descname"><span class="pre">is_outlier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mytools.html#is_outlier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mytools.is_outlier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tells is a value is an outlier.</p>
+<p>Calculamos outliers con el metodo z-scre</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mytools.kpss_test">
+<span class="sig-prename descclassname"><span class="pre">mytools.</span></span><span class="sig-name descname"><span class="pre">kpss_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeseries</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mytools.html#kpss_test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mytools.kpss_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs a Kwiatkowski–Phillips–Schmidt–Shin (KPSS) test</p>
+<p>Define function for the KPSS test. This is a statistical test to
+check for stationarity of a series around a deterministic trend.
+The null hypothesis of the KPSS test is that the series is
+stationary.  If the p-value is less than a predefined alpha level
+(typically 0.05), we reject the null hypothesis, so the series is
+NOT stationary</p>
+<p>Prints out the result.</p>
+<p>timeseries: ndarray</p>
+<p>None</p>
+<p>So overall what this means to us is, if a series is stationary
+according to the KPSS test by setting regression=’ct’ and is not
+stationary according to the ADF test, it means the series is
+stationary around a deterministic trend and so is fairly easy to
+model this series and produce fairly accurate forecasts</p>
+<p>Let us understand the different types of stationarities and how to
+interpret the results of the above tests.</p>
+<p><strong>Strict Stationary:</strong> A strict stationary series satisfies the
+mathematical definition of a stationary process. For a strict
+stationary series, the mean, variance and covariance are not the
+function of time. The aim is to convert a non-stationary series
+into a strict stationary series for making predictions.</p>
+<p><strong>Trend Stationary:</strong> A series that has no unit root but exhibits
+a trend is referred to as a trend stationary series. Once the
+trend is removed, the resulting series will be strict stationary.
+The KPSS test classifies a series as stationary on the absence of
+unit root. This means that the series can be strict stationary or
+trend stationary.</p>
+<p><strong>Difference Stationary:</strong> A time series that can be made strict
+stationary by differencing falls under difference stationary. ADF
+test is also known as a difference stationarity test.</p>
+<p>Case 1: Both tests conclude that the series is not stationary -&gt;
+series is not stationary</p>
+<p>Case 2: Both tests conclude that the series is stationary -&gt;
+series is stationary</p>
+<p>Case 3: KPSS = stationary and ADF = not stationary  -&gt; trend
+stationary, remove the trend to make series strict stationary</p>
+<p>Case 4: KPSS = not stationary and ADF = stationary -&gt; difference
+stationary, use differencing to make series stationary</p>
+<p>See more in:
+<a class="reference external" href="https://www.analyticsvidhya.com/blog/2018/09/non-stationary-time-series-python/">https://www.analyticsvidhya.com/blog/2018/09/non-stationary-time-series-python/</a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mytools.make_texfigure">
+<span class="sig-prename descclassname"><span class="pre">mytools.</span></span><span class="sig-name descname"><span class="pre">make_texfigure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsdir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mytools.html#make_texfigure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mytools.make_texfigure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a tex file containing a figure</p>
+<p>fi: ictionary with the name of the file
+figsdir: directory where the tex file will be saved</p>
+<p>None</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mytools.modif_1">
+<span class="sig-prename descclassname"><span class="pre">mytools.</span></span><span class="sig-name descname"><span class="pre">modif_1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mytools.html#modif_1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mytools.modif_1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Corrects a model according to empirical results in the loss
+function.</p>
+<p>Uses the empirical model:
+f(y) = maximum(y - sqrt(maximum(y, 1)), 0)</p>
+<p>y: ndarray with the predictions from the model</p>
+<p>yc: The corected prediction according to the empirical model.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mytools.modif_1b">
+<span class="sig-prename descclassname"><span class="pre">mytools.</span></span><span class="sig-name descname"><span class="pre">modif_1b</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mytools.html#modif_1b"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mytools.modif_1b" title="Permalink to this definition">¶</a></dt>
+<dd><p>Corrects a model according to empirical results in the loss
+function.</p>
+<p>Uses the empirical model:
+f(y) = maximum(y - sqrt(maximum(y, 1)), 12)</p>
+<p>y: ndarray with the predictions from the model</p>
+<p>yc: The corected prediction according to the empirical model.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mytools.modif_2">
+<span class="sig-prename descclassname"><span class="pre">mytools.</span></span><span class="sig-name descname"><span class="pre">modif_2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mytools.html#modif_2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mytools.modif_2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Corrects a model according to empirical results in the loss
+function.</p>
+<p>Uses the empirical model:
+f(y) = maximum(y - 10/(maximum(y, 1)), 15)</p>
+<p>y: ndarray with the predictions from the model</p>
+<p>yc: The corected prediction according to the empirical model.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mytools.modif_3">
+<span class="sig-prename descclassname"><span class="pre">mytools.</span></span><span class="sig-name descname"><span class="pre">modif_3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mytools.html#modif_3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mytools.modif_3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Corrects a model according to empirical results in the loss
+function.</p>
+<p>Uses the empirical model:
+f(y) = maximum(y - 100*exp(-maximum(y, 0)), 0)</p>
+<p>y: ndarray with the predictions from the model</p>
+<p>yc: The corected prediction according to the empirical model.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mytools.modif_4">
+<span class="sig-prename descclassname"><span class="pre">mytools.</span></span><span class="sig-name descname"><span class="pre">modif_4</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mytools.html#modif_4"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mytools.modif_4" title="Permalink to this definition">¶</a></dt>
+<dd><p>Corrects a model according to empirical results in the loss
+function.</p>
+<p>Uses the empirical model:
+f(y) = chi2(df=10, loc=-7, scale=1.8).pdf(y)</p>
+<p>y: ndarray with the predictions from the model</p>
+<p>yc: The corected prediction according to the empirical model.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mytools.plot_elbow">
+<span class="sig-prename descclassname"><span class="pre">mytools.</span></span><span class="sig-name descname"><span class="pre">plot_elbow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plotname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mytools.html#plot_elbow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mytools.plot_elbow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make an elbow plot</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mytools.plot_feature_importance">
+<span class="sig-prename descclassname"><span class="pre">mytools.</span></span><span class="sig-name descname"><span class="pre">plot_feature_importance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">modelo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nombre</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mytools.html#plot_feature_importance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mytools.plot_feature_importance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shows feature importance with XGBRegressor.</p>
+<p>Plots the results</p>
+<p>modelo: A sklearn model
+nombre: A name used for the model</p>
+<p>None</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mytools.shift_df">
+<span class="sig-prename descclassname"><span class="pre">mytools.</span></span><span class="sig-name descname"><span class="pre">shift_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tminus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shifted_column</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupCol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropna</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mytools.html#shift_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mytools.shift_df" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculamos n valores anteriores de una columna dada</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mytools.str2bool">
+<span class="sig-prename descclassname"><span class="pre">mytools.</span></span><span class="sig-name descname"><span class="pre">str2bool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mytools.html#str2bool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mytools.str2bool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform a string with yes/no options to a boolean variable</p>
+<p>string: string containing the option</p>
+<p>Return 0 or 1.
+0: no, n, f, false, off, 0, -
+1: yes, y, t, true, on, 1, s, si, ok</p>
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">rentas-gc</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Steps in the pipeline:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../data.html">Data aquisition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../eda.html">Data preparation and EDA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../etl.html">ETL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../models_forecasting.html">Forecasting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../models_clustering.html">Clustering</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../etl/pipeline_deuda.html">Funcions in pipeline_deuda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../etl/pipeline_pagos.html">Functions in pipeline_pagos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../etl/pipeline_interacciones.html">Functions in pipeline_interacciones</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Functions in utils</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../etl/pipeline_interacciones.html" title="previous chapter">Functions in pipeline_interacciones</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, IThreex.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/experiments/utils.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

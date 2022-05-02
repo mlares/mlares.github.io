@@ -1,0 +1,122 @@
+Forecasting
+=============
+
+El análisis de clustering se realiza con un conjunto de notebooks desarrolladas en JupyterLab.
+
+Todos los notebooks cuentan con dos secciones en el inicio:
+
+- Descripción del propósito del notebook, variables o archivos de entrada, etc.
+- Lista de los demás notebooks, posición relativa del prosente notebook en la secuencia de pasos y links a los mismos
+- Índice de las secciones del notebook
+
+
+Description of notebooks
+--------------------------
+
+Los experimentos de forecasting se realizaron a través de los siguientes notebooks de Jupyter-Lab:
+
+- 00_README.ipynb
+- 1a_DataPrep_1hot.ipynb
+- 1b_DataPrep_CatEncoding.ipynb
+- 1c_DataPrep_Embedding.ipynb
+- 2a_ModelSel_Lazy.ipynb
+- 2b_ModelSel_MyLazy.ipynb
+- 2c_ModelSel_Genetic.ipynb
+- 2d_ModelSel_CompareSet.ipynb
+- 2e_ModelSel_CrossVal_PickUp.ipynb
+- 2f_ModelSel_CrossVal_TryOut.ipynb
+- 2g_ModelSel_CrossVal.ipynb
+- 3a_ModelFit_Top.ipynb
+- 3b_ModelFit_BiasVariance.ipynb
+- 3c_ModelFit_byTaxType.ipynb
+- 4b_ModelAss_Splits.ipynb
+- 4c_ModelAss_CrossVal.ipynb
+- 5a_ModelViz_Insight.ipynb
+
+
+A continuación se describen las mismas, teniendo en cuenta los requerimientos de entrada (archivos, modelos, datos, etc.)
+y los objetivos.
+
+
+--
+**3b_ModelFit_BiasVariance.ipynb**
+
+PURPOSE OF THIS NOTEBOOK:
+
+- to choice a model from a given architecture using the bias-variance tradeoff criteria
+- to assess the model with a train-test-validation data split.
+    
+INPUTS:
+
+- a model
+- data file with processed data
+- train/test split rate
+- loss function
+
+OUTPUTS:
+
+- the final model is saved as a joblib file
+- experiments are registered with mlflow
+    
+NOTES:
+
+- this notebook must be run using either the *i3ml* conda environment
+- Input files are generated using DataPrep_1hot, DataPrep_CatEncoding or DataPrep_embedding
+- this notebook is specific for the XGBoost model, for different models the complexity parameters could change
+
+--
+
+
+
+
+
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "<div class=\"alert-info\"><br>\n",
+    "\n",
+    "**PURPOSE OF THIS NOTEBOOK**:\n",
+    "\n",
+    "- to explore the validity of the model fitting with a train-test-validation data split.\n",
+    "    \n",
+    "INPUTS:\n",
+    "\n",
+    "- a model\n",
+    "- data file with processed data\n",
+    "- train/test split rate\n",
+    "- loss function\n",
+    "\n",
+    "OUTPUTS:\n",
+    "\n",
+    "- the final model is saved as a joblib file\n",
+    "- experiments are registered with mlflow\n",
+    "    \n",
+    "NOTES:\n",
+    "- Input files are generated using DataPrep_1hot, \n",
+    "    DataPrep_CatEncoding or DataPrep_embedding\n",
+    "- this notebook is specific for the XGBoost model, for different models the complexity parameters\n",
+    "    could change\n",
+    "\n",
+    "<br></div>"
+   ]
+  },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

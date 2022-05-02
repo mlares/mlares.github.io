@@ -1,0 +1,539 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pipeline_deuda &#8212; rentas-gc 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for pipeline_deuda</h1><div class="highlight"><pre>
+<span></span><span class="c1"># %% imports</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">configparser</span> <span class="kn">import</span> <span class="n">ConfigParser</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">sqlite3</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">pandas.api.types</span> <span class="kn">import</span> <span class="n">CategoricalDtype</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">walk</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">path</span><span class="p">,</span> <span class="n">remove</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">walk</span>
+<span class="kn">import</span> <span class="nn">bonobo</span>
+<span class="kn">import</span> <span class="nn">yaml</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+
+<span class="n">cwd</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+<span class="n">root_dir</span> <span class="o">=</span> <span class="n">cwd</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">root_dir</span> <span class="o">/</span> <span class="s1">&#39;src/utils&#39;</span><span class="p">))</span>
+<span class="kn">from</span> <span class="nn">mytools</span> <span class="kn">import</span> <span class="n">str2bool</span>
+
+<div class="viewcode-block" id="step_00_read"><a class="viewcode-back" href="../etl/pipeline_deuda.html#pipeline_deuda.step_00_read">[docs]</a><span class="k">def</span> <span class="nf">step_00_read</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Devuelve un pandas dataframe con los datos obtenidos de la</span>
+<span class="sd">    tabla de excel.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">config</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">ConfigParser</span><span class="p">()</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;../../sets/settings.ini&#39;</span><span class="p">)</span>
+
+    <span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;files&#39;</span><span class="p">][</span><span class="s1">&#39;datadir&#39;</span><span class="p">],</span>
+                     <span class="n">config</span><span class="p">[</span><span class="s1">&#39;files&#39;</span><span class="p">][</span><span class="s1">&#39;datadir_deuda&#39;</span><span class="p">]])</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">root_dir</span> <span class="o">/</span> <span class="n">path</span>
+
+    <span class="n">flns</span>  <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">dirpath</span><span class="p">,</span> <span class="n">dirnames</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span> <span class="ow">in</span> <span class="n">walk</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="n">flns</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+    <span class="n">dfs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">flns</span><span class="p">:</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">path</span> <span class="o">/</span> <span class="n">f</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs</span><span class="p">)</span>
+    <span class="k">yield</span> <span class="n">D</span></div>
+
+<div class="viewcode-block" id="step_00_reads"><a class="viewcode-back" href="../etl/pipeline_deuda.html#pipeline_deuda.step_00_reads">[docs]</a><span class="k">def</span> <span class="nf">step_00_reads</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Devuelve un pandas dataframe con los datos obtenidos de muchas</span>
+<span class="sd">    tablas de excel.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">config</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">ConfigParser</span><span class="p">()</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;../../sets/settings.ini&#39;</span><span class="p">)</span>
+
+    <span class="n">datapath</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;files&#39;</span><span class="p">][</span><span class="s1">&#39;datadir&#39;</span><span class="p">],</span> <span class="s1">&#39;deuda&#39;</span><span class="p">])</span>
+    <span class="n">datapath</span> <span class="o">=</span> <span class="n">root_dir</span> <span class="o">/</span> <span class="n">datapath</span>
+
+    <span class="n">f</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">dirpath</span><span class="p">,</span> <span class="n">dirnames</span><span class="p">,</span> <span class="n">filenames</span><span class="p">)</span> <span class="ow">in</span> <span class="n">walk</span><span class="p">(</span><span class="n">datapath</span><span class="p">):</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">filenames</span><span class="p">)</span>
+
+
+
+    <span class="n">filein</span> <span class="o">=</span> <span class="n">root_dir</span> <span class="o">/</span> <span class="n">filein</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">filein</span><span class="p">)</span>
+    <span class="k">yield</span> <span class="n">D</span></div>
+
+
+<div class="viewcode-block" id="step_01"><a class="viewcode-back" href="../etl/pipeline_deuda.html#pipeline_deuda.step_01">[docs]</a><span class="k">def</span> <span class="nf">step_01</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Elimina las columnas redundantes</span>
+
+<span class="sd">    La lista de columnas eliminada es la siguiente:</span>
+<span class="sd">        - CUIT_SIN_GUION: se elimina porque tiene la misma información</span>
+<span class="sd">          que CUIT</span>
+<span class="sd">        - DNI: se elimina porque la información ya está en CUIT</span>
+<span class="sd">        - SELECCIÓN OMEGA: se elimina porque la muestra que se está</span>
+<span class="sd">          usando corresponde a un único valor para esta columna</span>
+<span class="sd">        - OMEGA: se elimina porque la muestra que se está</span>
+<span class="sd">          usando corresponde a un único valor para esta columna</span>
+<span class="sd">        - MARCA SUJ_OMEGA: se elimina porque la muestra que se está</span>
+<span class="sd">          usando corresponde a un único valor para esta columna</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">D</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;CUIT_SIN_GUION&#39;</span><span class="p">,</span> <span class="s1">&#39;DNI&#39;</span><span class="p">,</span> <span class="s1">&#39;SELECCIÓN OMEGA&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;MARCA SUJ_OMEGA&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">yield</span> <span class="n">D</span></div>
+
+
+<div class="viewcode-block" id="step_02"><a class="viewcode-back" href="../etl/pipeline_deuda.html#pipeline_deuda.step_02">[docs]</a><span class="k">def</span> <span class="nf">step_02</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Categoriza las variables que adoptan pocos valores posibles.</span>
+
+<span class="sd">    La lista de columnas categorizadas es la siguiente:</span>
+
+<span class="sd">    - PROTOCOLO DE GESTION: adopta los valores</span>
+<span class="sd">      · PROTOCOLO DIFERENCIAL</span>
+<span class="sd">      · GENERAL</span>
+<span class="sd">    - CYQ_TIPO PROCESO: adopta los valores:</span>
+<span class="sd">        · CONCURSO</span>
+<span class="sd">        · QUIEBRA</span>
+<span class="sd">        · {NULL}</span>
+<span class="sd">    - CYQ_DESCRIPCIÓN PROCESO: adopta los valores:</span>
+<span class="sd">        · CONCURSO PREVENTIVO</span>
+<span class="sd">        · GRAN CONCURSO PREVENTIVO</span>
+<span class="sd">        · QUIEBRA PEDIDA SIMPLE/QUIEBRA PROPIA SIMPLE</span>
+<span class="sd">        · PEQUEÑO CONCURSO PREVENTIVO</span>
+<span class="sd">        · QUIEBRA INDIRECTA</span>
+<span class="sd">        · {NULL}</span>
+<span class="sd">    - CATEGORIA_CC: adopta los valores:</span>
+<span class="sd">        · ALTA</span>
+<span class="sd">        · MEDIA ALTA</span>
+<span class="sd">        · BAJA</span>
+<span class="sd">        · MEDIA BAJA</span>
+<span class="sd">        · S/C</span>
+<span class="sd">        · {NULL}</span>
+<span class="sd">    - CATEGORIA_PFT: adopta los valores:</span>
+<span class="sd">        · ALTO</span>
+<span class="sd">        · MEDIO ALTO</span>
+<span class="sd">        · BAJO</span>
+<span class="sd">        · MEDIO BAJO</span>
+<span class="sd">        · S/C</span>
+<span class="sd">        · {NULL}</span>
+<span class="sd">    - CATEGORIA_RF: adopta los valores:</span>
+<span class="sd">        · ALTO</span>
+<span class="sd">        · MEDIO ALTO</span>
+<span class="sd">        · BAJO</span>
+<span class="sd">        · MEDIO BAJO</span>
+<span class="sd">        · S/C</span>
+<span class="sd">        · {NULL}</span>
+<span class="sd">    - CATEGORIA_CT: adopta los valores:</span>
+<span class="sd">        · MUY BUENA</span>
+<span class="sd">        · BUENA</span>
+<span class="sd">        · REGULAR</span>
+<span class="sd">        · MALA</span>
+<span class="sd">        · S/C</span>
+<span class="sd">        · {NULL}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">cats</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;PROTOCOLO DIFERENCIAL&#39;</span><span class="p">,</span> <span class="s1">&#39;GENERAL&#39;</span><span class="p">]</span>
+    <span class="n">status_type</span> <span class="o">=</span> <span class="n">CategoricalDtype</span><span class="p">(</span><span class="n">categories</span><span class="o">=</span><span class="n">cats</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">D</span><span class="p">[</span><span class="s1">&#39;PROTOCOLO DE GESTION&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="s1">&#39;PROTOCOLO DE GESTION&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">status_type</span><span class="p">)</span>
+
+    <span class="n">cats</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;CONCURSO&#39;</span><span class="p">,</span> <span class="s1">&#39;QUIEBRA&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">]</span>
+    <span class="n">status_type</span> <span class="o">=</span> <span class="n">CategoricalDtype</span><span class="p">(</span><span class="n">categories</span><span class="o">=</span><span class="n">cats</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">D</span><span class="p">[</span><span class="s1">&#39;CYQ_TIPO PROCESO&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="s1">&#39;CYQ_TIPO PROCESO&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">status_type</span><span class="p">)</span>
+
+    <span class="n">cats</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;CONCURSO PREVENTIVO&#39;</span><span class="p">,</span> <span class="s1">&#39;GRAN CONCURSO PREVENTIVO&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;QUIEBRA PEDIDA SIMPLE/QUIEBRA PROPIA SIMPLE&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;PEQUEÑO CONCURSO PREVENTIVO&#39;</span><span class="p">,</span> <span class="s1">&#39;QUIEBRA INDIRECTA&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">]</span>
+    <span class="n">status_type</span> <span class="o">=</span> <span class="n">CategoricalDtype</span><span class="p">(</span><span class="n">categories</span><span class="o">=</span><span class="n">cats</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">serie</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="s1">&#39;CYQ_DESCRIPCIÓN PROCESO&#39;</span><span class="p">]</span>
+    <span class="n">D</span><span class="p">[</span><span class="s1">&#39;CYQ_DESCRIPCIÓN PROCESO&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">serie</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">status_type</span><span class="p">)</span>
+
+    <span class="n">cats</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ALTA&#39;</span><span class="p">,</span> <span class="s1">&#39;MEDIA ALTA&#39;</span><span class="p">,</span> <span class="s1">&#39;BAJA&#39;</span><span class="p">,</span> <span class="s1">&#39;MEDIA BAJA&#39;</span><span class="p">,</span> <span class="s1">&#39;S/C&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">]</span>
+    <span class="n">status_type</span> <span class="o">=</span> <span class="n">CategoricalDtype</span><span class="p">(</span><span class="n">categories</span><span class="o">=</span><span class="n">cats</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">D</span><span class="p">[</span><span class="s1">&#39;CATEGORIA_CC&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="s1">&#39;CATEGORIA_CC&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">status_type</span><span class="p">)</span>
+
+    <span class="n">cats</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ALTO&#39;</span><span class="p">,</span> <span class="s1">&#39;MEDIO ALTO&#39;</span><span class="p">,</span> <span class="s1">&#39;BAJO&#39;</span><span class="p">,</span> <span class="s1">&#39;MEDIO BAJO&#39;</span><span class="p">,</span> <span class="s1">&#39;S/C&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">]</span>
+    <span class="n">status_type</span> <span class="o">=</span> <span class="n">CategoricalDtype</span><span class="p">(</span><span class="n">categories</span><span class="o">=</span><span class="n">cats</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">D</span><span class="p">[</span><span class="s1">&#39;CATEGORIA_PFT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="s1">&#39;CATEGORIA_PFT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">status_type</span><span class="p">)</span>
+
+    <span class="n">D</span><span class="p">[</span><span class="s1">&#39;CATEGORIA_RF&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="s1">&#39;CATEGORIA_RF&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">status_type</span><span class="p">)</span>
+
+    <span class="n">cats</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;MUY BUENA&#39;</span><span class="p">,</span> <span class="s1">&#39;BUENA&#39;</span><span class="p">,</span> <span class="s1">&#39;REGULAR&#39;</span><span class="p">,</span> <span class="s1">&#39;MALA&#39;</span><span class="p">,</span> <span class="s1">&#39;S/C&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">]</span>
+    <span class="n">status_type</span> <span class="o">=</span> <span class="n">CategoricalDtype</span><span class="p">(</span><span class="n">categories</span><span class="o">=</span><span class="n">cats</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">D</span><span class="p">[</span><span class="s1">&#39;CATEGORIA_CT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="s1">&#39;CATEGORIA_CT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">status_type</span><span class="p">)</span>
+
+    <span class="k">yield</span> <span class="n">D</span></div>
+
+
+<div class="viewcode-block" id="step_03"><a class="viewcode-back" href="../etl/pipeline_deuda.html#pipeline_deuda.step_03">[docs]</a><span class="k">def</span> <span class="nf">step_03</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Categoriza las variables binarias (escribe True/False/Null).</span>
+
+<span class="sd">    Columnas afectadas:</span>
+<span class="sd">        - MARCA_ORG PUBLICOS</span>
+<span class="sd">        - MARCA_POSIBLES EXENTOS</span>
+<span class="sd">        - MARCA QUIEBRA</span>
+<span class="sd">        - MARCA CONCURSO</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">serie</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="s1">&#39;MARCA_ORG PUBLICOS&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">D</span><span class="p">[</span><span class="s1">&#39;MARCA_ORG PUBLICOS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">serie</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;boolean&quot;</span><span class="p">)</span>
+
+    <span class="n">serie</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="s1">&#39;MARCA_POSIBLES EXENTOS&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">D</span><span class="p">[</span><span class="s1">&#39;MARCA_POSIBLES EXENTOS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">serie</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;boolean&quot;</span><span class="p">)</span>
+
+    <span class="n">serie</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="s1">&#39;MARCA QUIEBRA&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">D</span><span class="p">[</span><span class="s1">&#39;MARCA QUIEBRA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">serie</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float&quot;</span><span class="p">)</span>
+
+    <span class="n">serie</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="s1">&#39;MARCA CONCURSO&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">D</span><span class="p">[</span><span class="s1">&#39;MARCA CONCURSO&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">serie</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float&quot;</span><span class="p">)</span>
+
+    <span class="k">yield</span> <span class="n">D</span></div>
+
+
+<div class="viewcode-block" id="step_04"><a class="viewcode-back" href="../etl/pipeline_deuda.html#pipeline_deuda.step_04">[docs]</a><span class="k">def</span> <span class="nf">step_04</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Verifica, corrige y uniformiza el formato de las fechas.</span>
+
+<span class="sd">    Columnas afectadas:</span>
+<span class="sd">        - CYQ_FECHA</span>
+<span class="sd">        - FECHA_EJECUCION_PPG</span>
+<span class="sd">        - FECHA STOCK</span>
+<span class="sd">        - ACTUALIZACION</span>
+<span class="sd">        - MIN_VTO_ADEUDADO</span>
+<span class="sd">        - FECHA ACTUALIZACION</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">fullf</span> <span class="o">=</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span>
+
+    <span class="k">for</span> <span class="n">cname</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;CYQ_FECHA&#39;</span><span class="p">]:</span>
+
+        <span class="n">dates</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">D</span><span class="p">[</span><span class="n">cname</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">/%m/%Y&quot;</span><span class="p">)</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">dates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">):</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">dates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">):</span>
+                <span class="n">dates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">_libs</span><span class="o">.</span><span class="n">tslibs</span><span class="o">.</span><span class="n">nattype</span><span class="o">.</span><span class="n">NaTType</span><span class="p">):</span>
+                <span class="n">dates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">_libs</span><span class="o">.</span><span class="n">tslibs</span><span class="o">.</span><span class="n">timestamps</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">):</span>
+                <span class="n">dates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">D</span><span class="p">[</span><span class="n">cname</span><span class="p">]</span> <span class="o">=</span> <span class="n">dates</span>
+
+    <span class="k">for</span> <span class="n">cname</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;FECHA_EJECUCION_PPG&#39;</span><span class="p">,</span> <span class="s1">&#39;FECHA STOCK&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;ACTUALIZACION&#39;</span><span class="p">,</span> <span class="s1">&#39;MIN_VTO_ADEUDADO&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;FECHA ACTUALIZACION&#39;</span><span class="p">]:</span>
+
+        <span class="n">dates</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">D</span><span class="p">[</span><span class="n">cname</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">dates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">):</span>
+                <span class="n">dates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">NaT</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">):</span>
+                <span class="n">dates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">NaT</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">_libs</span><span class="o">.</span><span class="n">tslibs</span><span class="o">.</span><span class="n">nattype</span><span class="o">.</span><span class="n">NaTType</span><span class="p">):</span>
+                <span class="n">dates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">NaT</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">_libs</span><span class="o">.</span><span class="n">tslibs</span><span class="o">.</span><span class="n">timestamps</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">):</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">d</span><span class="p">),</span> <span class="n">fullf</span><span class="p">)</span>
+                <span class="n">dates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">NaT</span><span class="p">)</span>
+        <span class="n">D</span><span class="p">[</span><span class="n">cname</span><span class="p">]</span> <span class="o">=</span> <span class="n">dates</span>
+
+    <span class="k">yield</span> <span class="n">D</span></div>
+
+
+<div class="viewcode-block" id="step_05"><a class="viewcode-back" href="../etl/pipeline_deuda.html#pipeline_deuda.step_05">[docs]</a><span class="k">def</span> <span class="nf">step_05</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Corrije algunos nombres con caracteres especiales</span>
+
+<span class="sd">    Columnas afectadas:</span>
+<span class="sd">        - % DJ IB PRESENTADA</span>
+<span class="sd">        - % DJ IB PRESENTADA ET</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">D</span> <span class="o">=</span> <span class="n">D</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="s1">&#39;% DJ IB PRESENTADA&#39;</span><span class="p">:</span> <span class="s1">&#39;perc_DJ_IB_PRESENTADA&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;% DJ IB PRESENTADA ET&#39;</span><span class="p">:</span> <span class="s1">&#39;perc_DJ_IB_PRESENTADA_ET&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;% DJ AG PRESENTADA&#39;</span><span class="p">:</span> <span class="s1">&#39;perc_DJ_AG_PRESENTADA&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;% DJ AG PRESENTADA ET&#39;</span><span class="p">:</span> <span class="s1">&#39;perc_DJ_AG_PRESENTADA_ET&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;% PPG_FINANCIACION&#39;</span><span class="p">:</span> <span class="s1">&#39;perc_PPG_FINANCIACION&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;% PPG_REGULARIDAD_ACT&#39;</span><span class="p">:</span> <span class="s1">&#39;perc_PPG_REGULARIDAD_ACT&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;% DJ IB PRESENTADA (12)&#39;</span><span class="p">:</span> <span class="s1">&#39;perc_DJ_IB_PRESENTADA_12&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;% DJ IB PRESENTADA ET (12)&#39;</span><span class="p">:</span> <span class="s1">&#39;perc_DJ_IB_PRESENTADA_ET_12&#39;</span><span class="p">,</span>
+                  <span class="p">},</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">yield</span> <span class="n">D</span></div>
+
+
+<div class="viewcode-block" id="load"><a class="viewcode-back" href="../etl/pipeline_deuda.html#pipeline_deuda.load">[docs]</a><span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    LOAD: cargar datos a la base de datos</span>
+
+<span class="sd">    El archivo destino está nombrado según el archivo de configuración</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;files&#39;</span><span class="p">][</span><span class="s1">&#39;setsdir&#39;</span><span class="p">],</span>
+                         <span class="n">config</span><span class="p">[</span><span class="s1">&#39;files&#39;</span><span class="p">][</span><span class="s1">&#39;fields_deuda_yaml&#39;</span><span class="p">]])</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">root_dir</span> <span class="o">/</span> <span class="n">filename</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
+        <span class="n">da</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span>
+
+    <span class="n">table_name</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;fields&#39;</span><span class="p">][</span><span class="s1">&#39;db_people_table&#39;</span><span class="p">]</span>
+    <span class="n">clobber</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;DB&#39;</span><span class="p">][</span><span class="s1">&#39;clobber_deuda&#39;</span><span class="p">]</span>
+    <span class="n">clobber</span> <span class="o">=</span> <span class="n">str2bool</span><span class="p">(</span><span class="n">clobber</span><span class="p">)</span>
+
+    <span class="c1"># connect DB</span>
+    <span class="n">fileout</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;files&#39;</span><span class="p">][</span><span class="s1">&#39;datadir&#39;</span><span class="p">],</span>
+                        <span class="n">config</span><span class="p">[</span><span class="s1">&#39;files&#39;</span><span class="p">][</span><span class="s1">&#39;database&#39;</span><span class="p">]])</span>
+    <span class="n">fileout</span> <span class="o">=</span> <span class="n">root_dir</span> <span class="o">/</span> <span class="n">fileout</span>
+
+    <span class="n">conn</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">fileout</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+
+    <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;SELECT name</span>
+<span class="s2">                FROM sqlite_master</span>
+<span class="s2">                WHERE type=&#39;table&#39; AND name=&#39;</span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2">&#39;;&quot;&quot;&quot;</span>
+    <span class="n">query_results</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">query_results</span><span class="p">)</span>
+    <span class="n">table_exists</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="n">table_exists</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">clobber</span><span class="p">:</span>
+            <span class="n">script</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;DROP TABLE IF EXISTS </span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">script</span><span class="p">)</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">return</span>
+
+    <span class="n">script</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;CREATE TABLE IF NOT EXISTS </span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s1"> (&#39;</span>
+    <span class="n">script_head</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">script</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">da</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">na</span> <span class="o">=</span> <span class="n">da</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+        <span class="n">ty</span> <span class="o">=</span> <span class="n">da</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span>
+        <span class="n">script</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">script</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">na</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">ty</span><span class="si">}</span><span class="s1">,</span><span class="se">\n</span><span class="s1">&#39;</span>
+    <span class="n">script</span> <span class="o">=</span> <span class="n">script</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">script</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">script</span><span class="si">}</span><span class="s1">);&#39;</span>
+    <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">script</span><span class="p">)</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+    <span class="n">vals</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">D</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">da</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">ii</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">ty</span> <span class="o">=</span> <span class="n">ii</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span>
+            <span class="n">tmp</span> <span class="o">=</span> <span class="n">D</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="p">[</span><span class="n">key</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">_libs</span><span class="o">.</span><span class="n">missing</span><span class="o">.</span><span class="n">NAType</span><span class="p">):</span>
+                <span class="n">X</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">tmp</span><span class="p">):</span>
+                <span class="n">X</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">ty</span> <span class="o">==</span> <span class="s1">&#39;INT&#39;</span><span class="p">:</span>
+                    <span class="n">X</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">tmp</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="n">ty</span> <span class="o">==</span> <span class="s1">&#39;TINYINT&#39;</span><span class="p">:</span>
+                    <span class="n">X</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">tmp</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="n">ty</span> <span class="o">==</span> <span class="s1">&#39;TEXT&#39;</span><span class="p">:</span>
+                    <span class="n">X</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">tmp</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="n">ty</span> <span class="o">==</span> <span class="s1">&#39;DATE&#39;</span><span class="p">:</span>
+                    <span class="n">X</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">tmp</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="n">ty</span> <span class="o">==</span> <span class="s1">&#39;FLOAT&#39;</span><span class="p">:</span>
+                    <span class="n">X</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">tmp</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="n">ty</span> <span class="o">==</span> <span class="s1">&#39;BOOL&#39;</span><span class="p">:</span>
+                    <span class="n">X</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">ty</span><span class="p">)</span>
+                    <span class="c1"># should not print anything</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">vals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+    <span class="c1"># insert data</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">col_names</span> <span class="o">=</span> <span class="n">script</span><span class="p">[</span><span class="n">script_head</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">col_names</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">col_names</span><span class="p">)</span>
+    <span class="n">col_placeholders</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;?, &#39;</span> <span class="o">*</span> <span class="n">N</span><span class="p">)[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="n">insert_query</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;INSERT INTO </span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">col_names</span><span class="si">}</span><span class="s1">) &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;VALUES (</span><span class="si">{</span><span class="n">col_placeholders</span><span class="si">}</span><span class="s1">);&#39;</span><span class="p">)</span>
+
+    <span class="n">c</span><span class="o">.</span><span class="n">executemany</span><span class="p">(</span><span class="n">insert_query</span><span class="p">,</span> <span class="n">vals</span><span class="p">)</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="data_pipeline"><a class="viewcode-back" href="../etl/pipeline_deuda.html#pipeline_deuda.data_pipeline">[docs]</a><span class="k">def</span> <span class="nf">data_pipeline</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function builds the graph that needs to be executed.</span>
+
+<span class="sd">    :return: bonobo.Graph</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">bonobo</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+
+    <span class="n">graph</span><span class="o">.</span><span class="n">add_chain</span><span class="p">(</span><span class="n">step_00_read</span><span class="p">,</span>
+                    <span class="n">step_01</span><span class="p">,</span>
+                    <span class="n">step_02</span><span class="p">,</span>
+                    <span class="n">step_03</span><span class="p">,</span>
+                    <span class="n">step_04</span><span class="p">,</span>
+                    <span class="n">step_05</span><span class="p">,</span>
+                    <span class="n">load</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">graph</span></div>
+
+
+<div class="viewcode-block" id="get_services"><a class="viewcode-back" href="../etl/pipeline_deuda.html#pipeline_deuda.get_services">[docs]</a><span class="k">def</span> <span class="nf">get_services</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This function builds the services dictionary</span>
+<span class="sd">    used by bonobo for runtime injection.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">       dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{}</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span> <span class="ow">and</span> <span class="s1">&#39;__file__&#39;</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">():</span>
+
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">bonobo</span><span class="o">.</span><span class="n">get_argument_parser</span><span class="p">()</span>
+    <span class="k">with</span> <span class="n">bonobo</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span> <span class="k">as</span> <span class="n">options</span><span class="p">:</span>
+        <span class="n">bonobo</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">data_pipeline</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">),</span>
+                   <span class="n">services</span><span class="o">=</span><span class="n">get_services</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">))</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">rentas-gc</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Steps in the pipeline:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../data.html">Data aquisition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../eda.html">Data preparation and EDA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../etl.html">ETL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../models_forecasting.html">Forecasting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../models_clustering.html">Clustering</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../etl/pipeline_deuda.html">Funcions in pipeline_deuda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../etl/pipeline_pagos.html">Functions in pipeline_pagos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../etl/pipeline_interacciones.html">Functions in pipeline_interacciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../experiments/utils.html">Functions in utils</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, IThreex.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

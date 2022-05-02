@@ -1,0 +1,151 @@
+Data preparation and EDA
+================================
+
+
+
+
+Configuration files
+---------------------
+
+La mayoría de las variables que afectan al procesamiento de los datos están
+definidas en un archivo de configuración. El mismo presenta diferentes secciones para 
+definir variables relacionadas con los archivos (entrada y salida), criterios de selección,
+campos a utilizar
+y opciones de las bases de datos.
+
+.. code-block::
+
+	# _____________________________________________________
+	[experiment] # EXPERIMENT ID
+
+	# Experiment ID.  Useful to compare and save experiments.
+	# A directory will be created with this name under [out]dir_output
+	experiment_ID = TRN_01
+
+	# _____________________________________________________
+	[files] # DATA FILES
+
+	# data directories are given w.r.t. root directory
+
+	# locations of data files
+	datadir = dataset
+
+	datadir_DB = DB
+	datadir_pagos = pagos
+	datadir_deuda = deuda
+	datadir_inter = interacciones
+
+	# locations of data files
+	setsdir = sets
+
+	# categorias
+	filedata_cats = categorias.xlsx
+
+	# DEUDA
+	filedata_1 = 47- Grupo Omega_31012022_v1.xlsx
+
+	# INTERACIONES
+	filedata_inter = interacciones.xlsx
+
+	# PAGOS
+	# archivo de datos para impuesto automotor
+	filedata_pagos_autom = automotor.csv
+
+	# archivo de datos para impuesto a embarcaciones
+	filedata_pagos_embar = embarcaciones.csv
+
+	# archivo de datos para impuesto rural
+	filedata_pagos_rural = rural.csv
+
+	# archivo de datos para impuesto inmobiliario urbano
+	filedata_pagos_urban = urbano.csv
+
+	# archivo de datos para Impuesto Sobre Ingresos Brutos
+	filedata_pagos_ISIB = isib.csv
+
+	# archivo de datos para Monotributo Unificado Córdoba
+	filedata_pagos_MUC = muc.csv
+
+	# Name of the file containing the diccionary for "deuda"
+	fields_deuda_yaml = fields_deuda.yaml
+
+	# Name of the file containing the diccionary for "interacciones"
+	fields_inter_yaml = fields_inter.yaml
+
+	# Name of the file containing the diccionary for "pagos"
+	fields_pagos_yaml = fields_pagos.yaml
+
+	# Name of the file containing the diccionary for "pagos procesados"
+	fields_pagos_proc_yaml = fields_pagos_proc.yaml
+
+
+	# Name of the data base file (pagos - deuda - interacciones)
+	database = omega.db
+
+	# Name of the pagos data base file
+	database_pagos_priv = pagos_priv.db
+
+	# Name of the pagos data base file
+	database_pagos_anon = pagos_anon.db
+
+	# Name of the consolidated database for clustering
+	database_consolidated = omega_percuit.db
+
+	# REPORT
+	# location of figures for reporting  
+	figsdir = report/01_informe/figures
+
+	# location of tables for reporting  
+	tabsdir = report/01_informe/tables
+
+	# _____________________________________________________
+	[criteria]
+
+	# Valor de corte para considerar deuda como "no cancelado" ($)
+	pending_thres = 50
+
+	# anonymize method for CUITs: "encrypt" or "hash"
+	anonymize_method = hash
+
+	# _____________________________________________________
+	[fields] # DATA FIELDS
+
+	# Name of table for "contribuyentes" in SQL database
+	db_people_table = deuda
+
+	# Name of table for "interacciones" in SQL database
+	db_comm_table = interacciones
+
+	# Name of table for "pagos" in SQL database
+	db_pagos_table = pagos
+
+	# _____________________________________________________
+	[DB] # DATABASE OPTIONS
+
+	# If table deuda exists, overwrite it
+	clobber_deuda = False
+
+	# If table deuda exists, overwrite it
+	clobber_pagos = False
+
+	# If table deuda exists, overwrite it
+	clobber_interacciones = False
+
+
+Además, se construyó un archivo en formato XLSX que contiene la selección de campos,
+criterios de imputación de datos faltantes, nombres de los campos, y generación de
+tablas para archivos de configuración.
+
+Finalmente, se cuenta con archivos de configuración en formato YAML que definen los
+campos a utilizarse en las bases de datos, sus tipos, descripciones, etc.
+
+
+.. code::
+
+    Parser import Parser
+    config = Parser('config.ini')
+
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

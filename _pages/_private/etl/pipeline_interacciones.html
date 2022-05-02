@@ -1,0 +1,226 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Functions in pipeline_interacciones &#8212; rentas-gc 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Functions in utils" href="../experiments/utils.html" />
+    <link rel="prev" title="Functions in pipeline_pagos" href="pipeline_pagos.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-pipeline_interacciones">
+<span id="functions-in-pipeline-interacciones"></span><h1>Functions in pipeline_interacciones<a class="headerlink" href="#module-pipeline_interacciones" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="pipeline_interacciones.data_pipeline">
+<span class="sig-prename descclassname"><span class="pre">pipeline_interacciones.</span></span><span class="sig-name descname"><span class="pre">data_pipeline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pipeline_interacciones.html#data_pipeline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pipeline_interacciones.data_pipeline" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function builds the graph that needs to be executed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>bonobo.Graph</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pipeline_interacciones.get_services">
+<span class="sig-prename descclassname"><span class="pre">pipeline_interacciones.</span></span><span class="sig-name descname"><span class="pre">get_services</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pipeline_interacciones.html#get_services"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pipeline_interacciones.get_services" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function builds the services dictionary, which is a
+simple dict of names-to-implementation used by bonobo for runtime
+injection.
+It will be used on top of the defaults provided by bonobo (fs,
+http, …). You can override those defaults, or just let the
+framework define them. You can also define your own services and
+naming is up to you.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pipeline_interacciones.load">
+<span class="sig-prename descclassname"><span class="pre">pipeline_interacciones.</span></span><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pipeline_interacciones.html#load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pipeline_interacciones.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Carga datos a la base de datos</p>
+<p>El archivo destino está nombrado según el archivo de configuración</p>
+<p>Returns:
+None</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pipeline_interacciones.step_00_read">
+<span class="sig-prename descclassname"><span class="pre">pipeline_interacciones.</span></span><span class="sig-name descname"><span class="pre">step_00_read</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pipeline_interacciones.html#step_00_read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pipeline_interacciones.step_00_read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Devuelve un pandas dataframe con los datos obtenidos de la
+tabla de excel.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pipeline_interacciones.step_01">
+<span class="sig-prename descclassname"><span class="pre">pipeline_interacciones.</span></span><span class="sig-name descname"><span class="pre">step_01</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pipeline_interacciones.html#step_01"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pipeline_interacciones.step_01" title="Permalink to this definition">¶</a></dt>
+<dd><p>Elimina las columnas redundantes</p>
+<p>La lista de columnas eliminadas es la siguiente:</p>
+<ul class="simple">
+<li><p>Tipo Omega
+· Motivo: Toda la muestra es omega
+· Clases: Omega 495 y Resto Omega</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pipeline_interacciones.step_02">
+<span class="sig-prename descclassname"><span class="pre">pipeline_interacciones.</span></span><span class="sig-name descname"><span class="pre">step_02</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pipeline_interacciones.html#step_02"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pipeline_interacciones.step_02" title="Permalink to this definition">¶</a></dt>
+<dd><p>Categoriza las variables que adoptan pocos valores posibles.</p>
+<p>La lista de columnas categorizadas es la siguiente:</p>
+<ul class="simple">
+<li><p>CANAL
+· Chat en línea
+· Facebook
+· Jelou
+· Rentas te llama</p></li>
+<li><p>CATEGORÍA
+· ASESORAMIENTO
+· INCONVENIENTE
+· INICIA TRAMITE
+· AYUDA COVID
+· IMPUESTO 2021</p></li>
+<li><p>Subestado
+· Finalizado
+· Análisis
+· Registrado
+· Solicitud Interna
+· Requerido
+· Requerimiento a Sistemas
+· Solicitud Externa
+· {NULL}</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pipeline_interacciones.step_03">
+<span class="sig-prename descclassname"><span class="pre">pipeline_interacciones.</span></span><span class="sig-name descname"><span class="pre">step_03</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pipeline_interacciones.html#step_03"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pipeline_interacciones.step_03" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uniformiza nomenclatura de CUIT</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pipeline_interacciones.step_04">
+<span class="sig-prename descclassname"><span class="pre">pipeline_interacciones.</span></span><span class="sig-name descname"><span class="pre">step_04</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pipeline_interacciones.html#step_04"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pipeline_interacciones.step_04" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verifica y eventualmente corrige el formato de las fechas.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pipeline_interacciones.step_05">
+<span class="sig-prename descclassname"><span class="pre">pipeline_interacciones.</span></span><span class="sig-name descname"><span class="pre">step_05</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pipeline_interacciones.html#step_05"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pipeline_interacciones.step_05" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reemplaza nan por espacios</p>
+<p>Columnas afectadas:
+- SECTOR
+- Equipo
+- Propietario</p>
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">rentas-gc</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Steps in the pipeline:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../data.html">Data aquisition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../eda.html">Data preparation and EDA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../etl.html">ETL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../models_forecasting.html">Forecasting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../models_clustering.html">Clustering</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="pipeline_deuda.html">Funcions in pipeline_deuda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pipeline_pagos.html">Functions in pipeline_pagos</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Functions in pipeline_interacciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../experiments/utils.html">Functions in utils</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="pipeline_pagos.html" title="previous chapter">Functions in pipeline_pagos</a></li>
+      <li>Next: <a href="../experiments/utils.html" title="next chapter">Functions in utils</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, IThreex.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/etl/pipeline_interacciones.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

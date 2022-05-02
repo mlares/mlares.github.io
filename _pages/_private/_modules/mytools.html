@@ -1,0 +1,692 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mytools &#8212; rentas-gc 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for mytools</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">statsmodels.tsa.stattools</span> <span class="kn">import</span> <span class="n">adfuller</span>
+<span class="kn">from</span> <span class="nn">statsmodels.tsa.stattools</span> <span class="kn">import</span> <span class="n">kpss</span>
+<span class="kn">import</span> <span class="nn">matplotlib.colors</span> <span class="k">as</span> <span class="nn">colors</span>
+
+
+<span class="c1"># %% ANALYZE DISTRIBUTIONS                                           ---</span>
+
+<div class="viewcode-block" id="bayesian_blocks"><a class="viewcode-back" href="../experiments/utils.html#mytools.bayesian_blocks">[docs]</a><span class="k">def</span> <span class="nf">bayesian_blocks</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Bayesian Blocks Implementation</span>
+
+<span class="sd">    By Jake Vanderplas.  License: BSD</span>
+<span class="sd">    Based on algorithm outlined in</span>
+<span class="sd">    http://adsabs.harvard.edu/abs/2012arXiv1207.5578S</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    t : ndarray, length N</span>
+<span class="sd">        data to be histogrammed</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    bins : ndarray</span>
+<span class="sd">        array containing the (N+1) bin edges</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">    ------</span>
+<span class="sd">    This is an incomplete implementation: it may fail for some</span>
+<span class="sd">    datasets.  Alternate fitness functions and prior forms can</span>
+<span class="sd">    be found in the paper listed above.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+    <span class="c1"># copy and sort the array</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">size</span>
+
+    <span class="c1"># create length-(N + 1) array of cell edges</span>
+    <span class="n">edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">t</span><span class="p">[:</span><span class="mi">1</span><span class="p">],</span>
+                            <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">+</span> <span class="n">t</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span>
+                            <span class="n">t</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:]])</span>
+    <span class="n">block_length</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">edges</span>
+
+    <span class="c1"># arrays needed for the iteration</span>
+    <span class="n">nn_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+    <span class="n">best</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">last</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+    <span class="c1"># ----------------------------------------------------------------</span>
+    <span class="c1"># Start with first data cell; add one cell at each iteration</span>
+    <span class="c1"># ----------------------------------------------------------------</span>
+    <span class="k">for</span> <span class="n">K</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+        <span class="c1"># Compute the width and count of the final bin for all possible</span>
+        <span class="c1"># locations of the K^th changepoint</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="n">block_length</span><span class="p">[:</span><span class="n">K</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">block_length</span><span class="p">[</span><span class="n">K</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">count_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">nn_vec</span><span class="p">[:</span><span class="n">K</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">])[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># evaluate fitness function for these possibilities</span>
+        <span class="n">fit_vec</span> <span class="o">=</span> <span class="n">count_vec</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">count_vec</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">width</span><span class="p">))</span>
+        <span class="n">fit_vec</span> <span class="o">-=</span> <span class="mi">4</span>  <span class="c1"># 4 comes from the prior on the number of changepoints</span>
+        <span class="n">fit_vec</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">+=</span> <span class="n">best</span><span class="p">[:</span><span class="n">K</span><span class="p">]</span>
+
+        <span class="c1"># find the max of the fitness: this is the K^th changepoint</span>
+        <span class="n">i_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">fit_vec</span><span class="p">)</span>
+        <span class="n">last</span><span class="p">[</span><span class="n">K</span><span class="p">]</span> <span class="o">=</span> <span class="n">i_max</span>
+        <span class="n">best</span><span class="p">[</span><span class="n">K</span><span class="p">]</span> <span class="o">=</span> <span class="n">fit_vec</span><span class="p">[</span><span class="n">i_max</span><span class="p">]</span>
+
+    <span class="c1"># ----------------------------------------------------------------</span>
+    <span class="c1"># Recover changepoints by iteratively peeling off the last block</span>
+    <span class="c1"># ----------------------------------------------------------------</span>
+    <span class="n">change_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">i_cp</span> <span class="o">=</span> <span class="n">N</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="n">N</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">i_cp</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="n">change_points</span><span class="p">[</span><span class="n">i_cp</span><span class="p">]</span> <span class="o">=</span> <span class="n">ind</span>
+        <span class="k">if</span> <span class="n">ind</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">last</span><span class="p">[</span><span class="n">ind</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">change_points</span> <span class="o">=</span> <span class="n">change_points</span><span class="p">[</span><span class="n">i_cp</span><span class="p">:]</span>
+
+    <span class="k">return</span> <span class="n">edges</span><span class="p">[</span><span class="n">change_points</span><span class="p">]</span></div>
+
+
+<span class="c1"># %% OUTPUT FIGURES                                                  ---</span>
+
+<div class="viewcode-block" id="make_texfigure"><a class="viewcode-back" href="../experiments/utils.html#mytools.make_texfigure">[docs]</a><span class="k">def</span> <span class="nf">make_texfigure</span><span class="p">(</span><span class="n">fi</span><span class="p">,</span> <span class="n">figsdir</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a tex file containing a figure</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    fi: ictionary with the name of the file</span>
+<span class="sd">    figsdir: directory where the tex file will be saved</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fdir</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">figsdir</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">string</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">begin</span><span class="si">{figure}</span><span class="se">\n</span><span class="s1">&#39;</span>
+              <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">includegraphics[width=0.7</span><span class="se">\\</span><span class="s2">textwidth]&quot;</span>
+              <span class="sa">f</span><span class="s2">&quot;</span><span class="se">{{</span><span class="si">{</span><span class="n">fdir</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">fi</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">]</span><span class="si">}</span><span class="se">}}\n</span><span class="s2">&quot;</span>
+              <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">caption</span><span class="se">{{</span><span class="si">{</span><span class="n">fi</span><span class="p">[</span><span class="s1">&#39;caption&#39;</span><span class="p">]</span><span class="si">}</span><span class="se">}}\n</span><span class="s2">&quot;</span>
+              <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">label</span><span class="se">{{</span><span class="si">{</span><span class="n">fi</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span><span class="si">}</span><span class="se">}}\n</span><span class="s2">&quot;</span>
+              <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">end</span><span class="si">{figure}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="n">texfilename</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">fi</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;tex&#39;</span><span class="p">])</span>
+    <span class="n">texinput</span> <span class="o">=</span> <span class="n">figsdir</span> <span class="o">/</span> <span class="n">texfilename</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">texinput</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MidpointNormalize"><a class="viewcode-back" href="../experiments/utils.html#mytools.MidpointNormalize">[docs]</a><span class="k">class</span> <span class="nc">MidpointNormalize</span><span class="p">(</span><span class="n">colors</span><span class="o">.</span><span class="n">Normalize</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tools to plot a color bar with the midpoint specified.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">midpoint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">clip</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midpoint</span> <span class="o">=</span> <span class="n">midpoint</span>
+        <span class="n">colors</span><span class="o">.</span><span class="n">Normalize</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">,</span> <span class="n">clip</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">clip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># I&#39;m ignoring masked values and all kinds of edge cases to make a</span>
+        <span class="c1"># simple example...</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">vmin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">midpoint</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vmax</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span></div>
+
+<span class="c1"># %% MANAGE OPTIONS                                                  ---</span>
+
+<div class="viewcode-block" id="str2bool"><a class="viewcode-back" href="../experiments/utils.html#mytools.str2bool">[docs]</a><span class="k">def</span> <span class="nf">str2bool</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Transform a string with yes/no options to a boolean variable</span>
+
+<span class="sd">    Paramters:</span>
+<span class="sd">    ----------</span>
+<span class="sd">    string: string containing the option</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    Return 0 or 1.</span>
+<span class="sd">    0: no, n, f, false, off, 0, -</span>
+<span class="sd">    1: yes, y, t, true, on, 1, s, si, ok</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">val</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;yes&#39;</span><span class="p">,</span> <span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="s1">&#39;true&#39;</span><span class="p">,</span> <span class="s1">&#39;on&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="s1">&#39;si&#39;</span><span class="p">,</span> <span class="s1">&#39;ok&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="n">val</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">,</span> <span class="s1">&#39;no&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="s1">&#39;false&#39;</span><span class="p">,</span> <span class="s1">&#39;off&#39;</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;invalid truth value </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">val</span><span class="p">,))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;invalid type for input variable in str2bool&quot;</span><span class="p">)</span></div>
+
+<span class="c1"># %% CLUSTERING METRICS                                              ---</span>
+
+<div class="viewcode-block" id="clustering_metrics"><a class="viewcode-back" href="../experiments/utils.html#mytools.clustering_metrics">[docs]</a><span class="k">def</span> <span class="nf">clustering_metrics</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">C_centroids</span><span class="p">,</span> <span class="n">P_memberships</span><span class="p">,</span> <span class="n">global_mean</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    P: particles</span>
+<span class="sd">    C_centroinds: centroids of clusters</span>
+<span class="sd">    P_membership: memberships of particles in clusters (correlative numbers starting from 0)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    wg_var: within groups variability</span>
+<span class="sd">    bg_var: beween groups variability</span>
+<span class="sd">    ex_var: fraction of explanined variance</span>
+<span class="sd">    distor: distortion</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># within group variability</span>
+    <span class="n">ds_intra</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">ds_distor</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">wg_var</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">Xc</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">C_centroids</span><span class="p">):</span>
+        <span class="n">Xs</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="n">P_membership</span><span class="o">==</span><span class="n">k</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">xx</span> <span class="ow">in</span> <span class="n">Xs</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="n">xx</span><span class="o">-</span><span class="n">Xc</span><span class="p">)</span>
+            <span class="n">ds_intra</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="n">ds_distor</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="n">wg_var</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">ds_intra</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">wg_var</span> <span class="o">/=</span> <span class="p">(</span><span class="n">Ntotal</span><span class="o">-</span><span class="n">K</span><span class="p">)</span>
+    <span class="n">distor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">ds_distor</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+    <span class="c1"># between group variability</span>
+    <span class="n">ds_bgv</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">Xc</span> <span class="ow">in</span> <span class="n">BGM</span><span class="o">.</span><span class="n">means_</span><span class="p">:</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="n">Xc</span><span class="o">-</span><span class="n">global_mean</span><span class="p">)</span>
+        <span class="n">ds_bgv</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+    <span class="n">bg_var</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">ds_bgv</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="p">(</span><span class="n">K</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># fraction of explained variance</span>
+    <span class="n">ex_var</span> <span class="o">=</span> <span class="n">wg_var</span> <span class="o">/</span> <span class="n">bg_var</span>
+
+    <span class="k">return</span> <span class="n">wg_var</span><span class="p">,</span> <span class="n">bg_var</span><span class="p">,</span> <span class="n">ex_var</span><span class="p">,</span> <span class="n">distor</span></div>
+
+<div class="viewcode-block" id="plot_elbow"><a class="viewcode-back" href="../experiments/utils.html#mytools.plot_elbow">[docs]</a><span class="k">def</span> <span class="nf">plot_elbow</span><span class="p">(</span><span class="n">plotname</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Make an elbow plot</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Número de grupos&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;frac. de varianza explicada&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;tan&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">plotname</span><span class="p">)</span></div>
+
+
+<span class="c1"># %% EXPERIMENT IDENTIFICATIONS                                      ---</span>
+
+<div class="viewcode-block" id="get_next_exp_id"><a class="viewcode-back" href="../experiments/utils.html#mytools.get_next_exp_id">[docs]</a><span class="k">def</span> <span class="nf">get_next_exp_id</span><span class="p">(</span><span class="n">series</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the ID of the next experiment in the series</span>
+
+<span class="sd">    When experiments are performed and named after the following</span>
+<span class="sd">    convention:</span>
+<span class="sd">        - experiment series</span>
+<span class="sd">        - experiment number</span>
+<span class="sd">        - experiment realization</span>
+
+<span class="sd">    For instance, the experiment series AAA and number 1 generates</span>
+<span class="sd">    AAA_01, and several instances are saved by mlflow under the same</span>
+<span class="sd">    ID.  This function returns just the number. The last used number </span>
+<span class="sd">    is searched in the corresponding directory, then increased by 1, </span>
+<span class="sd">    and returned as the next number.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    series: string, name of the series (usually a three letter</span>
+<span class="sd">    sequence)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    An integer number representing the next set of experiments in the</span>
+<span class="sd">    series</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
+    <span class="n">paths</span> <span class="o">=</span> <span class="n">glob</span><span class="p">(</span><span class="s1">&#39;mlruns/*/*/tags/mlflow.runName&#39;</span><span class="p">)</span>
+    <span class="n">max_id</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">paths</span><span class="p">)</span><span class="o">&lt;</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">arch</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">arch</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">series</span> <span class="ow">in</span> <span class="n">s</span><span class="p">:</span>
+                <span class="n">idi</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">5</span><span class="p">:])</span>
+                <span class="n">max_id</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_id</span><span class="p">,</span> <span class="n">idi</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">max_id</span><span class="o">+</span><span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="get_run_name"><a class="viewcode-back" href="../experiments/utils.html#mytools.get_run_name">[docs]</a><span class="k">def</span> <span class="nf">get_run_name</span><span class="p">(</span><span class="n">experiment_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gets the name of the present run under experiment_name</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">k</span> <span class="o">=</span> <span class="n">get_next_exp_id</span><span class="p">(</span><span class="n">experiment_name</span><span class="p">)</span>
+    <span class="n">run_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">experiment_name</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="k">return</span> <span class="n">run_name</span></div>
+
+
+<span class="c1"># %% EXPERIMENT IDENTIFICATIONS                                      ---</span>
+
+<div class="viewcode-block" id="is_outlier"><a class="viewcode-back" href="../experiments/utils.html#mytools.is_outlier">[docs]</a><span class="k">def</span> <span class="nf">is_outlier</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tells is a value is an outlier.</span>
+
+<span class="sd">    Calculamos outliers con el metodo z-scre</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">lower_limit</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">-</span> <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">ddof</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">upper_limit</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">+</span> <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">ddof</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="k">return</span> <span class="o">~</span><span class="n">s</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="n">lower_limit</span><span class="p">,</span> <span class="n">upper_limit</span><span class="p">)</span></div>
+
+
+<span class="c1"># %% TIME SERIES                                                     ---</span>
+
+<div class="viewcode-block" id="shift_df"><a class="viewcode-back" href="../experiments/utils.html#mytools.shift_df">[docs]</a><span class="k">def</span> <span class="nf">shift_df</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">tminus</span><span class="p">,</span> <span class="n">shifted_column</span><span class="p">,</span> <span class="n">groupCol</span><span class="p">,</span> <span class="n">dropna</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    shift_df</span>
+
+<span class="sd">    Calculamos n valores anteriores de una columna dada</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">tminus</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;t-</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">groupCol</span><span class="p">,</span><span class="n">as_index</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="n">shifted_column</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">dropna</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="adf_test"><a class="viewcode-back" href="../experiments/utils.html#mytools.adf_test">[docs]</a><span class="k">def</span> <span class="nf">adf_test</span><span class="p">(</span><span class="n">timeseries</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Performs Dickey-Fuller test (a.k.a. ADF test).</span>
+
+<span class="sd">    ADF test es a statistical test to check for stationarity of a series</span>
+<span class="sd">    the null hypothesis in ADF test is the series is not stationary.</span>
+<span class="sd">    if p-value is above than a predefined alpha level (Typically</span>
+<span class="sd">    0.05), you cannot reject the null hypothesis.</span>
+<span class="sd">    So the series is NOT stationary</span>
+
+<span class="sd">    Prints out the result.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    timeseries: ndarray</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    None</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">    ------</span>
+
+<span class="sd">    So overall what this means to us is, if a series is stationary</span>
+<span class="sd">    according to the KPSS test by setting regression=&#39;ct&#39; and is not</span>
+<span class="sd">    stationary according to the ADF test, it means the series is</span>
+<span class="sd">    stationary around a deterministic trend and so is fairly easy to</span>
+<span class="sd">    model this series and produce fairly accurate forecasts</span>
+
+<span class="sd">    Let us understand the different types of stationarities and how to</span>
+<span class="sd">    interpret the results of the above tests.</span>
+
+<span class="sd">    **Strict Stationary:** A strict stationary series satisfies the</span>
+<span class="sd">    mathematical definition of a stationary process. For a strict</span>
+<span class="sd">    stationary series, the mean, variance and covariance are not the</span>
+<span class="sd">    function of time. The aim is to convert a non-stationary series</span>
+<span class="sd">    into a strict stationary series for making predictions.</span>
+
+<span class="sd">    **Trend Stationary:** A series that has no unit root but exhibits</span>
+<span class="sd">    a trend is referred to as a trend stationary series. Once the</span>
+<span class="sd">    trend is removed, the resulting series will be strict stationary.</span>
+<span class="sd">    The KPSS test classifies a series as stationary on the absence of</span>
+<span class="sd">    unit root. This means that the series can be strict stationary or</span>
+<span class="sd">    trend stationary.</span>
+
+<span class="sd">    **Difference Stationary:** A time series that can be made strict</span>
+<span class="sd">    stationary by differencing falls under difference stationary. ADF</span>
+<span class="sd">    test is also known as a difference stationarity test.</span>
+
+<span class="sd">    Case 1: Both tests conclude that the series is not stationary -&gt;</span>
+<span class="sd">    series is not stationary</span>
+
+<span class="sd">    Case 2: Both tests conclude that the series is stationary -&gt;</span>
+<span class="sd">    series is stationary</span>
+
+<span class="sd">    Case 3: KPSS = stationary and ADF = not stationary  -&gt; trend</span>
+<span class="sd">    stationary, remove the trend to make series strict stationary</span>
+
+<span class="sd">    Case 4: KPSS = not stationary and ADF = stationary -&gt; difference</span>
+<span class="sd">    stationary, use differencing to make series stationary</span>
+
+<span class="sd">    See more in:</span>
+<span class="sd">    https://www.analyticsvidhya.com/blog/2018/09/non-stationary-time-series-python/ </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">#Perform Dickey-Fuller test:</span>
+    <span class="nb">print</span> <span class="p">(</span><span class="s1">&#39;Results of Dickey-Fuller Test:&#39;</span><span class="p">)</span>
+    <span class="n">dftest</span> <span class="o">=</span> <span class="n">adfuller</span><span class="p">(</span><span class="n">timeseries</span><span class="p">,</span> <span class="n">autolag</span><span class="o">=</span><span class="s1">&#39;AIC&#39;</span><span class="p">)</span>
+    <span class="n">dfoutput</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">dftest</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Test Statistic&#39;</span><span class="p">,</span><span class="s1">&#39;p-value&#39;</span><span class="p">,</span><span class="s1">&#39;#Lags Used&#39;</span><span class="p">,</span><span class="s1">&#39;Number of Observations Used&#39;</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span><span class="n">value</span> <span class="ow">in</span> <span class="n">dftest</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+       <span class="n">dfoutput</span><span class="p">[</span><span class="s1">&#39;Critical Value (</span><span class="si">%s</span><span class="s1">)&#39;</span><span class="o">%</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="nb">print</span> <span class="p">(</span><span class="n">dfoutput</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="kpss_test"><a class="viewcode-back" href="../experiments/utils.html#mytools.kpss_test">[docs]</a><span class="k">def</span> <span class="nf">kpss_test</span><span class="p">(</span><span class="n">timeseries</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Performs a Kwiatkowski–Phillips–Schmidt–Shin (KPSS) test</span>
+
+<span class="sd">    Define function for the KPSS test. This is a statistical test to</span>
+<span class="sd">    check for stationarity of a series around a deterministic trend.</span>
+<span class="sd">    The null hypothesis of the KPSS test is that the series is</span>
+<span class="sd">    stationary.  If the p-value is less than a predefined alpha level</span>
+<span class="sd">    (typically 0.05), we reject the null hypothesis, so the series is</span>
+<span class="sd">    NOT stationary</span>
+
+<span class="sd">    Prints out the result.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ---------</span>
+<span class="sd">    timeseries: ndarray</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+
+<span class="sd">    So overall what this means to us is, if a series is stationary</span>
+<span class="sd">    according to the KPSS test by setting regression=&#39;ct&#39; and is not</span>
+<span class="sd">    stationary according to the ADF test, it means the series is</span>
+<span class="sd">    stationary around a deterministic trend and so is fairly easy to</span>
+<span class="sd">    model this series and produce fairly accurate forecasts</span>
+
+<span class="sd">    Let us understand the different types of stationarities and how to</span>
+<span class="sd">    interpret the results of the above tests.</span>
+
+<span class="sd">    **Strict Stationary:** A strict stationary series satisfies the</span>
+<span class="sd">    mathematical definition of a stationary process. For a strict</span>
+<span class="sd">    stationary series, the mean, variance and covariance are not the</span>
+<span class="sd">    function of time. The aim is to convert a non-stationary series</span>
+<span class="sd">    into a strict stationary series for making predictions.</span>
+
+<span class="sd">    **Trend Stationary:** A series that has no unit root but exhibits</span>
+<span class="sd">    a trend is referred to as a trend stationary series. Once the</span>
+<span class="sd">    trend is removed, the resulting series will be strict stationary.</span>
+<span class="sd">    The KPSS test classifies a series as stationary on the absence of</span>
+<span class="sd">    unit root. This means that the series can be strict stationary or</span>
+<span class="sd">    trend stationary.</span>
+
+<span class="sd">    **Difference Stationary:** A time series that can be made strict</span>
+<span class="sd">    stationary by differencing falls under difference stationary. ADF</span>
+<span class="sd">    test is also known as a difference stationarity test.</span>
+
+<span class="sd">    Case 1: Both tests conclude that the series is not stationary -&gt;</span>
+<span class="sd">    series is not stationary</span>
+
+<span class="sd">    Case 2: Both tests conclude that the series is stationary -&gt;</span>
+<span class="sd">    series is stationary</span>
+
+<span class="sd">    Case 3: KPSS = stationary and ADF = not stationary  -&gt; trend</span>
+<span class="sd">    stationary, remove the trend to make series strict stationary</span>
+
+<span class="sd">    Case 4: KPSS = not stationary and ADF = stationary -&gt; difference</span>
+<span class="sd">    stationary, use differencing to make series stationary</span>
+
+<span class="sd">    See more in:</span>
+<span class="sd">    https://www.analyticsvidhya.com/blog/2018/09/non-stationary-time-series-python/</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">print</span> <span class="p">(</span><span class="s1">&#39;Results of KPSS Test:&#39;</span><span class="p">)</span>
+    <span class="n">kpsstest</span> <span class="o">=</span> <span class="n">kpss</span><span class="p">(</span><span class="n">timeseries</span><span class="p">,</span> <span class="n">regression</span><span class="o">=</span><span class="s1">&#39;ct&#39;</span><span class="p">,</span><span class="n">nlags</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
+    <span class="n">kpss_output</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">kpsstest</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Test Statistic&#39;</span><span class="p">,</span><span class="s1">&#39;p-value&#39;</span><span class="p">,</span><span class="s1">&#39;Lags Used&#39;</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span><span class="n">value</span> <span class="ow">in</span> <span class="n">kpsstest</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">kpss_output</span><span class="p">[</span><span class="s1">&#39;Critical Value (</span><span class="si">%s</span><span class="s1">)&#39;</span><span class="o">%</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="nb">print</span> <span class="p">(</span><span class="n">kpss_output</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="plot_feature_importance"><a class="viewcode-back" href="../experiments/utils.html#mytools.plot_feature_importance">[docs]</a><span class="k">def</span> <span class="nf">plot_feature_importance</span><span class="p">(</span><span class="n">modelo</span><span class="p">,</span> <span class="n">nombre</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Shows feature importance with XGBRegressor.</span>
+
+<span class="sd">    Plots the results</span>
+
+<span class="sd">    Paramters</span>
+<span class="sd">    ---------</span>
+<span class="sd">    modelo: A sklearn model</span>
+<span class="sd">    nombre: A name used for the model</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">nombre</span><span class="o">.</span><span class="n">casefold</span><span class="p">()</span><span class="o">==</span><span class="s2">&quot;XGB&quot;</span><span class="p">:</span>
+        <span class="n">feature_important</span> <span class="o">=</span> <span class="n">modelo</span><span class="o">.</span><span class="n">get_booster</span><span class="p">()</span><span class="o">.</span><span class="n">get_score</span><span class="p">(</span><span class="n">importance_type</span><span class="o">=</span><span class="s1">&#39;gain&#39;</span><span class="p">)</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">feature_important</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">feature_important</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">values</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">keys</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;score&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span> <span class="o">=</span> <span class="s2">&quot;score&quot;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="c1">## plot top 40 features</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">nlargest</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s2">&quot;score&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;barh&#39;</span><span class="p">,</span> <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span></div>
+
+<span class="c1">#    else</span>
+<span class="c1">#        fig, ax = plt.subplots(figsize=(12,10))</span>
+<span class="c1">#        modelo.plot_importance(model, max_num_features=50, height=0.8, ax=ax)</span>
+<span class="c1">#        ax.grid(False)</span>
+<span class="c1">#        plt.title(&quot;LightGBM - Feature Importance&quot;, fontsize=15)</span>
+<span class="c1">#        plt.show()</span>
+
+
+
+<span class="c1"># %% MODEL CORRECTIONS                                               ---</span>
+
+<div class="viewcode-block" id="modif_1"><a class="viewcode-back" href="../experiments/utils.html#mytools.modif_1">[docs]</a><span class="k">def</span> <span class="nf">modif_1</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Corrects a model according to empirical results in the loss</span>
+<span class="sd">    function.</span>
+
+<span class="sd">    Uses the empirical model:</span>
+<span class="sd">    f(y) = maximum(y - sqrt(maximum(y, 1)), 0)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y: ndarray with the predictions from the model</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    yc: The corected prediction according to the empirical model.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">maximum</span><span class="p">,</span> <span class="n">sqrt</span>
+    <span class="n">yy</span> <span class="o">=</span> <span class="n">maximum</span><span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">maximum</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">yy</span><span class="p">[</span><span class="n">yy</span><span class="o">&lt;</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="n">yy</span></div>
+
+<div class="viewcode-block" id="modif_1b"><a class="viewcode-back" href="../experiments/utils.html#mytools.modif_1b">[docs]</a><span class="k">def</span> <span class="nf">modif_1b</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Corrects a model according to empirical results in the loss</span>
+<span class="sd">    function.</span>
+
+<span class="sd">    Uses the empirical model:</span>
+<span class="sd">    f(y) = maximum(y - sqrt(maximum(y, 1)), 12)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y: ndarray with the predictions from the model</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    yc: The corected prediction according to the empirical model.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">maximum</span><span class="p">,</span> <span class="n">sqrt</span>
+    <span class="n">yy</span> <span class="o">=</span> <span class="n">maximum</span><span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">maximum</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">yy</span><span class="p">[</span><span class="n">yy</span><span class="o">&lt;</span><span class="mi">12</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="n">yy</span></div>
+
+<div class="viewcode-block" id="modif_2"><a class="viewcode-back" href="../experiments/utils.html#mytools.modif_2">[docs]</a><span class="k">def</span> <span class="nf">modif_2</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Corrects a model according to empirical results in the loss</span>
+<span class="sd">    function.</span>
+
+<span class="sd">    Uses the empirical model:</span>
+<span class="sd">    f(y) = maximum(y - 10/(maximum(y, 1)), 15)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y: ndarray with the predictions from the model</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    yc: The corected prediction according to the empirical model.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">maximum</span><span class="p">,</span> <span class="n">sqrt</span>
+    <span class="n">yy</span> <span class="o">=</span> <span class="n">maximum</span><span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="mi">10</span><span class="o">/</span><span class="p">(</span><span class="n">maximum</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">yy</span><span class="p">[</span><span class="n">yy</span><span class="o">&lt;</span><span class="mi">15</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="n">yy</span></div>
+
+<div class="viewcode-block" id="modif_3"><a class="viewcode-back" href="../experiments/utils.html#mytools.modif_3">[docs]</a><span class="k">def</span> <span class="nf">modif_3</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Corrects a model according to empirical results in the loss</span>
+<span class="sd">    function.</span>
+
+<span class="sd">    Uses the empirical model:</span>
+<span class="sd">    f(y) = maximum(y - 100*exp(-maximum(y, 0)), 0)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y: ndarray with the predictions from the model</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    yc: The corected prediction according to the empirical model.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">maximum</span><span class="p">,</span> <span class="n">exp</span>
+    <span class="n">yy</span> <span class="o">=</span> <span class="n">maximum</span><span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="mi">100</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">maximum</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">yy</span><span class="p">[</span><span class="n">yy</span><span class="o">&lt;</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="n">yy</span></div>
+
+<div class="viewcode-block" id="modif_4"><a class="viewcode-back" href="../experiments/utils.html#mytools.modif_4">[docs]</a><span class="k">def</span> <span class="nf">modif_4</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Corrects a model according to empirical results in the loss</span>
+<span class="sd">    function.</span>
+
+<span class="sd">    Uses the empirical model:</span>
+<span class="sd">    f(y) = chi2(df=10, loc=-7, scale=1.8).pdf(y)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y: ndarray with the predictions from the model</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    yc: The corected prediction according to the empirical model.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">chi2</span>
+    <span class="n">yy</span> <span class="o">=</span> <span class="n">chi2</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">loc</span><span class="o">=-</span><span class="mi">7</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.8</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">yy</span> <span class="o">=</span> <span class="n">y</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="mi">10</span><span class="o">*</span><span class="n">yy</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">yy</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">rentas-gc</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Steps in the pipeline:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../data.html">Data aquisition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../eda.html">Data preparation and EDA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../etl.html">ETL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../models_forecasting.html">Forecasting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../models_clustering.html">Clustering</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../etl/pipeline_deuda.html">Funcions in pipeline_deuda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../etl/pipeline_pagos.html">Functions in pipeline_pagos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../etl/pipeline_interacciones.html">Functions in pipeline_interacciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../experiments/utils.html">Functions in utils</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, IThreex.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

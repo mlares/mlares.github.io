@@ -1,0 +1,8 @@
+Funcions in pipeline_deuda
+================================
+
+
+.. automodule:: pipeline_deuda
+        :members:
+        :undoc-members:
+        :show-inheritance:
