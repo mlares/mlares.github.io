@@ -16,11 +16,11 @@ minimal_mistakes_skin    : "air" # "default" # "air", "aqua", "contrast", "dark"
 
 # Site Settings
 locale                   : "en-US"
-title                    : "home"
+title                    : "Marcelo Lares"
 title_separator          : "-"
 subtitle                 : # site tagline that appears below site title in masthead
 name                     : "Marcelo Lares"
-description              : "My personal homepage"
+description              : "Senior Data Science and Machine Learning Engineer. CV, projects, research, teaching, and publications."
 url                      : "https://mlares.github.io"
 baseurl                  : # the subpath of your site, e.g. "/blog"
 repository               : "mlares/"
@@ -95,9 +95,9 @@ analytics:
 author:
   name             : "Marcelo Lares"
   avatar           : "/assets/images/face.png"
-  bio              : "Astrophycisist, data scientist"
+  bio              : "Astrophysicist, data scientist, machine learning engineer"
   location         : "Córdoba, Argentina"
-  email            : marcelo.lares@unc.edu.ar
+  email            : marcelo.lares@gmail.com
   links:
    # - label: "Email"
    # icon: "fas fa-fw fa-envelope-square"
@@ -121,6 +121,9 @@ footer:
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
       url: https://github.com/mlares
+    - label: "LinkedIn"
+      icon: "fab fa-fw fa-linkedin"
+      url: https://ar.linkedin.com/in/marcelo-lares-a4532831
     - label: "Bitbucket"
       icon: "fab fa-fw fa-bitbucket"
       url: https://bitbucket.org/mhlares/

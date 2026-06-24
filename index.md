@@ -1,29 +1,108 @@
 ---
-layout: "tag"
+layout: splash
+title: "Marcelo Lares"
+permalink: /
+excerpt: "Senior Data Science and Machine Learning Engineer"
+header:
+  overlay_image: /assets/images/galaxia2.jpg
+  overlay_filter: 0.45
+  actions:
+    - label: "Download CV"
+      url: "/documents/CV.pdf"
+    - label: "View Projects"
+      url: "/projects/"
 ---
 
-Hi!  I am Marcelo Lares, an astronomer working at
-[IATE](http://www.iate.oac.uncor.edu), 
-researcher at [CONICET](https://www.conicet.gov.ar/new_scp/detalle.php?id=26990&keywords=LAres%2Bmarcelo&datos_academicos=yes)
-and Professor at the
-[Observatorio de Córdoba](https://www.oac.unc.edu.ar), [Universidad Nacional de Córdoba](https://www.unc.edu.ar).
+<section class="cv-intro">
+  <p class="cv-kicker">Data science, machine learning, and scientific software</p>
+  <h1>Astrophysicist turned senior ML engineer.</h1>
+  <p class="cv-lead">
+    I build data products that connect statistical rigor, machine learning, and production systems. My recent industry work includes recommender systems at Mercadolibre and data science leadership at Ithreex Global, after a long research and teaching career in astronomy, scientific computing, and large-scale data analysis.
+  </p>
+  <div class="cv-actions">
+    <a class="btn btn--primary" href="/documents/CV.pdf">Download current CV</a>
+    <a class="btn" href="/documents/RESUME.pdf">Download one-page resume</a>
+    <a class="btn" href="/projects/">See selected projects</a>
+  </div>
+</section>
 
- 
-My primary research interest is the analysis of
-astronomical data, mainly using Big Data and statistical learning
-tools, to learn about the processes that shape the structures we see
-in the universe at many different scales.
+<section class="cv-band cv-band--metrics">
+  <div>
+    <strong>20+ years</strong>
+    <span>Research, academia, and industry</span>
+  </div>
+  <div>
+    <strong>30+ papers</strong>
+    <span>Peer-reviewed scientific production</span>
+  </div>
+  <div>
+    <strong>ML in production</strong>
+    <span>Ranking, recommendations, experimentation</span>
+  </div>
+  <div>
+    <strong>Team leadership</strong>
+    <span>Data science projects and mentoring</span>
+  </div>
+</section>
 
-My topics of interest:
+<section class="cv-section">
+  <h2>Current Focus</h2>
+  <div class="cv-grid">
+    <article>
+      <h3>Machine Learning Systems</h3>
+      <p>Recommendation strategies, ranking models, embeddings, feature engineering, experiment tracking, production rollout, and A/B testing.</p>
+    </article>
+    <article>
+      <h3>Data Science Leadership</h3>
+      <p>Project design, stakeholder communication, team guidance, model evaluation, and delivery across e-commerce, agriculture, finance, retail, and tourism.</p>
+    </article>
+    <article>
+      <h3>Scientific Computing</h3>
+      <p>Statistical learning, Bayesian inference, high-performance computing, reproducible pipelines, and open-source scientific software.</p>
+    </article>
+  </div>
+</section>
 
-- Astrostatistics
-- Astroinformatics
-- Large scale structure of the universe
-- The transient universe (time domain astronomy)
-- Multimessenger astronomy
-- Visualization and data storytelling
-- Reproducible science, reliable scientific software development
+<section class="cv-section">
+  <h2>Selected Experience</h2>
+  <div class="timeline">
+    <article>
+      <span>2024-2026</span>
+      <h3>Senior Data Science Machine Learning Engineer, Mercadolibre</h3>
+      <p>Worked on production-scale recommendation systems, ranking, heterogeneous feature signals, MLflow workflows, and statistical experimentation.</p>
+    </article>
+    <article>
+      <span>2022-2024</span>
+      <h3>Senior Data Scientist and Data Science Lead, Ithreex Global</h3>
+      <p>Led data science projects involving computer vision, customer segmentation, churn modeling, forecasting, RAG systems, and internal Python libraries.</p>
+    </article>
+    <article>
+      <span>2005-present</span>
+      <h3>Professor, Universidad Nacional de Córdoba</h3>
+      <p>Teaching and mentoring in statistics, numerical methods, machine learning, simulations, computation, and data science.</p>
+    </article>
+    <article>
+      <span>2004-2022</span>
+      <h3>Researcher, CONICET</h3>
+      <p>Applied statistical learning, Bayesian inference, and HPC techniques to astronomical datasets and transient-event pipelines.</p>
+    </article>
+  </div>
+</section>
 
-
-I am a member of the [TOROS](http://cam.unc.edu.ar/index.php/toros/), [OTHER](https://blog.ucc.edu.ar/other/) and [ARCOVID19](https://ivco19.github.io/) projects.
-
+<section class="cv-section">
+  <h2>Where To Go Next</h2>
+  <div class="cv-grid cv-grid--links">
+    <article>
+      <h3><a href="/projects/">Projects</a></h3>
+      <p>Industry, scientific software, data pipelines, and public-interest data work translated into concise case studies.</p>
+    </article>
+    <article>
+      <h3><a href="/cv/">CV Repository</a></h3>
+      <p>Downloadable CVs, academic record, publications, teaching, outreach, and supporting documents.</p>
+    </article>
+    <article>
+      <h3><a href="/research/">Research</a></h3>
+      <p>Publications, talks, posters, collaborations, and open science profiles.</p>
+    </article>
+  </div>
+</section>

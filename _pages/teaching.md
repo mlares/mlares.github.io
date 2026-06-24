@@ -1,78 +1,95 @@
 ---
-layout: "tag"
+layout: single
 title: Teaching
+permalink: /teaching/
+classes:
+  - cv-modern
+author_profile: false
 ---
 
-I am an Adjoint Professor at the
-[Universidad Nacional de Córdoba](https://www.unc.edu.ar),
-working at the [Observatorio de Córdoba](https://www.oac.unc.edu.ar).
+<section class="cv-page-hero">
+  <p class="cv-kicker">Teaching and mentoring</p>
+  <h1>University-level teaching in data science, statistics, computation, and astronomy.</h1>
+  <p>
+    I am a professor at the <a href="https://www.unc.edu.ar">Universidad Nacional de Cordoba</a>, working at the <a href="https://www.oac.unc.edu.ar">Observatorio de Cordoba</a>. I am currently head of the Data Science course in the Applied Mathematics department.
+  </p>
+</section>
 
+<section class="cv-band cv-band--metrics">
+  <div>
+    <strong>20 years</strong>
+    <span>University teaching experience</span>
+  </div>
+  <div>
+    <strong>Data Science</strong>
+    <span>Head of the Data Science course</span>
+  </div>
+  <div>
+    <strong>Mentoring</strong>
+    <span>PhD and undergraduate supervision</span>
+  </div>
+  <div>
+    <strong>Outreach</strong>
+    <span>Public talks and educational material</span>
+  </div>
+</section>
 
-## My courses
+<section class="cv-section">
+  <h2>Courses</h2>
+  <div class="cv-grid cv-grid--links">
+    <article>
+      <h3>Data Science</h3>
+      <p>Current head of the Data Science course in the Applied Mathematics department.</p>
+    </article>
+    <article>
+      <h3><a href="https://www.famaf.unc.edu.ar/materias/astrometria/">Astrometria</a></h3>
+      <p>Current university course.</p>
+    </article>
+    <article>
+      <h3><a href="https://computacion2020.readthedocs.io/es/latest/">Computacion</a></h3>
+      <p>Course material and notes from 2020.</p>
+    </article>
+    <article>
+      <h3><a href="https://oac.unc.edu.ar/academicas/seminarios/">Seminar Series</a></h3>
+      <p>Co-organizer at the Observatorio Astronomico de Cordoba.</p>
+    </article>
+  </div>
+</section>
 
-- [Astrometria (NOW)](https://www.famaf.unc.edu.ar/materias/astrometria/)
-- [Computación (2020)](https://computacion2020.readthedocs.io/es/latest/)
-- [Co-organizer of the seminar series at the OAC (2018-present)](https://oac.unc.edu.ar/academicas/seminarios/)
+<section class="cv-section">
+  <h2>Previous Teaching</h2>
+  <div class="tag-cloud">
+    <span>Metodos numericos</span>
+    <span>Probabilidad y estadistica</span>
+    <span>Modelos y simulacion</span>
+    <span>Aprendizaje no supervisado</span>
+    <span>Introduccion a la Fisica</span>
+    <span>Algebra II</span>
+  </div>
+</section>
 
-Other courses (previous years):
+<section class="cv-section">
+  <h2>Invited Lectures</h2>
+  <div class="modern-list">
+    <p><strong>The transient universe and the TOROS project.</strong> Elementos de astronomia, Universidad Andres Bello, 2020. <a href="{% link _pages/talks/2020-10-06-multimessenger.md %}">Slides and videos</a></p>
+    <p><strong>Fundamentos teoricos de las cadenas de Markov Monte Carlo.</strong> Curvas de luz en estrellas binarias y efectos en los tiempos de transitos, Universidad Nacional de Cordoba, 2020. <a href="{% link _pages/talks/2020-11-02-binarias.md %}">Slides, video, and notebooks</a></p>
+  </div>
+</section>
 
-- Métodos numéricos
-- Probabilidad y estadística
-- Modelos y simulación
-- Aprendizaje no supervisado [(Diplomatura en ciencias de datos, 2019)](http://diplodatos.famaf.unc.edu.ar/)
-- Introducción a la Física
-- Álgebra II
-
-Invited lectures:
-
-- "The transient universe qnd the TOROS project", Materia: Elementos de astronomía, Titular: Dante Minniti, Universidad Andrés Bello, 2020 [(slides + videos)]({% link _pages/talks/2020-10-06-multimessenger.md %})
-- "Fundamentos teóricos de las cadenas de Markov Monte Carlo", Materia: Curvas de luz en estrellas binarias y
-efectos en los tiempos de tránsitos, Titular: Luciana Gramajo, Universidad Nacional de Córdoba, 2020 
-[(slides + video + notebooks)]({% link _pages/talks/2020-11-02-binarias.md %})
-
- 
-
-
-## Students
-
-I have the privilege to accompany two great students, Vanessa Daza
-Perilla and Federico Dávila Kurbán.
-
-## Books
-
-- La Astronomía y su enseñanza en la Educación Secundaria, Cap. 8 [(PDF)](https://openlibra.com/es/book/download/la-astronomia-y-su-ensenanza-en-la-educacion-secundaria)
-
-
-## Evaluation
- 
-- Peer-review evaluation for CONICET research career positions (2017,
-  2019).
-
-- Member of evaluation committees for evaluation of teaching
-  positions, Universidad Nacional de Córdoba (2012, 2017, 2018, 2019)
-
-- Member of Thesis evaluation tribunals
-   - Silvio Rodriguez (2019)
-   - Laura Baravalle (2018)
-
-- Member of master degree final work evaluation tribunals
-   - Valeria Sieyra (2014)
-   - Bruno Sánchez (2014)
-   - Mónica Taormina (2013)
-   - Andrés Nicolás Ruiz (2008)
-
-- Evaluation of I+D projects, Secyt, UNC (2016)
-
-- PhD program, member of advising committees
-   - Bruno Sánchez
-   - Valeria Sieyra
-   - Federico Dávila Kurbán
-   - Vanessa Daza Perilla
-   - Germán Alfaro
-
-# Tools
-
-[My Geogebra profile](https://www.geogebra.org/u/mlares)
-
-
-
+<section class="cv-section">
+  <h2>Mentoring and Evaluation</h2>
+  <div class="cv-grid">
+    <article>
+      <h3>Students</h3>
+      <p>Advisor and mentor for PhD and undergraduate students, including Vanessa Daza Perilla and Federico Davila Kurban.</p>
+    </article>
+    <article>
+      <h3>Evaluation</h3>
+      <p>Peer-review evaluation for CONICET research career positions and member of teaching-position and thesis evaluation committees.</p>
+    </article>
+    <article>
+      <h3>Educational Resources</h3>
+      <p>Contributor to <a href="https://openlibra.com/es/book/download/la-astronomia-y-su-ensenanza-en-la-educacion-secundaria">La Astronomia y su ensenanza en la Educacion Secundaria</a> and <a href="https://www.geogebra.org/u/mlares">Geogebra materials</a>.</p>
+    </article>
+  </div>
+</section>

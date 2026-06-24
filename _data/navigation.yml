@@ -1,39 +1,36 @@
 # main links
 main:
-  - title: "Blog"
-    url: _pages/blog
-  - title: "Research"
-    url: _pages/research
-  - title: "Teaching"
-    url: _pages/teaching
-  - title: "Outreach"
-    url: _pages/outreach
-  - title: "channels"
-    url: _pages/channels
+  - title: "Home"
+    url: /
   - title: "CV"
-    url: _pages/cv
-  - title: "Utils"
-    url: _pages/utils
+    url: /cv/
+  - title: "Projects"
+    url: /projects/
+  - title: "Research"
+    url: /research/
+  - title: "Teaching"
+    url: /teaching/
+  - title: "Outreach"
+    url: /outreach/
+  - title: "Blog"
+    url: /blog/
+  - title: "Contact"
+    url: /contact/
 
 smain:
-  - title: "Blog"
-    url: _pages/blog
-  - title: "Research"
-    url: _pages/research
-  - title: "Teaching"
-    url: _pages/teaching
-  - title: "Outreach"
-    url: _pages/outreach
-  - title: "channels"
-    url: _pages/channels
+  - title: "Home"
+    url: /
   - title: "CV"
-    url: _pages/cv
-  - title: "Utils"
-    url: _pages/utils
-    children:
-      - title: "Child Link 1"
-        url: /child-1-page-url/
-      - title: "Child Link 2"
-        url: /child-2-page-url/
-
- 
+    url: /cv/
+  - title: "Projects"
+    url: /projects/
+  - title: "Research"
+    url: /research/
+  - title: "Teaching"
+    url: /teaching/
+  - title: "Outreach"
+    url: /outreach/
+  - title: "Blog"
+    url: /blog/
+  - title: "Contact"
+    url: /contact/
