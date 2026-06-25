@@ -38,7 +38,7 @@ author_profile: false
   <h2>Courses</h2>
   <div class="cv-grid cv-grid--links">
     <article>
-      <h3>Data Science</h3>
+      <h3><a href="https://www.famaf.unc.edu.ar/academica/materias/ciencia-de-datos/">Data Science</a></h3>
       <p>Current head of the Data Science course in the Applied Mathematics department.</p>
     </article>
     <article>

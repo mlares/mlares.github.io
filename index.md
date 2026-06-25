@@ -15,7 +15,7 @@ header:
 
 <section class="cv-intro">
   <p class="cv-kicker">Data science, machine learning, and scientific software</p>
-  <h1>Astrophysicist turned senior ML engineer.</h1>
+  <h1>Understanding complex systems through data and models.</h1>
   <p class="cv-lead">
     I build data products that connect statistical rigor, machine learning, and production systems. My recent industry work includes recommender systems at Mercadolibre and data science leadership at Ithreex Global, after a long research and teaching career in astronomy, scientific computing, and large-scale data analysis.
   </p>
@@ -50,11 +50,11 @@ header:
   <div class="cv-grid">
     <article>
       <h3>Machine Learning Systems</h3>
-      <p>Recommendation strategies, ranking models, embeddings, feature engineering, experiment tracking, production rollout, and A/B testing.</p>
+      <p>Recommendation strategies, ranking models, embeddings, feature engineering, experiment tracking, production rollout, A/B testing, and machine learning applied to scientific problems.</p>
     </article>
     <article>
       <h3>Data Science Leadership</h3>
-      <p>Project design, stakeholder communication, team guidance, model evaluation, and delivery across e-commerce, agriculture, finance, retail, and tourism.</p>
+      <p>Project design, stakeholder communication, team guidance, model evaluation, thesis direction, research collaboration, and delivery across industry and science.</p>
     </article>
     <article>
       <h3>Scientific Computing</h3>
