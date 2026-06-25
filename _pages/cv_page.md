@@ -1,6 +1,7 @@
 ---
-layout: "tag"
+layout: single
 title: Marcelo Lares | Currículum Vitae
+permalink: /cv/full/
 ---
 
 **Villa Carlos Paz – Córdoba – Argentina**
@@ -586,5 +587,4 @@ Role: Attendee
 + Spanish: Native – English: Conversational.
 + Computational tools and technical skills: git, continuous integration (TravisCI), OpenMP, python scientific libraries,
 readthedocs, shell programming, Latex, HPC, parallel programming, machine learning, HTML.
-
 
