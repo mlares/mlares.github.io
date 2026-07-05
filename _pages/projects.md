@@ -18,22 +18,23 @@ classes:
 <section class="project-list">
   <article>
     <p class="cv-kicker">E-commerce recommendations</p>
-    <h2>Recommendation Systems at Mercadolibre</h2>
-    <p>Production-scale machine learning for ranking and recommendation in a major e-commerce marketplace.</p>
+    <h2>Recommendation Systems at Mercado Libre</h2>
+    <p>Primary data science ownership of an online ranking model serving millions of users across Argentina, Brazil, and Mexico.</p>
     <ul>
       <li><strong>Role:</strong> Senior Data Science Machine Learning Engineer.</li>
-      <li><strong>Work:</strong> ranking models, heterogeneous feature engineering, fashion attributes, logistics signals, collaborative interactions, embeddings, MLflow workflows, A/B testing, rollout, and monitoring.</li>
-      <li><strong>Industry value:</strong> model quality, reproducible experimentation, production ownership, and cross-functional delivery.</li>
+      <li><strong>Work:</strong> PyTorch ranking, feature-store integration, embeddings, Fury pipelines, CUDA optimization, MLflow, ONNX, A/B testing, rollout validation, and monitoring.</li>
+      <li><strong>Outcome:</strong> tripled training-data capacity and delivered measurable purchase-conversion lift through controlled experiments.</li>
+      <li><strong>Industry value:</strong> end-to-end ownership, reproducible experimentation, safer releases, and cross-functional delivery.</li>
     </ul>
   </article>
 
   <article>
     <p class="cv-kicker">Applied data science leadership</p>
-    <h2>Data Science Lead at Ithreex Global</h2>
-    <p>Led and delivered data science projects across agriculture, finance, retail, and tourism.</p>
+    <h2>Data Science Lead at IThreex Global</h2>
+    <p>Led an eight-person team delivering data science projects across public revenue, agriculture, retail, tourism, and international trade.</p>
     <ul>
       <li><strong>Role:</strong> Senior Data Scientist and Data Science Lead.</li>
-      <li><strong>Work:</strong> computer vision for livestock weight estimation, customer segmentation, churn modeling, forecasting, RAG-based support systems, and internal Python libraries for model deployment.</li>
+      <li><strong>Work:</strong> tax-revenue forecasting, payment behavior, computer vision for livestock weight estimation, customer segmentation, predictive modeling, a RAG support API, and the core Python library for the Molibdeno AI platform.</li>
       <li><strong>Industry value:</strong> translated ambiguous business problems into deployable models and reusable engineering assets.</li>
     </ul>
   </article>

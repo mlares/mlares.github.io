@@ -20,7 +20,7 @@ title                    : "Marcelo Lares"
 title_separator          : "-"
 subtitle                 : # site tagline that appears below site title in masthead
 name                     : "Marcelo Lares"
-description              : "Senior Data Science and Machine Learning Engineer. CV, projects, research, teaching, and publications."
+description              : "Senior Data Scientist, Machine Learning Engineer, and team leader with production ML ownership and a strong academic background."
 url                      : "https://mlares.github.io"
 baseurl                  : # the subpath of your site, e.g. "/blog"
 repository               : "mlares/"
@@ -70,7 +70,7 @@ naver_site_verification  :
 
 # Social Sharing
 twitter:
-  username               : mlares
+  username               :
 facebook:
   username               :
   app_id                 :
@@ -99,37 +99,22 @@ author:
   location         : "Córdoba, Argentina"
   email            : marcelo.lares@gmail.com
   links:
-   # - label: "Email"
-   # icon: "fas fa-fw fa-envelope-square"
-   #   url: "mailto:marcelo.lares@unc.edu.ar"
-    - label: "Twitter"
-      # icon: "fab fa-fw fa-twitter-square"
-      url: "https://twitter.com/LaresMarcelo"
-    - label: "GitHub"
-      # icon: "fab fa-fw fa-github"
-      url: "https://github.com/mlares"
+    - label: "Email"
+      icon: "fas fa-fw fa-envelope-square"
+      url: "mailto:marcelo.lares@gmail.com"
     - label: "LinkedIn"
-      # icon: "fab fa-fw fa-linkedin"
+      icon: "fab fa-fw fa-linkedin"
       url: "https://ar.linkedin.com/in/marcelo-lares-a4532831"
 
 # Site Footer
 footer:
   links:
-    - label: "Twitter"
-      icon: "fab fa-fw fa-twitter-square"
-      url: https://twitter.com/LaresMarcelo
-    - label: "GitHub"
-      icon: "fab fa-fw fa-github"
-      url: https://github.com/mlares
+    - label: "Email"
+      icon: "fas fa-fw fa-envelope-square"
+      url: mailto:marcelo.lares@gmail.com
     - label: "LinkedIn"
       icon: "fab fa-fw fa-linkedin"
       url: https://ar.linkedin.com/in/marcelo-lares-a4532831
-    - label: "Bitbucket"
-      icon: "fab fa-fw fa-bitbucket"
-      url: https://bitbucket.org/mhlares/
-    - label: "YouTube"
-      icon: "fab fa-fw fa-youtube"
-      url: https://www.youtube.com/channel/UCpCwXO9WVBior1uW3xYF5Ww
 
 
 # Reading Files
@@ -161,6 +146,7 @@ exclude:
   - Rakefile
   - README
   - tmp
+  - documents/CurriculumVitae_largo.pdf
   - /docs # ignore Minimal Mistakes /docs
   - /test # ignore Minimal Mistakes /test
 keep_files:

@@ -2,51 +2,174 @@
 layout: single
 title: Marcelo Lares | Currículum Vitae
 permalink: /cv/full/
+classes:
+  - cv-modern
+  - cv-full
 ---
 
-**Villa Carlos Paz – Córdoba – Argentina**
-**• marcelo.lares@unc.edu.ar •
-[www.mlares.space](http://www.mlares.space)**
+**• [marcelo.lares@gmail.com](mailto:marcelo.lares@gmail.com) •
+[LinkedIn](https://ar.linkedin.com/in/marcelo-lares-a4532831)**
+
+<nav class="cv-full-nav" aria-label="CV sections">
+  <strong>Navigate this CV</strong>
+  <div class="cv-full-nav__links">
+    <a href="#academic-record">Academic record</a>
+    <a href="#publications">Publications</a>
+    <a href="#teaching-mentoring">Teaching &amp; mentoring</a>
+    <a href="#evaluation-service">Evaluation &amp; service</a>
+    <a href="#grants">Grants</a>
+    <a href="#outreach">Outreach</a>
+    <a href="#meetings">Meetings</a>
+    <a href="#skills">Skills</a>
+  </div>
+  <div class="cv-fold-actions" aria-label="Section controls">
+    <button type="button" data-cv-fold-action="expand">Expand all</button>
+    <button type="button" data-cv-fold-action="collapse">Collapse all</button>
+  </div>
+</nav>
+
+<details class="cv-fold" open>
+<summary id="academic-record">Academic background and appointments</summary>
+<div class="cv-fold__content" markdown="1">
 
 #### Academia
 
 ---
 
 + **Ph.D. in Astronomy**
-_National University of Córdoba, Argentina 2003–_
+_National University of Córdoba, Argentina, 2003–2009_
 Supervisor: Prof. Dr. Diego García Lambas
+Thesis: *Low-luminosity satellite galaxies*
 
 + **National University of Córdoba**
-_Licenciado degree in Astronomy, Argentina 1997–_
+_Licenciado degree in Astronomy, Argentina, 1997–2003_
 (The Licenciado Degree comprises 32 courses including
 a research project in astronomy in a minimum of five years)
+Thesis: *Dynamics of galaxies in groups*
 
 + **Instituto "El Obraje"**
-_Técnico químico, Alta Gracia–Córdoba 1991–_
+_Chemical Technician, Alta Gracia–Córdoba_
 Best score, flag escort
 
-#### Current position
+#### Postdoctoral training
 
-Researcher at CONICET, Argentina and Assistant Professor at Universidad Nacional de Córdoba.
-Member of the IAU, the AAA (Argentine Astronomial Asociation), the TOROS project and the OTHER project.
+---
 
-## Publications
++ **CONICET Postdoctoral Fellowship**, 2009–2011
+  *Characterization of the large-scale structure of the Universe*. Host researcher: Diego García Lambas. Field: extragalactic astronomy.
+
+#### Complementary education
+
+---
+
++ **DevOps with GitLab**, Platzi, 2022 — certificate of completion.
++ **AWSome Day**, Amazon, 2021 — cloud computing training.
++ **Ley Micaela: gender and violence against women**, INAP, 2020 — certificate of completion.
++ **Scientific Programming with Python**, Observatorio Astronómico de Córdoba, 2014 — 30 hours covering scientific programming, environments, version control, SQL, testing, interoperability, and project development.
++ **High Performance Computing: Models, Methods and Means**, Louisiana State University, 2010 — taught by Thomas Sterling.
++ **The Universe at High Redshift**, FaMAF-UNC, 2008.
++ **Statistics and Stochastic Processes**, FaMAF-UNC, 2005.
++ **Exploring the High-Redshift Universe with Quasar Absorption Lines**, ICATE, 2004.
++ **Intensive Mini-course on the First Structures**, IAFE, 2004.
++ **Numerical Methods and Programming**, FaMAF-UNC, 2004.
++ **Gravitational Lensing**, Observatorio Astronómico de Córdoba, 2000.
+
+#### Research visits
+
+---
+
++ **Pontificia Universidad Católica de Chile**, 2009 — research on cosmic-void dynamics with Nelson Padilla.
++ **Pontificia Universidad Católica de Chile**, 2006 — research on cosmic voids through LENAC.
++ **Max Planck Institute for Astrophysics, Germany**, 2005 — research on the luminosity function of galaxies in groups with Simon White, through LENAC.
+
+#### Professional record
+
+Professor at Universidad Nacional de Córdoba, with a research career at CONICET through 2022 and subsequent senior data-science and machine-learning work in industry. Member of the IAU, the AAA (Argentine Astronomical Association), and the TOROS and OTHER projects.
+
+#### Academic and institutional appointments
+
+---
+
++ **Universidad Nacional de Córdoba / Observatorio Astronómico de Córdoba**
+  + Professor and university teacher since 2000; regular teaching appointment since 2007.
+  + Courses include Models and Simulation, Probability and Statistics, Astrometry, Numerical Methods, Mathematical Analysis III, Algebra I and II, Physics I and II, Computing, and Introduction to Physics.
++ **CONICET** — Scientific and Technological Research Career, 2012–2023 (on leave during 2022–2023).
++ **Mercado Libre** — Senior Data Science and Machine Learning Engineer, 2024–2026.
++ **IThreex Global** — Senior Data Scientist and Data Science Team Lead, 2022–2024.
++ **Observatorio Astronómico de Córdoba** — Council member, 2007–2010; coordinator of an ad-hoc advisory section in 2009; alternate member of the electoral committee from 2015.
++ **Asociación Argentina de Astronomía** — associate editor of its newsletter, 2009–2010; technical editor of its scientific bulletin since 2012.
++ **Research Incentive Program** — Category IV, 2009–2014.
+
+</div>
+</details>
+
+<details class="cv-fold">
+<summary id="publications">Publications and technical developments</summary>
+<div class="cv-fold__content" markdown="1">
 
 #### Ph.D. Thesis
 
 ---
 
 - **Low luminosity galaxy satellites**
-  2004, PhD thesis, Universidad Nacional de Córdoba
+  2009, PhD thesis, Universidad Nacional de Córdoba
   Advisor: Diego Garcia Lambas.
 
 #### Articles on indexed journals
 
 ---
 
+- **[The VVV near-IR galaxy catalogue of the southern Galactic disc](https://doi.org/10.1051/0004-6361/202452197)**
+2025, *Astronomy & Astrophysics*, 700, A33.
+M. V. Alonso, L. D. Baravalle, J. L. Nilo-Castellón, C. Villalon, M. Soto, M. A. Sgró, I. V. Daza-Perilla, C. Valotto, M. Lares, D. Minniti, et al.
+
+- **[The PAU survey: Enhancing photometric redshift estimation using DEEPz](https://doi.org/10.1051/0004-6361/202452053)**
+2025, *Astronomy & Astrophysics*, 693, A102.
+I. V. Daza-Perilla, M. Eriksen, D. Navarro-Gironés, E. J. Gonzalez, F. Rodriguez, E. Gaztañaga, C. M. Baugh, M. Lares, L. Cabayol-Garcia, F. J. Castander, et al.
+
+- **[The VISTA Variables in the Vía Láctea extended (VVVX) ESO public survey: Completion of the observations and legacy](https://doi.org/10.1051/0004-6361/202450584)**
+2024, *Astronomy & Astrophysics*, 689, A148.
+R. K. Saito et al.
+
+- **[Galaxies in the zone of avoidance: Misclassifications using machine learning tools](https://doi.org/10.1051/0004-6361/202348637)**
+2024, *Astronomy & Astrophysics*, 686, A18.
+P. Marchant Cortés et al.
+
+- **[The VVV near-IR galaxy catalogue in a Northern part of the Galactic disc](https://doi.org/10.1093/mnras/stad1767)**
+2023, *Monthly Notices of the Royal Astronomical Society*, 524(1), 678–694.
+I. V. Daza-Perilla, M. A. Sgró, L. D. Baravalle, M. V. Alonso, C. Villalon, M. Lares, M. Soto, J. L. Nilo Castellón, C. Valotto, P. Marchant Cortés, et al.
+
+- **Automated classification of eclipsing binary systems in the VVV Survey**
+2023, *Monthly Notices of the Royal Astronomical Society*, 520(1), 828–838.
+I. V. Daza-Perilla, L. V. Gramajo, M. Lares, T. Palma, C. E. Ferreira Lopes, D. Minniti, and J. J. Clariá.
+
+- **The cosmic shallows I: Interaction of CMB photons in extended galaxy haloes**
+2023, *Monthly Notices of the Royal Astronomical Society*, 518(4), 5643–5652.
+H. E. Luparello, E. F. Boero, M. Lares, A. G. Sánchez, and D. García Lambas.
+
+- **Spin alignment around TNG300-1 voids**
+2023, *Monthly Notices of the Royal Astronomical Society*, 518(2), 3095–3105.
+F. Dávila-Kurbán, M. Lares, and D. García Lambas.
+
+- **Improved two-point correlation function estimates using glass-like distributions as a reference sample**
+2021, *Monthly Notices of the Royal Astronomical Society*.
+F. Dávila Kurbán, A. G. Sánchez, M. Lares, and A. N. Ruiz.
+
+- **Drifting Features: Detection and evaluation in the context of automatic RRLs identification in VVV**
+2021, *Astronomy & Astrophysics*.
+J. Cabral, M. Lares, S. Gurovich, D. Minniti, and P. Granitto.
+
+- **GriSPy: A Python package for fixed-radius nearest neighbors search**
+2021, *Astronomy and Computing*, 34.
+M. Chalela, E. Sillero, L. Pereyra, M. A. Garcia, J. B. Cabral, M. Lares, and M. Merchán.
+
 - **Monte Carlo estimation of the probability of causal contacts between communicating civilizations**
 2020, International Journal of Astrobiology , 19(5):393–
 M. Lares, J. G. Funes, and L. Gramajo.
+
+- **Spatial correlations of extended cosmological structures**
+2020, *Monthly Notices of the Royal Astronomical Society*, 494(3), 3227–3234.
+V. Santucho, H. E. Luparello, M. Lares, D. G. Lambas, A. N. Ruiz, and M. A. Sgró.
 
 - **Searching for Spiritual Signatures in SETI Research**
 2019, Theology and Science , 17(3):373–
@@ -203,6 +326,34 @@ R E González, M Lares, D G Lambas, and C Valotto.
 2004, Monthly Notices of the Royal Astronomical Society, Volume 352, Issue 2, pp. 501-507. , 352:501–
 M Lares, D G Lambas, and A G Sánchez.
 
+#### Corrections
+
+---
+
+- **[Correction to: The VVV near-IR galaxy catalogue in a Northern part of the Galactic disc](https://doi.org/10.1093/mnras/stae1272)**
+2024, *Monthly Notices of the Royal Astronomical Society*, 531(2), 2785.
+I. V. Daza-Perilla et al.
+
+#### Preprints
+
+---
+
+- **[A statistical formalism for alignment analysis](https://doi.org/10.48550/arXiv.2202.13244)**
+2022, *arXiv e-prints*, arXiv:2202.13244.
+F. Dávila-Kurbán, M. Lares, and D. Garcia Lambas.
+
+#### Data products
+
+---
+
+- **[VizieR Online Data Catalog: VVV NIRGC III (Alonso+, 2025)](https://ui.adsabs.harvard.edu/abs/2025yCat..37000033A)**
+2025, VizieR On-line Data Catalog, J/A+A/700/A33.
+M. V. Alonso et al.
+
+- **[VizieR Online Data Catalog: VVVX tile coordinates (Saito+, 2024)](https://ui.adsabs.harvard.edu/abs/2025yCat..36890148S)**
+2025, VizieR On-line Data Catalog, J/A+A/689/A148.
+R. K. Saito et al.
+
 
 #### Articles with large collaborations
 
@@ -238,6 +389,30 @@ B. P. Abbott, R. Abbott, T. D. Abbott, and et al.
 #### Refereed articles on Conferences
 
 ---
+
+- **[The TOROS data reduction pipeline](https://ui.adsabs.harvard.edu/abs/2021BAAA...62..286D)**
+2021, *Boletín de la Asociación Argentina de Astronomía*, 62, 286–288.
+I. Daza, M. Lares, B. Sánchez, J. B. Cabral, M. Beroiz, and M. Domínguez.
+
+- **[PISCIS: Platform for Interactive Search and Citizen Science](https://ui.adsabs.harvard.edu/abs/2021BAAA...62..310D)**
+2021, *Boletín de la Asociación Argentina de Astronomía*, 62, 310–312.
+I. Daza, I. G. Alfaro, J. A. Benavides, M. Lares, M. V. Santucho, J. B. Cabral, A. L. O'Mill, F. Rodriguez, and M. Koraj.
+
+- **[Soporte de decisiones frente al COVID-19: reporte de una experiencia interdisciplinaria](https://ui.adsabs.harvard.edu/abs/2021BAAA...62..313L)**
+2021, *Boletín de la Asociación Argentina de Astronomía*, 62, 313–315.
+M. Lares, J. B. Cabral, V. Daza, N. Luczywo, D. Paz, B. Sanchez, and F. Stasyszyn.
+
+- **[The role of the galactocentric distance of a civilization on its chance of contacting other intelligent civilizations](https://ui.adsabs.harvard.edu/abs/2021BAAA...62..316L)**
+2021, *Boletín de la Asociación Argentina de Astronomía*, 62, 316–318.
+M. Lares, J. G. Funes, and L. V. Gramajo.
+
+- **[Clasificación automatizada de sistemas binarios eclipsantes detectados en el relevamiento VVV](https://ui.adsabs.harvard.edu/abs/2021BAAA...62...98D)**
+2021, *Boletín de la Asociación Argentina de Astronomía*, 62, 98–100.
+I. Daza, L. V. Gramajo, M. Lares, C. E. Ferreira Lopes, J. J. Clariá, T. Palma, and D. Minniti.
+
+- **[Gravitational-Wave Optical Counterpart Detection Methods for the TOROS Campaign During LVC O2 Observation Run](https://ui.adsabs.harvard.edu/abs/2019APS..APRQ16007B)**
+2019, *APS April Meeting Abstracts*, Q16.007.
+M. Beroiz, R. Camuccio, M. Castillo, M. Diaz, M. Dominguez, M. Lares, B. Sanchez, A. Zadrozny, and the TOROS Team.
 
 - **Orientation of galactic disks around Illustris voids**
     2018, _Boletín de la Asociación Argentina de Astronomía, vol. 60, p.130-132_ , 60:130–
@@ -314,6 +489,15 @@ A A Alvarez-Candal, R Duffard, M Lares, M Leiva, M C Pivato, and A G Sánchez.
 An updated list of my publications can be found in my ORCID profile:
 https://orcid.org/0000-0001-8180-
 
+#### Books and book chapters
+
+---
+
+- **La búsqueda de vida extraterrestre inteligente. Un enfoque interdisciplinario**
+  José G. Funes, Marcelo Lares, Ximena Abrevaya, Lucio Fiorio, and Mariano Asla. EDUCC, Córdoba, 2023. ISBN 978-987-626-513-3.
+- **La naturaleza de la luz y astronomía multibanda**
+  Book chapter in *La astronomía y su enseñanza en la Educación Secundaria*. Editorial de la Universidad Nacional de Córdoba, 2012, pp. 37–42.
+
 
 #### Technical developments
 
@@ -353,7 +537,12 @@ L. Sampedro, M. Schneiter, L. Sodre, M. Starck, S. Torres-Flores, M. Tornatore, 
 An updated sample of software projects can be found in my GitHub profile:
 https://github.com/mlares
 
-## Teaching Activities
+</div>
+</details>
+
+<details class="cv-fold">
+<summary id="teaching-mentoring">Teaching and mentoring</summary>
+<div class="cv-fold__content" markdown="1">
 
 #### Teaching positions
 
@@ -361,12 +550,13 @@ https://github.com/mlares
 
 + OAC FAMAF-UNC
 
-    - Adjoint Professor, Córdoba 2017 – today
+    - Associate Professor, Córdoba 2023 – today
+    - Adjoint Professor, Córdoba 2016 – 2023
 
 + OAC FAMAF-UNC
 
-   - Assistant Professor, Córdoba 2007 – 2017
-   - Teaching assistant, Córdoba 2001 – 2006
+   - Assistant Professor, Córdoba 2005 – 2015
+   - Teaching assistant, Córdoba 2001 – 2003
 
 
 ## Mentoring
@@ -376,19 +566,35 @@ https://github.com/mlares
 ---
 
 + **Daza Perilla, Vanessa. Universidad Nacional de Córdoba – Argentina**
-_Ph.D. program, Facultad de Matemática, Astronomía y Física 2017–_
+_Ph.D. program, Facultad de Matemática, Astronomía y Física, 2019–2024_
 Machine learning detection of transient and periodic objects
 
 + **Dávila Kurbán, Federico. Universidad Nacional de Córdoba – Argentina**
-_Ph.D. program, Facultad de Matemática, Astronomía y Física 2017–_
+_Ph.D. program, Facultad de Matemática, Astronomía y Física, 2016–2022_
 The internal structure of cosmic voids
 
 + **Luparello, Heliana. Universidad Nacional de Córdoba – Argentina**
-_graduate program, Facultad de Matemática, Astronomía y Física 2017–_
+_undergraduate thesis, Facultad de Matemática, Astronomía y Física, 2008–2009_
 The largest structures in the Universe
 
++ **Sánchez, Bruno. IATE / Asociación Argentina de Astronomía**
+_Research initiation fellowship, 2013–2014_
+Co-advisor.
 
-## Evaluation
++ **Cabral, Juan Bautista. CONAE**
+_Scientific Research Career, from 2022_
+Advisor.
+
++ **Baravalle, Laura. CONAE**
+_Scientific Research Career, from 2022_
+Co-advisor.
+
+</div>
+</details>
+
+<details class="cv-fold">
+<summary id="evaluation-service">Evaluation and professional service</summary>
+<div class="cv-fold__content" markdown="1">
 
 #### Peer-review
 
@@ -423,6 +629,8 @@ https://www.fof.oac.unc.ar/
 
 - Comisiones asesoras de doctorado
 
+Selected documented evaluations include undergraduate theses by Andrés Ruiz, Mónica Taormina, Valeria Sieyra, Bruno Sánchez, Laura Baravalle, and Silvio Rodríguez Moncada; teaching competitions at the Observatorio Astronómico de Córdoba; CONICET research-career evaluations in 2017 and 2019; and doctoral advisory committees for Bruno Sánchez and María Valeria Sieyra.
+
 ## Service
 
 #### Editorial
@@ -440,31 +648,46 @@ https://www.fof.oac.unc.ar/
 
 **FoF2018 Córdoba** _Friends of friends meeting (head of the LOC) 2018_ https://www.fof.oac.unc.ar/
 
-## Grants
+</div>
+</details>
+
+<details class="cv-fold">
+<summary id="grants">Grants, projects, and fellowships</summary>
+<div class="cv-fold__content" markdown="1">
 
 #### Projects
 
 ---
 
-+ **Soporte a la Decisión ante Covid-19 UNDEFI** _Codirección de Proyecto., (Aprobado por la Resolución Rectoral UNDEF 114/2020). 05/20–04/_ Monto del financiamiento:$150_._ 000 Ejecutado por CRUC-IUA - Universidad de la Defensa Nacional 
-+ **Estudios estadisticos y dinámicos de la estructura en gran escala del universo** _PI: Diego Garcia Lambas, PICT-2015-3098 2017–_ AR$ 630000 ANPCyT 
-+ **Astronomía Computacional** _PI: Diego Garcia Lambas 2017–_ AR$ 5000000 CONICET 
-+ **Astronomía Computacional** _PI: Diego Garcia Lambas 2017–_ AR$ 5000000 CONICET 
-+ **Dinámica de las grandes estructuras en el Universo** _PI: Marcelo Lares 2016–_ AR$ 17000 UNC-Secyt 
-+ **Formación de estructuras en gran escala del universo** _PI: Dante Paz, co-PI: Marcelo Lares 2016–_ AR$ 26280 UNC-Secyt Program 
-+ **Estudios sobre el sector oscuro** _PI: Mariano Domínguez, co-PI: Marcelo Lares, 11220150100797CO 2015–_ AR$ 150000 UNC-Secyt Program 
-+ **Estructura en gran escala del universo y su evolución** _PI: Diego García Lambas 2014–_ AR$ 24000 
-+ **Formacion de estructuras en el Universo** _PI: Mario Abadi 2012–_ AR$ 9360 UNC–Secyt program 
-+ **Formación de estructuras y evolución de galaxias a partir de estudios de galaxias satélites** _PI: Marcelo Lares, SeCyT-UNC 30820110100330 2012–_ AR$ 3500 UNC–Secyt 
-+ **Formación de estructuras en el universo** _PI: María Victoria Alonso, PIP 112-201101-01014 2012–_ AR$ 215000 CONICET 
-+ **Evolucion de la estructura en el universo** _PI: Diego García Lambas, PICT-2010-2639 2010–_ AR$ 291200 ANPCyT–BID 2437/OC-AR 
-+ **Evolución de la estructura en el universo** _PI: Diego García Lambas 2009–_ AR$ 300000 
-+ **Evolución de la estructura en el universo** _PI: Diego García Lambas, PIP 112-200801-00706 2008–_ AR$ 216000 CONICET–PIP 
-+ **Evolución de la Estructura en el Universo** _PI: Diego García Lambas, PID 2008 2009–_ AR$ 30000 ANCPCyT 
-+ **Formacion y evolucion de galaxias y estructuras en el universo** _PI: Diego García Lambas, PIP 5420 - 2005/2006 2006–_ AR$ 210000 CONICET–PIP 
-+ **Evolución de la estructura del Universo** _PI: Diego García Lambas, PID 2006 2006–_ AR$ 10000 ANPCyT 
-+ **Propiedades de la Distribución de Satélites en Galaxias Simuladas** _PI: Mario Abadi 2005–_ AR$ 10000 UNC–Secyt 
++ **Automatic analysis of large volumes of multi-messenger astronomical data** _Researcher, 2019–2020._ Code 32520170100041CB, SeCyT-UNC. Development of hardware and software capabilities for automated transient-event processing in the TOROS project.
+
++ **Soporte a la Decisión ante Covid-19 UNDEFI** _Codirección de Proyecto., (Aprobado por la Resolución Rectoral UNDEF 114/2020). 05/20–04/_ Monto del financiamiento:$150_._ 000 Ejecutado por CRUC-IUA - Universidad de la Defensa Nacional
++ **Estudios estadisticos y dinámicos de la estructura en gran escala del universo** _PI: Diego Garcia Lambas, PICT-2015-3098 2017–_ AR$ 630000 ANPCyT
++ **Astronomía Computacional** _PI: Diego Garcia Lambas 2017–_ AR$ 5000000 CONICET
++ **Astronomía Computacional** _PI: Diego Garcia Lambas 2017–_ AR$ 5000000 CONICET
++ **Dinámica de las grandes estructuras en el Universo** _PI: Marcelo Lares 2016–_ AR$ 17000 UNC-Secyt
++ **Formación de estructuras en gran escala del universo** _PI: Dante Paz, co-PI: Marcelo Lares 2016–_ AR$ 26280 UNC-Secyt Program
++ **Estudios sobre el sector oscuro** _PI: Mariano Domínguez, co-PI: Marcelo Lares, 11220150100797CO 2015–_ AR$ 150000 UNC-Secyt Program
++ **Estructura en gran escala del universo y su evolución** _PI: Diego García Lambas 2014–_ AR$ 24000
++ **Formacion de estructuras en el Universo** _PI: Mario Abadi 2012–_ AR$ 9360 UNC–Secyt program
++ **Formación de estructuras y evolución de galaxias a partir de estudios de galaxias satélites** _PI: Marcelo Lares, SeCyT-UNC 30820110100330 2012–_ AR$ 3500 UNC–Secyt
++ **Formación de estructuras en el universo** _PI: María Victoria Alonso, PIP 112-201101-01014 2012–_ AR$ 215000 CONICET
++ **Evolucion de la estructura en el universo** _PI: Diego García Lambas, PICT-2010-2639 2010–_ AR$ 291200 ANPCyT–BID 2437/OC-AR
++ **Evolución de la estructura en el universo** _PI: Diego García Lambas 2009–_ AR$ 300000
++ **Evolución de la estructura en el universo** _PI: Diego García Lambas, PIP 112-200801-00706 2008–_ AR$ 216000 CONICET–PIP
++ **Evolución de la Estructura en el Universo** _PI: Diego García Lambas, PID 2008 2009–_ AR$ 30000 ANCPCyT
++ **Formacion y evolucion de galaxias y estructuras en el universo** _PI: Diego García Lambas, PIP 5420 - 2005/2006 2006–_ AR$ 210000 CONICET–PIP
++ **Evolución de la estructura del Universo** _PI: Diego García Lambas, PID 2006 2006–_ AR$ 10000 ANPCyT
++ **Propiedades de la Distribución de Satélites en Galaxias Simuladas** _PI: Mario Abadi 2005–_ AR$ 10000 UNC–Secyt
 + LENAC. Latinamerican European Network for Astrophysics and Cosmology PI: Carlos Frenk 2004– EUR 950000 LENAC–EU
+
+#### Fellowships received
+
+---
+
++ **CONICET Postdoctoral Fellowship**, 2009–2011.
++ **CONICET Doctoral Fellowship**, 2004–2009.
++ **Asociación Argentina de Astronomía summer fellowship**, 2004, to complete the Licenciado degree.
 
 #### Organization of Meetings
 
@@ -475,18 +698,27 @@ https://www.fof.oac.unc.ar/
 + **FoF Meeting 2018 ANPCyT** PI: Diego Garcia Lambas 04/ ARS 40000 ANPCyT
 + **FoF Meeting 2018 UNC–Secyt** _PI: Marcelo Lares 04/_ ARS 7000 UNC–Secyt
 
-## Outreach
+</div>
+</details>
+
+<details class="cv-fold">
+<summary id="outreach">Outreach and transfer</summary>
+<div class="cv-fold__content" markdown="1">
 
 #### Science Outreach
 
 ---
 
-+ **OAC general public conferences Speaker** _Conference, OAC 2018, 2017, 2015_ + **Night of the museums Organizer, speaker** _Conference, organizer, OAC 2019, 2018, 2017_ 
-+ **ScientificAmerican Press** _, Want to Talk to Aliens? Try Changing the Technological Channel beyond Radio, by Adam Mann 29/04/_ 
-+ **Nature news Press** _Press, "The sparkling universe: coherent motions of cosmic voids" by Ron Cowen 10/_ 
-+ **OAC Exhibitions Organizer** _Gagarin 50 - FETTU - OAC 140 Aniversary 2010-_ 
-+ **OAC Web page Developer** _design, administration and mainteinance, [http://www.oac.uncor.edu](http://www.oac.uncor.edu) 2010-_ 
-+ **BIAAA Editor** _Informative bulletin of the Argentine Astronomy Asociation 2008-_ 
++ **Synergies in Artificial Intelligence**, organizer, Córdoba, October 2022. Regional academy-industry meeting on machine learning, implementation, talent, and business applications.
++ **Democratizing AI: Tools for a Data-Driven Future**, speaker, IThreex Global and H2O.ai LinkedIn Live, October 2022.
++ **Communication with Extraterrestrial Life**, public lecture, Observatorio Astronómico de Córdoba, July 2022.
+
++ **OAC general public conferences Speaker** _Conference, OAC 2018, 2017, 2015_ + **Night of the museums Organizer, speaker** _Conference, organizer, OAC 2019, 2018, 2017_
++ **ScientificAmerican Press** _, Want to Talk to Aliens? Try Changing the Technological Channel beyond Radio, by Adam Mann 29/04/_
++ **Nature news Press** _Press, "The sparkling universe: coherent motions of cosmic voids" by Ron Cowen 10/_
++ **OAC Exhibitions Organizer** _Gagarin 50 - FETTU - OAC 140 Aniversary 2010-_
++ **OAC Web page Developer** _design, administration and mainteinance, [http://www.oac.uncor.edu](http://www.oac.uncor.edu) 2010-_
++ **BIAAA Editor** _Informative bulletin of the Argentine Astronomy Asociation 2008-_
 + **EABA - OAC Visitor guide** _Summer seasons at astrophysical station, guided tours to schools 2003-_
 
 #### Media, interviews
@@ -495,28 +727,36 @@ https://www.fof.oac.unc.ar/
 
 + **Como es la tecnología con la que se analizan los escenarios post-cuarentena. Periferia** _Press note 29/04/_ Argentina
 + **Investigadores del OAC proponen herramientas para entender el coronavirus. Prensa UNC** _Press Release, Córdoba 11/04/_ Argentina
-+ **Arcovid, el soporte que permite entender el Coronavirus El Show del Lagarto. EldoceTV** _TV interview, Córdoba 08/04/_ Argentina 
-+ **Comerse la curva. Revista El gato y la caja.** _Press note, Mención por Pablo A. González. 05/04/_ Argentina 
-+ **Arcovid19: Herramientas para ayudar a entender y combatir el Coronavirus. Prensa OAC** _Press release, Córdoba 04/04/_ Argentina 
++ **Arcovid, el soporte que permite entender el Coronavirus El Show del Lagarto. EldoceTV** _TV interview, Córdoba 08/04/_ Argentina
++ **Comerse la curva. Revista El gato y la caja.** _Press note, Mención por Pablo A. González. 05/04/_ Argentina
++ **Arcovid19: Herramientas para ayudar a entender y combatir el Coronavirus. Prensa OAC** _Press release, Córdoba 04/04/_ Argentina
 + **Noche de los museos 2018 OAC-UNC** _Public talk, Córdoba 26/10/_ Argentina
-+ **Noche de los museos 2017 OAC-UNC** _Public talk, Córdoba 01/12/_ Argentina 
-+ **TalkRadio** _Radio interview 9/_ UK 
-+ **Canal 10** _interview 9/_ Argentina 
-+ **Canal 12** _interview 9/_ Argentina 
-+ **Catholic news** _mention 9/_ 
-+ **Radio Nacional Mendoza** _Interview 9/_ Argentina 
-+ **Radio de la Universidad Nacional de Mar del Plata** _Interview 9/_ Argentina 
++ **Noche de los museos 2017 OAC-UNC** _Public talk, Córdoba 01/12/_ Argentina
++ **TalkRadio** _Radio interview 9/_ UK
++ **Canal 10** _interview 9/_ Argentina
++ **Canal 12** _interview 9/_ Argentina
++ **Catholic news** _mention 9/_
++ **Radio Nacional Mendoza** _Interview 9/_ Argentina
++ **Radio de la Universidad Nacional de Mar del Plata** _Interview 9/_ Argentina
 + **Convenios de cooperación entre la UNSa y proyectos astronómicos en Salta General public** _Conference 12/_ Argentina
 
 #### Community and social services
 
 ---
 
-+ **Project ARCOVID19 –** _https: // ivco19. github. io/_ Member of the multidisciplinary group Arcovid19, aimed at designing tools for decision support in the context of the SARS–COVID 19 pandemic. The team also worked on public outreach and participated on several seminars and meetings about the topic.  
-+ **Industry Outreach** I participated in several collaborations with the industry, including two "high level technological services" certificated by the outreach office of the CONICET.  
++ **Project ARCOVID19 –** _https: // ivco19. github. io/_ Member of the multidisciplinary group Arcovid19, aimed at designing tools for decision support in the context of the SARS–COVID 19 pandemic. The team also worked on public outreach and participated on several seminars and meetings about the topic.
++ **Industry Outreach** I participated in several collaborations with the industry, including two "high level technological services" certificated by the outreach office of the CONICET.
++ **Data mining and visualization service (ST1497)** — permanent consulting and technical-assistance service, 2013–2016; team lead.
++ **OAC Extension House** — restoration, exhibition setup, and coordination, 2011–2012.
++ **Public astronomy activities** — Telescopio Itinerante, Proyecto Eratóstenes, guided visits at OAC and Bosque Alegre, and the Gagarin 50, From Earth to the Universe, and OAC 140th-anniversary exhibitions.
++ **OAC website** — design, development, maintenance, analytics, and content production.
 
+</div>
+</details>
 
-## Meetings
+<details class="cv-fold">
+<summary id="meetings">Scientific meetings</summary>
+<div class="cv-fold__content" markdown="1">
 
 + Name: **Astronomy Association of Argentina**
 Type: Annual Meetings
@@ -581,10 +821,44 @@ Location: Buenos Aires, Argentina
 Date: 2003
 Role: Attendee
 
-## Skills
+</div>
+</details>
+
+<details class="cv-fold">
+<summary id="skills">Skills and languages</summary>
+<div class="cv-fold__content" markdown="1">
 
 + Programming Languages: Python, R, Fortran
-+ Spanish: Native – English: Conversational.
++ Spanish: Native – English: Advanced – Portuguese: Basic.
 + Computational tools and technical skills: git, continuous integration (TravisCI), OpenMP, python scientific libraries,
 readthedocs, shell programming, Latex, HPC, parallel programming, machine learning, HTML.
 
+</div>
+</details>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const sections = Array.from(document.querySelectorAll("details.cv-fold"));
+
+  document.querySelectorAll("[data-cv-fold-action]").forEach(function (button) {
+    button.addEventListener("click", function () {
+      const shouldOpen = button.dataset.cvFoldAction === "expand";
+      sections.forEach(function (section) {
+        section.open = shouldOpen;
+      });
+    });
+  });
+
+  function openSectionForHash() {
+    if (!window.location.hash) return;
+    const target = document.getElementById(window.location.hash.slice(1));
+    if (target) {
+      const section = target.closest("details.cv-fold");
+      if (section) section.open = true;
+    }
+  }
+
+  openSectionForHash();
+  window.addEventListener("hashchange", openSectionForHash);
+});
+</script>

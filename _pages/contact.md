@@ -9,8 +9,8 @@ classes:
 
 <section class="cv-page-hero">
   <p class="cv-kicker">Contact</p>
-  <h1>Professional links and current CV documents.</h1>
-  <p>For opportunities, collaboration, or professional references, use the channels below.</p>
+  <h1>Email and LinkedIn.</h1>
+  <p>For opportunities, collaboration, or professional references, use either contact channel below.</p>
 </section>
 
 <section class="cv-grid cv-grid--links">
@@ -21,10 +21,6 @@ classes:
   <article>
     <h2>LinkedIn</h2>
     <p><a href="https://ar.linkedin.com/in/marcelo-lares-a4532831">linkedin.com/in/marcelo-lares-a4532831</a></p>
-  </article>
-  <article>
-    <h2>GitHub</h2>
-    <p><a href="https://github.com/mlares">github.com/mlares</a></p>
   </article>
 </section>
 
