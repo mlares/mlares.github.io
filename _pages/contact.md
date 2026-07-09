@@ -20,7 +20,7 @@ classes:
   </article>
   <article>
     <h2>LinkedIn</h2>
-    <p><a href="https://ar.linkedin.com/in/marcelo-lares-a4532831">linkedin.com/in/marcelo-lares-a4532831</a></p>
+    <p><a href="https://www.linkedin.com/in/marcelolares">www.linkedin.com/in/marcelolares</a></p>
   </article>
 </section>
 

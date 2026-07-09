@@ -31,6 +31,10 @@ author_profile: false
       <p>Astronomy-focused publication index.</p>
     </article>
     <article>
+      <h3><a href="https://ui.adsabs.harvard.edu/search/filter_author_facet_hier_fq_author=OR&filter_author_facet_hier_fq_author=author_facet_hier%3A%221%2FLares%2C%20M%2FLares%2C%20M%22&filter_author_facet_hier_fq_author=author_facet_hier%3A%221%2FLares%2C%20M%2FLares%2C%20Marcelo%22&fq=%7B!type%3Daqp%20v%3D%24fq_database%7D&fq=%7B!type%3Daqp%20v%3D%24fq_author%7D&fq_author=(author_facet_hier%3A%221%2FLares%2C%20M%2FLares%2C%20M%22%20OR%20author_facet_hier%3A%221%2FLares%2C%20M%2FLares%2C%20Marcelo%22)&fq_database=(database%3Aastronomy%20OR%20database%3Aphysics)&q=%20author%3A%22marcelo%20lares%22&sort=date%20desc%2C%20bibcode%20desc/metrics">NASA ADS Metrics</a></h3>
+      <p>Citation metrics in the NASA Astrophysics Data System.</p>
+    </article>
+    <article>
       <h3><a href="https://www.scopus.com/authid/detail.uri?authorId=6603839089">Scopus</a></h3>
       <p>Indexed publication and citation profile.</p>
     </article>

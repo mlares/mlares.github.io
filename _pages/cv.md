@@ -9,12 +9,12 @@ author_profile: false
 
 <section class="cv-page-hero">
   <p class="cv-kicker">CV repository</p>
-  <h1>Senior data science profile: production ownership, team leadership, and academic rigor.</h1>
+  <h1>Applied AI technical leadership: production ML, experiment strategy, and academic rigor.</h1>
   <p>
     A recruiter-facing overview of impact, experience, and technical depth. Detailed evidence is expandable; the long-form academic record remains available separately.
   </p>
   <div class="cv-actions">
-    <a class="btn btn--primary" href="/documents/cv_jun2026.pdf">Current CV</a>
+    <a class="btn btn--primary" href="/documents/cv.pdf">Current CV</a>
     <a class="btn" href="/documents/RESUME.pdf">One-page resume</a>
     <a class="btn" href="/cv/full/">HTML archive</a>
   </div>
@@ -25,13 +25,13 @@ author_profile: false
   <a href="#evidence">Evidence</a>
   <a href="#roles">Experience</a>
   <a href="#skills">Skills</a>
-  <a href="#documents">Documents</a>
+  <a href="/cv/full/#documents">Documents</a>
 </nav>
 
 <section class="cv-section" id="profile">
   <h2>Profile</h2>
   <p class="cv-lead">
-    Senior Data Scientist and Machine Learning Engineer experienced in production recommendation systems and client-facing AI delivery. Combines decisive execution and end-to-end ownership with formal model validation, a PhD in Astronomy, 30+ Q1 publications, and extensive teaching and mentoring experience.
+    Applied AI and Data Science technical leader experienced in production recommendation systems, client-facing AI delivery, experiment strategy, and cross-functional execution. Combines decisive model ownership with roadmap thinking, formal validation, mentoring, a PhD in Astronomy, 30+ Q1 publications, and extensive teaching and supervision experience.
   </p>
 </section>
 
@@ -45,8 +45,8 @@ author_profile: false
     <span>More training data through pragmatic systems optimization</span>
   </div>
   <div>
-    <strong>8-person team</strong>
-    <span>Cross-domain data science leadership and client delivery</span>
+    <strong>8-person DS team</strong>
+    <span>Technical roadmap, OKRs, mentoring, and client delivery</span>
   </div>
   <div>
     <strong>PhD · h-index 17</strong>
@@ -66,6 +66,7 @@ author_profile: false
           <li>Tripled training-data capacity through Fury pipeline, framework, and CUDA optimization.</li>
           <li>Owned reproducibility and release safety through MLflow, ONNX validation, and a pre-production protocol.</li>
           <li>Designed statistical confidence tools for A/B tests and monitored clicks, purchases, GMV, and model behavior.</li>
+          <li>Guided launch, pause, and refinement decisions by communicating evidence, trade-offs, risks, and next steps.</li>
           <li>Partnered across engineering, product, and analytics to deliver measurable conversion lift.</li>
         </ul>
       </div>
@@ -75,7 +76,8 @@ author_profile: false
       <div class="role-accordion__body">
         <p>Led an eight-person team delivering AI and analytics products in fast-moving, client-facing environments.</p>
         <ul>
-          <li>Created the core Python library for the Molibdeno AI platform to make ML workflows reusable.</li>
+          <li>Defined the technical roadmap for the Molibdeno AI platform and created the core Python library for reusable ML workflows.</li>
+          <li>Defined OKRs, tracked team execution, mentored and onboarded data scientists, and participated in hiring and evaluation decisions.</li>
           <li>Led tax-revenue forecasting and payment-behavior work as principal technical contact for Kolektor.</li>
           <li>Delivered segmentation and predictive products for retail, tourism, and international-trade clients.</li>
           <li>Built computer-vision models for cattle-weight estimation and a LangChain RAG API.</li>
@@ -86,13 +88,13 @@ author_profile: false
     <details>
       <summary><span>Universidad Nacional de Córdoba · 2023–present</span><strong>Associate Professor</strong></summary>
       <div class="role-accordion__body">
-        <p>Head of the Data Science course in Applied Mathematics, following twenty years teaching statistics, machine learning, and scientific computing. Advises graduate researchers and connects formal foundations with implementation.</p>
+        <p>Head of the Data Science course in Applied Mathematics, following twenty years teaching statistics, machine learning, and scientific computing. Supervises graduate researchers and connects formal foundations with implementation.</p>
       </div>
     </details>
     <details>
       <summary><span>CONICET · 2004–2023</span><strong>Researcher</strong></summary>
       <div class="role-accordion__body">
-        <p>Applied Bayesian inference, statistical learning, numerical methods, and HPC to large astronomical datasets. Developed open-source software and automated pipelines in international teams; authored 30+ Q1 papers.</p>
+        <p>Applied Bayesian inference, statistical learning, numerical methods, and HPC to large astronomical datasets. Developed open-source software and automated pipelines in international teams; authored 30+ Q1 papers, supervised researchers, reviewed technical work, and organized academic activities.</p>
       </div>
     </details>
   </div>
@@ -119,34 +121,8 @@ author_profile: false
     </details>
     <details>
       <summary>Leadership and domains</summary>
-      <p>Technical direction, mentoring, client communication, stakeholder management, and cross-functional delivery in e-commerce, retail, public revenue, tourism, agriculture, and international trade.</p>
+      <p>Technical direction, roadmap definition, OKRs, mentoring, onboarding, hiring participation, client communication, stakeholder management, and cross-functional delivery in e-commerce, retail, public revenue, tourism, agriculture, and international trade.</p>
     </details>
-  </div>
-</section>
-
-<section class="cv-section" id="documents">
-  <h2>Document Library</h2>
-  <div class="cv-grid cv-grid--links">
-    <article>
-      <h3><a href="/documents/cv_jun2026.pdf">Current CV</a></h3>
-      <p>Two-page senior data science and ML profile, updated June 2026.</p>
-    </article>
-    <article>
-      <h3><a href="/documents/RESUME.pdf">One-page Resume</a></h3>
-      <p>Short recruiter-facing summary.</p>
-    </article>
-    <article>
-      <h3><a href="/cv/full/">HTML CV Archive</a></h3>
-      <p>Expanded, privacy-safe academic record with publications, training, appointments, mentoring, grants, service, outreach, and meetings.</p>
-    </article>
-    <article>
-      <h3><a href="/documents/Coursera_Agile_Jira.pdf">Agile + Jira Certificate</a></h3>
-      <p>Supporting credential for industry project work.</p>
-    </article>
-    <article>
-      <h3><a href="/documents/CCyG2021.pdf">Gender Parity Presentation</a></h3>
-      <p>Data analysis and public communication project.</p>
-    </article>
   </div>
 </section>
 
@@ -161,7 +137,8 @@ author_profile: false
     <span>Bayesian inference</span>
     <span>HPC</span>
     <span>Scientific software</span>
-    <span>Data science leadership</span>
+    <span>Applied AI leadership</span>
+    <span>Technical roadmap</span>
     <span>Teaching and mentoring</span>
   </div>
 </section>

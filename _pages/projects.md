@@ -9,9 +9,9 @@ classes:
 
 <section class="cv-page-hero">
   <p class="cv-kicker">Selected projects</p>
-  <h1>Data products, research software, and applied ML work.</h1>
+  <h1>Applied AI work from technical strategy to production delivery.</h1>
   <p>
-    A focused selection of projects that translate academic depth into industry-relevant delivery: model design, experimentation, production thinking, and stakeholder communication.
+    A focused selection of projects that translate academic depth into industry-relevant delivery: model design, experimentation strategy, product roadmaps, production thinking, and stakeholder communication.
   </p>
 </section>
 
@@ -21,10 +21,10 @@ classes:
     <h2>Recommendation Systems at Mercado Libre</h2>
     <p>Primary data science ownership of an online ranking model serving millions of users across Argentina, Brazil, and Mexico.</p>
     <ul>
-      <li><strong>Role:</strong> Senior Data Science Machine Learning Engineer.</li>
-      <li><strong>Work:</strong> PyTorch ranking, feature-store integration, embeddings, Fury pipelines, CUDA optimization, MLflow, ONNX, A/B testing, rollout validation, and monitoring.</li>
+      <li><strong>Role:</strong> Senior Data Scientist / Machine Learning Engineer and primary data science owner.</li>
+      <li><strong>Work:</strong> PyTorch ranking, feature-store integration, embeddings, Fury pipelines, CUDA optimization, MLflow, ONNX, A/B testing, rollout validation, monitoring, and experiment-decision support.</li>
       <li><strong>Outcome:</strong> tripled training-data capacity and delivered measurable purchase-conversion lift through controlled experiments.</li>
-      <li><strong>Industry value:</strong> end-to-end ownership, reproducible experimentation, safer releases, and cross-functional delivery.</li>
+      <li><strong>Industry value:</strong> end-to-end ownership, reproducible experimentation, safer releases, trade-off communication, and cross-functional delivery.</li>
     </ul>
   </article>
 
@@ -33,9 +33,9 @@ classes:
     <h2>Data Science Lead at IThreex Global</h2>
     <p>Led an eight-person team delivering data science projects across public revenue, agriculture, retail, tourism, and international trade.</p>
     <ul>
-      <li><strong>Role:</strong> Senior Data Scientist and Data Science Lead.</li>
-      <li><strong>Work:</strong> tax-revenue forecasting, payment behavior, computer vision for livestock weight estimation, customer segmentation, predictive modeling, a RAG support API, and the core Python library for the Molibdeno AI platform.</li>
-      <li><strong>Industry value:</strong> translated ambiguous business problems into deployable models and reusable engineering assets.</li>
+      <li><strong>Role:</strong> Lead Data Scientist.</li>
+      <li><strong>Work:</strong> technical roadmap and OKRs for the Molibdeno AI platform, tax-revenue forecasting, payment behavior, computer vision for livestock weight estimation, customer segmentation, predictive modeling, a RAG support API, and the core Python library for reusable ML workflows.</li>
+      <li><strong>Industry value:</strong> translated ambiguous business problems into deployable models, reusable engineering assets, mentored team execution, and stakeholder-facing delivery.</li>
     </ul>
   </article>
 
@@ -46,7 +46,7 @@ classes:
     <ul>
       <li><strong>Projects:</strong> HEARSAY, AEGIS, PINNACLE, CORRAL, PROPERIMAGE, GriSPy, and related public repositories.</li>
       <li><strong>Work:</strong> statistical simulation, publication analytics, astronomical image processing, pipeline design, reproducibility, and package documentation.</li>
-      <li><strong>Industry value:</strong> production-minded software practices in research environments with complex data and long-term reproducibility needs.</li>
+      <li><strong>Industry value:</strong> production-minded software practices, methodological evaluation, and technical leadership in research environments with complex data and long-term reproducibility needs.</li>
     </ul>
   </article>
 

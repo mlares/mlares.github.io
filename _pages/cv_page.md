@@ -8,7 +8,7 @@ classes:
 ---
 
 **• [marcelo.lares@gmail.com](mailto:marcelo.lares@gmail.com) •
-[LinkedIn](https://ar.linkedin.com/in/marcelo-lares-a4532831)**
+[LinkedIn](https://www.linkedin.com/in/marcelolares)**
 
 <nav class="cv-full-nav" aria-label="CV sections">
   <strong>Navigate this CV</strong>
@@ -21,6 +21,7 @@ classes:
     <a href="#outreach">Outreach</a>
     <a href="#meetings">Meetings</a>
     <a href="#skills">Skills</a>
+    <a href="#documents">Documents</a>
   </div>
   <div class="cv-fold-actions" aria-label="Section controls">
     <button type="button" data-cv-fold-action="expand">Expand all</button>
@@ -832,6 +833,32 @@ Role: Attendee
 + Spanish: Native – English: Advanced – Portuguese: Basic.
 + Computational tools and technical skills: git, continuous integration (TravisCI), OpenMP, python scientific libraries,
 readthedocs, shell programming, Latex, HPC, parallel programming, machine learning, HTML.
+
+</div>
+</details>
+
+<details class="cv-fold">
+<summary id="documents">Documents</summary>
+<div class="cv-fold__content" markdown="1">
+
+<div class="cv-grid cv-grid--links">
+  <article>
+    <h3><a href="/documents/cv.pdf">Current CV</a></h3>
+    <p>Applied AI and Data Science technical leadership profile, updated July 2026.</p>
+  </article>
+  <article>
+    <h3><a href="/documents/RESUME.pdf">One-page Resume</a></h3>
+    <p>Short recruiter-facing summary.</p>
+  </article>
+  <article>
+    <h3><a href="/documents/Coursera_Agile_Jira.pdf">Agile + Jira Certificate</a></h3>
+    <p>Supporting credential for industry project work.</p>
+  </article>
+  <article>
+    <h3><a href="/documents/CCyG2021.pdf">Gender Parity Presentation</a></h3>
+    <p>Data analysis and public communication project.</p>
+  </article>
+</div>
 
 </div>
 </details>

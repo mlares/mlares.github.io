@@ -20,7 +20,7 @@ title                    : "Marcelo Lares"
 title_separator          : "-"
 subtitle                 : # site tagline that appears below site title in masthead
 name                     : "Marcelo Lares"
-description              : "Senior Data Scientist, Machine Learning Engineer, and team leader with production ML ownership and a strong academic background."
+description              : "Applied AI technical leader, Lead Data Scientist, and Machine Learning Engineer with production ML ownership, experiment strategy, mentoring, and a strong academic background."
 url                      : "https://mlares.github.io"
 baseurl                  : # the subpath of your site, e.g. "/blog"
 repository               : "mlares/"
@@ -95,7 +95,7 @@ analytics:
 author:
   name             : "Marcelo Lares"
   avatar           : "/assets/images/face.png"
-  bio              : "Astrophysicist, data scientist, machine learning engineer"
+  bio              : "Applied AI technical leader, data scientist, machine learning engineer"
   location         : "Córdoba, Argentina"
   email            : marcelo.lares@gmail.com
   links:
@@ -104,7 +104,7 @@ author:
       url: "mailto:marcelo.lares@gmail.com"
     - label: "LinkedIn"
       icon: "fab fa-fw fa-linkedin"
-      url: "https://ar.linkedin.com/in/marcelo-lares-a4532831"
+      url: "https://www.linkedin.com/in/marcelolares"
 
 # Site Footer
 footer:
@@ -114,7 +114,7 @@ footer:
       url: mailto:marcelo.lares@gmail.com
     - label: "LinkedIn"
       icon: "fab fa-fw fa-linkedin"
-      url: https://ar.linkedin.com/in/marcelo-lares-a4532831
+      url: https://www.linkedin.com/in/marcelolares
 
 
 # Reading Files
