@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bias-Variance and Generalization</title>
+    <!-- Tailwind CSS para diseño moderno claro -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .code-font {
+            font-family: 'Fira Code', monospace;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col selection:bg-indigo-100 selection:text-indigo-900">
+
+    <!-- Header -->
+    <header class="border-b border-slate-200 bg-white/95 backdrop-blur px-6 py-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm z-10">
+        <div>
+            <div class="flex items-center gap-2 text-xs font-semibold tracking-wider text-indigo-600 uppercase">
+                <span class="px-2 py-0.5 rounded bg-indigo-50 border border-indigo-100">Pattern Classification</span>
+                <span>Generalización y Complejidad — Cap. 6 & 9</span>
+            </div>
+            <h1 class="text-xl font-bold tracking-tight text-slate-900 mt-1">
+                Visualizador de Overfitting y Capacidad en Redes Neuronales
+            </h1>
+            <p class="text-xs text-slate-500 mt-0.5 font-medium">
+                Interactive technical note for studying the bias-variance trade-off and L2 regularization.
+            </p>
+        </div>
+    </header>
+
+    <!-- Layout Principal -->
+    <main class="flex-1 max-w-6xl w-full mx-auto p-4 md:p-6 space-y-4">
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <!-- PANEL DE CONTROL (IZQUIERDA - 4/12) -->
+            <section class="lg:col-span-4 bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4 flex flex-col justify-between">
+                
+                <div class="space-y-4">
+                    <div class="border-b border-slate-100 pb-2">
+                        <h2 class="text-xs font-bold tracking-wider text-slate-500 uppercase flex items-center gap-2">
+                            <i data-lucide="sliders" class="w-4 h-4 text-indigo-600"></i> Parámetros del Experimento
+                        </h2>
+                    </div>
+
+                    <!-- Capacidad de la Red (Neuronas Ocultas) -->
+                    <div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-slate-600 font-semibold">Complejidad (Neuronas Ocultas)</span>
+                            <span id="val-complexity" class="font-bold text-indigo-700 code-font">16</span>
+                        </div>
+                        <input type="range" id="complexity" min="2" max="48" step="1" value="16" oninput="changeComplexity()" class="w-full accent-indigo-600 bg-slate-200 h-1 rounded appearance-none cursor-pointer">
+                        <div class="flex justify-between text-[9px] text-slate-400 mt-1 font-mono">
+                            <span>2 (Baja Capacidad)</span>
+                            <span>48 (Sobreparametrizado)</span>
+                        </div>
+                    </div>
+
+                    <!-- Nivel de Ruido en el Dataset -->
+                    <div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-slate-600 font-semibold">Nivel de Ruido ($\sigma$)</span>
+                            <span id="val-noise" class="font-bold text-amber-600 code-font">0.25</span>
+                        </div>
+                        <input type="range" id="noise-level" min="0.0" max="0.6" step="0.05" value="0.25" oninput="regenerateDataset()" class="w-full accent-amber-500 bg-slate-200 h-1 rounded appearance-none cursor-pointer">
+                        <div class="flex justify-between text-[9px] text-slate-400 mt-1 font-mono">
+                            <span>0.00 (Frontera Limpia)</span>
+                            <span>0.60 (Alta Dispersión)</span>
+                        </div>
+                    </div>
+
+                    <!-- Coeficiente de Regularización L2 (Weight Decay) -->
+                    <div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-slate-600 font-semibold">Regularización L2 (Weight Decay $\lambda$)</span>
+                            <span id="val-lambda" class="font-bold text-emerald-700 code-font">0.000</span>
+                        </div>
+                        <input type="range" id="lambda" min="0.0" max="0.1" step="0.001" value="0.000" oninput="updateParameters()" class="w-full accent-emerald-600 bg-slate-200 h-1 rounded appearance-none cursor-pointer">
+                        <div class="flex justify-between text-[9px] text-slate-400 mt-1 font-mono">
+                            <span>0.000 (Sin Penalización)</span>
+                            <span>0.100 (Restricción Alta)</span>
+                        </div>
+                    </div>
+
+                    <!-- Tasa de Aprendizaje -->
+                    <div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-slate-600 font-medium">Tasa de Aprendizaje $\eta$</span>
+                            <span id="val-lr" class="font-bold text-indigo-700 code-font">0.15</span>
+                        </div>
+                        <input type="range" id="learning-rate" min="0.01" max="0.5" step="0.01" value="0.15" oninput="updateParameters()" class="w-full accent-indigo-600 bg-slate-200 h-1 rounded appearance-none cursor-pointer">
+                    </div>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="space-y-2 pt-4 border-t border-slate-100">
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="toggleTraining()" id="btn-play-pause" class="col-span-2 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs tracking-wide shadow-md shadow-indigo-600/10 transition">
+                            <i data-lucide="play" class="w-4 h-4"></i> Iniciar Entrenamiento
+                        </button>
+                        <button onclick="stepTraining()" class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs border border-slate-200 transition">
+                            <i data-lucide="skip-forward" class="w-3.5 h-3.5"></i> Época individual
+                        </button>
+                        <button onclick="resetAll()" class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs border border-slate-200 transition">
+                            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Reiniciar Todo
+                        </button>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- ESPACIO DE TRAZO Y GRAFO DINÁMICO (DERECHA - 8/12) -->
+            <section class="lg:col-span-8 bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex flex-col gap-6">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                    
+                    <!-- Plot de Frontera de Decisión 2D -->
+                    <div class="flex flex-col items-center">
+                        <span class="text-[10px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Espacio de Características (Train vs Val)</span>
+                        <div class="relative bg-slate-100 p-1 rounded-lg border border-slate-200 shadow-sm">
+                            <canvas id="canvas-decision" width="260" height="260" class="rounded shadow-inner bg-white w-[260px] h-[260px]"></canvas>
+                        </div>
+                        <div class="flex gap-4 mt-2 text-[10px] text-slate-500 font-semibold">
+                            <div class="flex items-center gap-1">
+                                <span class="w-2.5 h-2.5 rounded-full border border-blue-600 bg-blue-500"></span>
+                                <span>Entrenamiento</span>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <span class="w-2.5 h-2.5 rounded-full border border-dashed border-indigo-700 bg-transparent flex items-center justify-center font-bold text-[7px] text-indigo-700">V</span>
+                                <span>Validación (Transparente)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gráficos de Pérdida y Precisión (Loss / Accuracy) -->
+                    <div class="flex flex-col justify-between h-full space-y-4 self-stretch">
+                        <!-- Gráfico de Pérdida (Loss) -->
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 flex flex-col justify-between flex-1">
+                            <div class="flex justify-between items-center text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                <span>Curva de Pérdida (MSE)</span>
+                                <span class="text-[9px] font-mono text-indigo-600 lowercase">azul: train | rojo: val</span>
+                            </div>
+                            <div class="relative w-full h-[85px] mt-1">
+                                <canvas id="canvas-loss" width="240" height="85" class="w-full h-full"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Gráfico de Precisión (Accuracy) -->
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 flex flex-col justify-between flex-1">
+                            <div class="flex justify-between items-center text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                <span>Curva de Precisión (Accuracy %)</span>
+                                <span class="text-[9px] font-mono text-indigo-600 lowercase">azul: train | rojo: val</span>
+                            </div>
+                            <div class="relative w-full h-[85px] mt-1">
+                                <canvas id="canvas-acc" width="240" height="85" class="w-full h-full"></canvas>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- MONITOR MINIMALISTA DE ESTADO -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-slate-100 pt-4 text-xs font-mono">
+                    <div class="bg-slate-950 text-slate-300 rounded-xl p-3 flex flex-col justify-between shadow-inner">
+                        <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Épocas de Entrenamiento</span>
+                        <span id="monitor-epoch" class="text-base font-bold text-indigo-400 mt-1">0</span>
+                    </div>
+                    <div class="bg-slate-950 text-slate-300 rounded-xl p-3 flex flex-col justify-between shadow-inner">
+                        <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Pérdida (Train vs Val)</span>
+                        <div class="flex justify-between items-center mt-1">
+                            <span id="monitor-loss-train" class="text-sm font-bold text-blue-400">0.0000</span>
+                            <span class="text-slate-600">/</span>
+                            <span id="monitor-loss-val" class="text-sm font-bold text-rose-400">0.0000</span>
+                        </div>
+                    </div>
+                    <div class="bg-slate-950 text-slate-300 rounded-xl p-3 flex flex-col justify-between shadow-inner">
+                        <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Precisión (Train vs Val)</span>
+                        <div class="flex justify-between items-center mt-1">
+                            <span id="monitor-acc-train" class="text-sm font-bold text-blue-400">0.0%</span>
+                            <span class="text-slate-600">/</span>
+                            <span id="monitor-acc-val" class="text-sm font-bold text-rose-400">0.0%</span>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-200 bg-white px-6 py-4 text-xs text-slate-500 flex flex-col md:flex-row justify-between items-center gap-3 mt-auto">
+        <div>
+            Efecto del sobreajuste en el riesgo: $R_{emp}(\mathbf{w}) \rightarrow 0$ mientras que $R_{real}(\mathbf{w}) \rightarrow \infty$.
+        </div>
+        <div class="text-[11px] text-slate-400 font-medium max-w-xl text-center md:text-right font-medium">
+            <strong>Experimento de Overfitting:</strong> Desactive la regularización L2 ($\lambda = 0$), elija una complejidad de 32 o más y entrene sobre datos con ruido alto ($\sigma = 0.3$). Verá cómo la pérdida de validación (roja) comienza a diverger de la de entrenamiento (azul).
+        </div>
+    </footer>
+
+    <!-- Script de Simulación del Comportamiento del Modelo MLP -->
+    <script>
+        // Inicializar iconos
+        lucide.createIcons();
+
+        // Variables de Estado del Dataset y del Entrenamiento
+        let trainSet = [];
+        let valSet = [];
+        let network = null;
+        let isTraining = false;
+        let epoch = 0;
+        let animationFrameId = null;
+
+        // Historial de métricas para trazar las curvas
+        let metricsHistory = {
+            epochs: [],
+            trainLoss: [],
+            valLoss: [],
+            trainAcc: [],
+            valAcc: []
+        };
+
+        // Estructura matemática del modelo multicapa MLP [2 -> H -> 1]
+        class MLP {
+            constructor(inputSize, hiddenSize, outputSize) {
+                this.inputSize = inputSize;
+                this.hiddenSize = hiddenSize;
+                this.outputSize = outputSize;
+
+                // Inicialización de Xavier/Glorot
+                const limit1 = Math.sqrt(6 / (inputSize + hiddenSize));
+                const limit2 = Math.sqrt(6 / (hiddenSize + outputSize));
+
+                // Capa Oculta
+                this.w1 = Array.from({ length: hiddenSize }, () => 
+                    Array.from({ length: inputSize }, () => (Math.random() * 2 - 1) * limit1)
+                );
+                this.b1 = Array(hiddenSize).fill(0).map(() => (Math.random() * 2 - 1) * 0.1);
+
+                // Capa de Salida
+                this.w2 = Array.from({ length: outputSize }, () => 
+                    Array.from({ length: hiddenSize }, () => (Math.random() * 2 - 1) * limit2)
+                );
+                this.b2 = Array(outputSize).fill(0).map(() => (Math.random() * 2 - 1) * 0.1);
+            }
+
+            // Funciones de activación básicas
+            sigmoid(z) { return 1 / (1 + Math.exp(-z)); }
+            tanh(z) { return Math.tanh(z); }
+
+            // Feedforward
+            forward(x) {
+                // Entrada -> Capa Oculta
+                const h_net = [];
+                const h_act = [];
+                for (let j = 0; j < this.hiddenSize; j++) {
+                    let net = this.b1[j];
+                    for (let i = 0; i < this.inputSize; i++) {
+                        net += x[i] * this.w1[j][i];
+                    }
+                    h_net.push(net);
+                    h_act.push(this.tanh(net)); // Tanh para capa oculta para mejor gradiente
+                }
+
+                // Capa Oculta -> Salida
+                let o_net = this.b2[0];
+                for (let j = 0; j < this.hiddenSize; j++) {
+                    o_net += h_act[j] * this.w2[0][j];
+                }
+                const o_act = this.sigmoid(o_net); // Sigmoide para salida binaria [0, 1]
+
+                return { h_act, o_act };
+            }
+
+            // Un paso de entrenamiento mediante Backpropagation con penalización L2 (Weight Decay)
+            trainStep(x, target, lr, lambda) {
+                const { h_act, o_act } = this.forward(x);
+
+                // 1. Delta en la salida
+                const outError = o_act - target;
+                const outDelta = outError * o_act * (1 - o_act); // Derivada de Sigmoide
+
+                // 2. Deltas en la capa oculta
+                const hiddenDeltas = [];
+                for (let j = 0; j < this.hiddenSize; j++) {
+                    const deriv = 1 - h_act[j] * h_act[j]; // Derivada de Tanh
+                    const sum = outDelta * this.w2[0][j];
+                    hiddenDeltas.push(sum * deriv);
+                }
+
+                // 3. Gradientes y Actualización de pesos con Regularización L2 (Weight Decay)
+                // Capa Oculta -> Salida
+                this.b2[0] -= lr * outDelta;
+                for (let j = 0; j < this.hiddenSize; j++) {
+                    // Gradiente con penalización de peso L2: dE/dw + lambda * w
+                    const grad = outDelta * h_act[j] + lambda * this.w2[0][j];
+                    this.w2[0][j] -= lr * grad;
+                }
+
+                // Capa Entrada -> Oculta
+                for (let j = 0; j < this.hiddenSize; j++) {
+                    this.b1[j] -= lr * hiddenDeltas[j];
+                    for (let i = 0; i < this.inputSize; i++) {
+                        const grad = hiddenDeltas[j] * x[i] + lambda * this.w1[j][i];
+                        this.w1[j][i] -= lr * grad;
+                    }
+                }
+            }
+        }
+
+        // Generar un conjunto de datos sinusoidal no lineal con ruido controlado (Capítulo 9)
+        function generateNoisyDataset() {
+            const noise = parseFloat(document.getElementById('noise-level').value);
+            const totalSamples = 160;
+            const tempSet = [];
+
+            for (let i = 0; i < totalSamples; i++) {
+                // Coordenadas x1, x2 en rango [-1.2, 1.2]
+                const x1 = Math.random() * 2.4 - 1.2;
+                const x2 = Math.random() * 2.4 - 1.2;
+
+                // Frontera subyacente real: un perfil sinusoidal suave
+                const boundary = 0.5 * Math.sin(Math.PI * x1);
+                
+                // Agregar ruido estocástico gaussiano a la posición de la frontera
+                const noisyBoundary = boundary + (Math.random() * 2 - 1) * noise;
+
+                const label = x2 > noisyBoundary ? 1 : 0;
+                tempSet.push({ x: [x1, x2], y: label });
+            }
+
+            // Split 50/50: 80 muestras para entrenamiento, 80 para validación
+            // Barajamos para asegurar consistencia
+            const shuffled = tempSet.sort(() => Math.random() - 0.5);
+            trainSet = shuffled.slice(0, 80);
+            valSet = shuffled.slice(80);
+        }
+
+        function regenerateDataset() {
+            generateNoisyDataset();
+            resetNetwork();
+        }
+
+        function changeComplexity() {
+            const comp = parseInt(document.getElementById('complexity').value);
+            document.getElementById('val-complexity').innerText = comp;
+            resetNetwork();
+        }
+
+        function resetAll() {
+            generateNoisyDataset();
+            resetNetwork();
+        }
+
+        function resetNetwork() {
+            epoch = 0;
+            const complexity = parseInt(document.getElementById('complexity').value);
+            network = new MLP(2, complexity, 1);
+
+            metricsHistory = {
+                epochs: [],
+                trainLoss: [],
+                valLoss: [],
+                trainAcc: [],
+                valAcc: []
+            };
+
+            if (isTraining) {
+                toggleTraining(); // Detener bucle activo si existe
+            }
+
+            updateParameters();
+            evaluateEpoch(); // Evaluar estado inicial (Época 0)
+            drawAll();
+        }
+
+        function updateParameters() {
+            document.getElementById('val-noise').innerText = parseFloat(document.getElementById('noise-level').value).toFixed(2);
+            document.getElementById('val-lambda').innerText = parseFloat(document.getElementById('lambda').value).toFixed(3);
+            document.getElementById('val-lr').innerText = parseFloat(document.getElementById('learning-rate').value).toFixed(2);
+        }
+
+        // Ejecutar un ciclo completo de entrenamiento (época) sobre el train set de forma SGD
+        function stepTraining() {
+            if (!network) return;
+            const lr = parseFloat(document.getElementById('learning-rate').value);
+            const lambda = parseFloat(document.getElementById('lambda').value);
+
+            // Barajar conjunto de entrenamiento para descenso estocástico
+            const shuffledTrain = [...trainSet].sort(() => Math.random() - 0.5);
+            shuffledTrain.forEach(sample => {
+                network.trainStep(sample.x, sample.y, lr, lambda);
+            });
+
+            epoch++;
+            evaluateEpoch();
+            drawAll();
+        }
+
+        // Evaluar métricas estadísticas en conjuntos de Entrenamiento y Validación
+        function evaluateEpoch() {
+            const f = network;
+            
+            // 1. Evaluar Pérdida y Precisión en Entrenamiento (Train)
+            let trainLossSum = 0;
+            let trainCorrect = 0;
+            trainSet.forEach(s => {
+                const { o_act } = f.forward(s.x);
+                trainLossSum += 0.5 * Math.pow(s.y - o_act, 2); // MSE
+                const pred = o_act >= 0.5 ? 1 : 0;
+                if (pred === s.y) trainCorrect++;
+            });
+            const trainMSE = trainLossSum / trainSet.length;
+            const trainAcc = (trainCorrect / trainSet.length) * 100;
+
+            // 2. Evaluar Pérdida y Precisión en Validación (Val)
+            let valLossSum = 0;
+            let valCorrect = 0;
+            valSet.forEach(s => {
+                const { o_act } = f.forward(s.x);
+                valLossSum += 0.5 * Math.pow(s.y - o_act, 2); // MSE
+                const pred = o_act >= 0.5 ? 1 : 0;
+                if (pred === s.y) valCorrect++;
+            });
+            const valMSE = valLossSum / valSet.length;
+            const valAcc = (valCorrect / valSet.length) * 100;
+
+            // Registrar en el historial de curvas
+            metricsHistory.epochs.push(epoch);
+            metricsHistory.trainLoss.push(trainMSE);
+            metricsHistory.valLoss.push(valMSE);
+            metricsHistory.trainAcc.push(trainAcc);
+            metricsHistory.valAcc.push(valAcc);
+
+            // Actualizar monitores del panel inferior
+            document.getElementById('monitor-epoch').innerText = epoch;
+            document.getElementById('monitor-loss-train').innerText = trainMSE.toFixed(4);
+            document.getElementById('monitor-loss-val').innerText = valMSE.toFixed(4);
+            document.getElementById('monitor-acc-train').innerText = `${trainAcc.toFixed(1)}%`;
+            document.getElementById('monitor-acc-val').innerText = `${valAcc.toFixed(1)}%`;
+        }
+
+        // Control del bucle interactivo de entrenamiento autónomo
+        function toggleTraining() {
+            const btn = document.getElementById('btn-play-pause');
+            if (isTraining) {
+                isTraining = false;
+                btn.className = "col-span-2 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs tracking-wide shadow-md shadow-indigo-600/10 transition";
+                btn.innerHTML = `<i data-lucide="play" class="w-4 h-4"></i> Iniciar Entrenamiento`;
+                cancelAnimationFrame(animationFrameId);
+            } else {
+                isTraining = true;
+                btn.className = "col-span-2 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs tracking-wide shadow-md shadow-rose-600/10 transition";
+                btn.innerHTML = `<i data-lucide="pause" class="w-4 h-4"></i> Detener`;
+                loop();
+            }
+            lucide.createIcons();
+        }
+
+        function loop() {
+            if (!isTraining) return;
+            stepTraining();
+            // Demoramos ligeramente el refresco para facilitar el análisis visual
+            setTimeout(() => {
+                animationFrameId = requestAnimationFrame(loop);
+            }, 30);
+        }
+
+        // ==========================================
+        // SECCIÓN DE RENDERIZADO GRÁFICO (CANVAS)
+        // ==========================================
+        function drawAll() {
+            drawDecisionBoundary();
+            drawLineChart('canvas-loss', metricsHistory.trainLoss, metricsHistory.valLoss, false);
+            drawLineChart('canvas-acc', metricsHistory.trainAcc, metricsHistory.valAcc, true);
+        }
+
+        // Pintar la frontera de decisión 2D interactiva
+        function drawDecisionBoundary() {
+            const canvas = document.getElementById('canvas-decision');
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+
+            // 1. Dibujar píxel por píxel la salida de la red
+            const imgData = ctx.createImageData(w, h);
+            for (let py = 0; py < h; py++) {
+                for (let px = 0; px < w; px++) {
+                    // Mapear coordenadas a rango [-1.2, 1.2]
+                    const x1 = (px / w) * 2.4 - 1.2;
+                    const x2 = (1 - py / h) * 2.4 - 1.2;
+
+                    const { o_act } = network.forward([x1, x2]);
+                    const idx = (py * w + px) * 4;
+
+                    // Mezcla divergente: Azul para clase 1, Naranja para clase 0
+                    // Sólido 100% opacidad
+                    const r = Math.floor(o_act * 251 + (1 - o_act) * 59);
+                    const g = Math.floor(o_act * 146 + (1 - o_act) * 130);
+                    const b = Math.floor(o_act * 60 + (1 - o_act) * 246);
+
+                    imgData.data[idx] = r;
+                    imgData.data[idx+1] = g;
+                    imgData.data[idx+2] = b;
+                    imgData.data[idx+3] = 255;
+                }
+            }
+            ctx.putImageData(imgData, 0, 0);
+
+            // Ejes de coordenadas sutiles
+            ctx.strokeStyle = 'rgba(15, 23, 42, 0.08)';
+            ctx.lineWidth = 1.2;
+            ctx.beginPath();
+            ctx.moveTo(w / 2, 0); ctx.lineTo(w / 2, h);
+            ctx.moveTo(0, h / 2); ctx.lineTo(w, h / 2);
+            ctx.stroke();
+
+            // 2. Dibujar puntos de datos reales por encima
+            // Conjunto de Entrenamiento: Círculos opacos con borde
+            trainSet.forEach(s => {
+                const cx = ((s.x[0] + 1.2) / 2.4) * w;
+                const cy = (1 - (s.x[1] + 1.2) / 2.4) * h;
+
+                ctx.beginPath();
+                ctx.arc(cx, cy, 4.5, 0, 2 * Math.PI);
+                ctx.fillStyle = s.y === 1 ? 'rgb(249, 115, 22)' : 'rgb(59, 130, 246)';
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 1.2;
+                ctx.fill();
+                ctx.stroke();
+            });
+
+            // Conjunto de Validación: Círculos transparentes con borde punteado/marcador interno
+            valSet.forEach(s => {
+                const cx = ((s.x[0] + 1.2) / 2.4) * w;
+                const cy = (1 - (s.x[1] + 1.2) / 2.4) * h;
+
+                ctx.beginPath();
+                ctx.arc(cx, cy, 4.0, 0, 2 * Math.PI);
+                ctx.strokeStyle = s.y === 1 ? 'rgb(249, 115, 22)' : 'rgb(59, 130, 246)';
+                ctx.lineWidth = 2.0;
+                ctx.stroke();
+
+                // Marca de aspa interna 'V' de validación sutil
+                ctx.beginPath();
+                ctx.arc(cx, cy, 1.5, 0, 2 * Math.PI);
+                ctx.fillStyle = '#ffffff';
+                ctx.fill();
+            });
+        }
+
+        // Función reutilizable para dibujar un gráfico de líneas en canvas
+        function drawLineChart(canvasId, trainData, valData, isAcc) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width = canvas.parentElement.clientWidth;
+            const h = canvas.height = canvas.parentElement.clientHeight;
+
+            ctx.clearRect(0, 0, w, h);
+
+            if (trainData.length < 1) return;
+
+            // Calcular escala de ejes
+            let minVal = 0;
+            let maxVal = 1;
+
+            if (isAcc) {
+                minVal = 0;
+                maxVal = 100;
+            } else {
+                // Para pérdida, adaptamos dinámicamente los extremos
+                const maxInBoth = Math.max(...trainData, ...valData);
+                maxVal = Math.min(1.0, maxInBoth * 1.15 || 0.5); // Limitar escala superior
+            }
+
+            const diff = maxVal - minVal || 1;
+
+            // Líneas de referencia sutiles del eje Y (Gachas)
+            ctx.strokeStyle = 'rgba(15, 23, 42, 0.05)';
+            ctx.lineWidth = 1;
+            for (let percent = 0.25; percent <= 0.75; percent += 0.25) {
+                const py = h - 6 - percent * (h - 12);
+                ctx.beginPath();
+                ctx.moveTo(0, py); ctx.lineTo(w, py);
+                ctx.stroke();
+            }
+
+            // Trazar línea de Entrenamiento (Azul)
+            ctx.beginPath();
+            ctx.lineWidth = 2.0;
+            ctx.strokeStyle = 'rgb(59, 130, 246)';
+            for (let i = 0; i < trainData.length; i++) {
+                const px = (i / (trainData.length - 1 || 1)) * w;
+                const py = h - 6 - ((trainData[i] - minVal) / diff) * (h - 12);
+                if (i === 0) ctx.moveTo(px, py);
+                else ctx.lineTo(px, py);
+            }
+            ctx.stroke();
+
+            // Trazar línea de Validación (Rojo)
+            ctx.beginPath();
+            ctx.lineWidth = 2.0;
+            ctx.strokeStyle = 'rgb(239, 68, 68)';
+            for (let i = 0; i < valData.length; i++) {
+                const px = (i / (valData.length - 1 || 1)) * w;
+                const py = h - 6 - ((valData[i] - minVal) / diff) * (h - 12);
+                if (i === 0) ctx.moveTo(px, py);
+                else ctx.lineTo(px, py);
+            }
+            ctx.stroke();
+
+            // Dibujar etiquetas dinámicas a la derecha de los extremos
+            ctx.fillStyle = '#64748b';
+            ctx.font = '8px monospace';
+            ctx.textAlign = 'right';
+            ctx.fillText(maxVal.toFixed(isAcc ? 0 : 2) + (isAcc ? '%' : ''), w - 4, 10);
+            ctx.fillText(minVal.toFixed(isAcc ? 0 : 2) + (isAcc ? '%' : ''), w - 4, h - 4);
+        }
+
+        // Inicializar experimento al cargar la ventana
+        window.onload = function() {
+            resetAll();
+        };
+    </script>
+</body>
+</html>

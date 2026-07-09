@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explorador de Kernel RBF - SVM (Frontera Fina)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        canvas {
+            cursor: crosshair;
+            touch-action: none;
+        }
+        .control-slider {
+            accent-color: #4f46e5;
+        }
+        /* Grid eliminado para un fondo limpio */
+        .clean-canvas {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans">
+
+    <div class="min-h-screen p-4 md:p-8 max-w-6xl mx-auto">
+        <header class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-6">
+            <div>
+                <h1 class="text-3xl font-bold text-slate-900">Kernel RBF Refinado</h1>
+                <p class="text-slate-500 font-medium">Visualización de fronteras de decisión con trazo fino</p>
+            </div>
+            <div class="flex gap-3">
+                <button id="reset-btn" class="px-5 py-2 bg-white text-slate-700 hover:bg-slate-50 rounded-xl border border-slate-300 transition-all text-sm font-semibold shadow-sm">
+                    Limpiar
+                </button>
+                <button id="toggle-points-btn" class="px-5 py-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded-xl transition-all text-sm font-bold shadow-md shadow-indigo-200">
+                    Clase: Azul (+)
+                </button>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            <div class="lg:col-span-8">
+                <div class="bg-white rounded-2xl p-2 border border-slate-200 shadow-xl overflow-hidden">
+                    <div class="relative aspect-square w-full max-w-[650px] mx-auto clean-canvas rounded-xl border border-slate-100">
+                        <canvas id="svmCanvas" class="w-full h-full"></canvas>
+                    </div>
+                </div>
+                <div class="mt-4 flex justify-between text-[11px] text-slate-400 uppercase tracking-widest font-bold px-2">
+                    <span>Dimensión X₁</span>
+                    <span>Dimensión X₂</span>
+                </div>
+            </div>
+
+            <div class="lg:col-span-4 space-y-6">
+                <section class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                    <h2 class="text-lg font-bold mb-6 text-slate-800">Parámetros</h2>
+                    <div class="space-y-8">
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <label class="text-sm font-semibold text-slate-700">Gamma (γ)</label>
+                                <span id="gamma-val" class="text-indigo-600 font-mono font-bold text-lg">0.050</span>
+                            </div>
+                            <input type="range" id="gamma-slider" min="0.001" max="0.5" step="0.001" value="0.05" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer control-slider">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                    <h2 class="text-sm font-bold uppercase tracking-wider mb-4 text-slate-400">Leyenda</h2>
+                    <ul class="space-y-4 text-sm text-slate-600">
+                        <li class="flex items-center gap-3">
+                            <span class="w-4 h-4 rounded-full bg-indigo-500 border-2 border-white shadow-sm"></span>
+                            <span>Clase Azul (+1)</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <span class="w-4 h-4 rounded-full bg-rose-500 border-2 border-white shadow-sm"></span>
+                            <span>Clase Roja (-1)</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <div class="w-8 border-t-2 border-dashed border-slate-800"></div>
+                            <span>Frontera (Trazo Fino)</span>
+                        </li>
+                    </ul>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('svmCanvas');
+        const ctx = canvas.getContext('2d');
+        const gammaSlider = document.getElementById('gamma-slider');
+        const gammaValDisp = document.getElementById('gamma-val');
+        const resetBtn = document.getElementById('reset-btn');
+        const togglePointsBtn = document.getElementById('toggle-points-btn');
+
+        let points = [
+            {x: 180, y: 180, label: 1}, {x: 210, y: 190, label: 1}, {x: 190, y: 220, label: 1},
+            {x: 420, y: 420, label: -1}, {x: 450, y: 400, label: -1}, {x: 410, y: 440, label: -1}
+        ];
+        let currentLabel = 1; 
+        let gamma = 0.05;
+        const RESOLUTION = 8; 
+
+        function resize() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            render();
+        }
+
+        function rbf(p1, p2, g) {
+            const dx = p1.x - p2.x;
+            const dy = p1.y - p2.y;
+            return Math.exp(-g * 0.01 * (dx * dx + dy * dy));
+        }
+
+        function decisionFunction(x, y) {
+            if (points.length === 0) return 0;
+            let score = 0;
+            for (let p of points) {
+                score += p.label * rbf({x, y}, p, gamma);
+            }
+            return score;
+        }
+
+        function drawDashedFrontera(segments) {
+            if (segments.length < 1) return;
+            
+            ctx.save();
+            ctx.beginPath();
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 1.5; // Línea más fina
+            ctx.setLineDash([5, 4]); // Línea de trazos
+            ctx.lineCap = 'round';
+
+            segments.forEach(seg => {
+                ctx.moveTo(seg.start.x, seg.start.y);
+                ctx.lineTo(seg.end.x, seg.end.y);
+            });
+            
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function render() {
+            const w = canvas.width;
+            const h = canvas.height;
+            if (w === 0 || h === 0) return;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // 1. Fondo de áreas (opacidad ligeramente ajustada)
+            for (let i = 0; i < w; i += RESOLUTION) {
+                for (let j = 0; j < h; j += RESOLUTION) {
+                    const val = decisionFunction(i, j);
+                    const intensity = Math.tanh(val * 2.5);
+                    if (intensity > 0) {
+                        ctx.fillStyle = `rgba(79, 70, 229, ${intensity * 0.15})`; 
+                    } else if (intensity < 0) {
+                        ctx.fillStyle = `rgba(244, 63, 94, ${Math.abs(intensity) * 0.15})`; 
+                    } else continue;
+                    ctx.fillRect(i, j, RESOLUTION, RESOLUTION);
+                }
+            }
+
+            // 2. Cálculo de segmentos de frontera
+            const segments = [];
+            for (let i = 0; i < w; i += RESOLUTION) {
+                for (let j = 0; j < h; j += RESOLUTION) {
+                    const x = i, y = j;
+                    const res = RESOLUTION;
+
+                    const vNW = decisionFunction(x, y);
+                    const vNE = decisionFunction(x + res, y);
+                    const vSW = decisionFunction(x, y + res);
+                    const vSE = decisionFunction(x + res, y + res);
+
+                    const lerp = (p1, p2, v1, v2) => {
+                        const t = (0 - v1) / (v2 - v1);
+                        return { x: p1.x + t * (p2.x - p1.x), y: p1.y + t * (p2.y - p1.y) };
+                    };
+
+                    const edgePoints = [];
+                    if ((vNW > 0) !== (vNE > 0)) edgePoints.push(lerp({x, y}, {x: x+res, y}, vNW, vNE));
+                    if ((vNE > 0) !== (vSE > 0)) edgePoints.push(lerp({x: x+res, y}, {x: x+res, y: y+res}, vNE, vSE));
+                    if ((vSE > 0) !== (vSW > 0)) edgePoints.push(lerp({x: x+res, y: y+res}, {x, y: y+res}, vSE, vSW));
+                    if ((vSW > 0) !== (vNW > 0)) edgePoints.push(lerp({x, y: y+res}, {x, y}, vSW, vNW));
+
+                    if (edgePoints.length >= 2) {
+                        segments.push({start: edgePoints[0], end: edgePoints[1]});
+                    }
+                }
+            }
+            drawDashedFrontera(segments);
+
+            // 3. Puntos de Datos
+            points.forEach(p => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 6, 0, Math.PI * 2);
+                ctx.fillStyle = p.label === 1 ? '#4f46e5' : '#f43f5e';
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = p.label === 1 ? 'rgba(79, 70, 229, 0.3)' : 'rgba(244, 63, 94, 0.3)';
+                ctx.fill();
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+            });
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+            points.push({x, y, label: currentLabel});
+            render();
+        });
+
+        gammaSlider.addEventListener('input', (e) => {
+            gamma = parseFloat(e.target.value);
+            gammaValDisp.innerText = gamma.toFixed(3);
+            render();
+        });
+
+        resetBtn.addEventListener('click', () => {
+            points = [];
+            render();
+        });
+
+        togglePointsBtn.addEventListener('click', () => {
+            currentLabel *= -1;
+            if (currentLabel === 1) {
+                togglePointsBtn.innerText = "Clase: Azul (+)";
+                togglePointsBtn.className = "px-5 py-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded-xl transition-all text-sm font-bold shadow-md shadow-indigo-200";
+            } else {
+                togglePointsBtn.innerText = "Clase: Roja (-)";
+                togglePointsBtn.className = "px-5 py-2 bg-rose-600 text-white hover:bg-rose-700 rounded-xl transition-all text-sm font-bold shadow-md shadow-rose-200";
+            }
+            render();
+        });
+
+        window.addEventListener('resize', resize);
+        setTimeout(resize, 50);
+    </script>
+</body>
+</html>

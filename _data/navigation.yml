@@ -6,6 +6,8 @@ main:
     url: /cv/
   - title: "Projects"
     url: /projects/
+  - title: "Lab"
+    url: /lab/
   - title: "Research"
     url: /research/
   - title: "Teaching"
@@ -24,6 +26,8 @@ smain:
     url: /cv/
   - title: "Projects"
     url: /projects/
+  - title: "Lab"
+    url: /lab/
   - title: "Research"
     url: /research/
   - title: "Teaching"

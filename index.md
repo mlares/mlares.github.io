@@ -32,6 +32,7 @@ header:
   <a href="#leadership">Leadership</a>
   <a href="#experience">Experience</a>
   <a href="/projects/">Projects</a>
+  <a href="/lab/">Lab</a>
   <a href="/cv/">Full profile</a>
 </nav>
 
@@ -86,6 +87,24 @@ header:
     <article>
       <h3>People and evaluation</h3>
       <p>Mentored and onboarded data scientists, supervised doctoral researchers, reviewed technical work, and participated in hiring and evaluation decisions.</p>
+    </article>
+  </div>
+</section>
+
+<section class="cv-section">
+  <h2>Interactive Data Science Lab</h2>
+  <div class="cv-grid cv-grid--links">
+    <article>
+      <h3><a href="/lab/">Technical notes you can manipulate</a></h3>
+      <p>Small interactive applets showing how metrics, projections, uncertainty, and model behavior change as assumptions change.</p>
+    </article>
+    <article>
+      <h3><a href="/lab/roc-pr/">ROC and PR Explorer</a></h3>
+      <p>Classification thresholds, class imbalance, and the gap between ROC AUC and Precision-Recall behavior.</p>
+    </article>
+    <article>
+      <h3><a href="/lab/pca/">PCA Projection Explorer</a></h3>
+      <p>A geometric view of variance, projection, reconstruction, and what lower-dimensional representations preserve.</p>
     </article>
   </div>
 </section>

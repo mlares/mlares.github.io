@@ -1,0 +1,66 @@
+{% assign applet = site.data.applets | where: "slug", page.applet | first %}
+
+{% if applet %}
+<section class="lab-shell">
+  <aside class="lab-sidebar" aria-label="Interactive lab navigation">
+    <a class="lab-sidebar__home" href="/lab/">Interactive Lab</a>
+    <nav>
+      {% for item in site.data.applets %}
+        <a href="/lab/{{ item.slug }}/"{% if item.slug == applet.slug %} class="is-active"{% endif %}>
+          <span>{{ item.category }}</span>
+          {{ item.title }}
+        </a>
+      {% endfor %}
+    </nav>
+  </aside>
+
+  <article class="lab-detail">
+    <header class="cv-page-hero lab-detail__hero">
+      <p class="cv-kicker">{{ applet.category }}</p>
+      <h1>{{ applet.title }}</h1>
+      <p>{{ applet.subtitle }}</p>
+    </header>
+
+    <section class="lab-summary">
+      <div>
+        <h2>What This Shows</h2>
+        <p>{{ applet.description }}</p>
+      </div>
+      <div class="project-badges">
+        {% for skill in applet.skills %}
+          <span>{{ skill }}</span>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="lab-frame-section" aria-label="{{ applet.title }}">
+      <iframe
+        class="lab-frame"
+        src="/applets/raw/{{ applet.source }}"
+        title="{{ applet.title }}"
+        loading="lazy"></iframe>
+    </section>
+
+    <section class="lab-notes">
+      <article>
+        <h3>Technical Challenge</h3>
+        <p>{{ applet.challenge }}</p>
+      </article>
+      <article>
+        <h3>My Contribution</h3>
+        <p>{{ applet.contribution }}</p>
+      </article>
+      <article>
+        <h3>Industry Transfer</h3>
+        <p>{{ applet.transferable }}</p>
+      </article>
+      <article>
+        <h3>Connected Work</h3>
+        <p>{{ applet.related }}</p>
+      </article>
+    </section>
+  </article>
+</section>
+{% else %}
+<p>Applet metadata not found.</p>
+{% endif %}

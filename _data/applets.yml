@@ -1,0 +1,263 @@
+- slug: roc-pr
+  source: roc-pr.html
+  title: ROC and Precision-Recall Explorer
+  subtitle: Thresholds, class imbalance, and classification trade-offs.
+  category: Model Evaluation
+  visual: Metrics
+  description: >
+    Explore how ROC and Precision-Recall curves respond when prevalence, class
+    separation, and decision thresholds change. The demo makes visible a common
+    production ML risk: a model can look acceptable under one metric while
+    failing the operating point that matters for the positive class.
+  skills:
+    - ROC
+    - Precision-Recall
+    - Class imbalance
+    - Thresholds
+    - Model evaluation
+  challenge: Choosing metrics and thresholds when false positives and false negatives have different operational costs.
+  contribution: Built an interactive simulator that links score distributions, confusion-matrix behavior, and evaluation curves.
+  transferable: Fraud detection, medical triage, rare-event monitoring, ranking, recommender evaluation.
+  related: TOROS rare-event detection and production model evaluation.
+
+- slug: pca
+  source: pca.html
+  title: PCA Projection Explorer
+  subtitle: Variance, projection, reconstruction, and information loss.
+  category: Representation Learning
+  visual: Projection
+  description: >
+    Manipulate a two-dimensional data cloud and observe how principal components
+    rotate, project, and reconstruct the data. The applet gives a concrete view
+    of what dimensionality reduction preserves, what it discards, and why that
+    matters before feeding compressed representations into downstream models.
+  skills:
+    - PCA
+    - Linear algebra
+    - Dimensionality reduction
+    - Feature compression
+    - Reconstruction
+  challenge: Reducing dimensionality without losing the structure needed for the task.
+  contribution: Designed a visual explanation that connects covariance geometry to model-ready representations.
+  transferable: Embeddings, denoising, exploratory analysis, feature engineering, scientific data reduction.
+  related: VVV/VVVX feature extraction and DEEPz high-dimensional regression.
+
+- slug: gradient-descent
+  source: gradient-descent.html
+  title: Gradient Descent Playground
+  subtitle: Optimization paths, learning rates, and loss-surface behavior.
+  category: Optimization
+  visual: Loss Surface
+  description: >
+    Adjust optimization settings and watch how the path over a loss surface
+    changes. The demo shows why learning rate, curvature, and initialization
+    affect convergence, instability, and training time in machine learning
+    systems.
+  skills:
+    - Optimization
+    - Gradient descent
+    - Numerical methods
+    - Loss functions
+    - Model training
+  challenge: Making iterative optimization behavior visible enough to diagnose convergence failures.
+  contribution: Built an interactive loss-surface view that connects parameter updates to model training dynamics.
+  transferable: Deep learning, forecasting models, calibration, optimization-heavy analytics workflows.
+  related: Production ML training workflows and statistical modeling.
+
+- slug: bias-variance
+  source: bias-variance.html
+  title: Bias-Variance and Generalization
+  subtitle: Model complexity, noise, and the gap between fitting and learning.
+  category: Model Robustness
+  visual: Generalization
+  description: >
+    Change model complexity and data conditions to see how training fit can
+    diverge from generalization. The applet turns overfitting into an observable
+    behavior rather than an abstract warning, making it useful for model
+    selection and risk-aware validation.
+  skills:
+    - Generalization
+    - Bias-variance
+    - Validation
+    - Model selection
+    - Regularization
+  challenge: Distinguishing useful flexibility from unstable fitting under noisy data.
+  contribution: Created an interactive simulator for comparing training behavior with out-of-sample performance.
+  transferable: Experiment design, forecasting, predictive maintenance, risk models, applied ML validation.
+  related: Mercado Libre experimentation and robust scientific inference.
+
+- slug: decision-boundaries
+  source: decision-boundaries.html
+  title: Decision Boundary Explorer
+  subtitle: Comparing classifiers through the regions they assign.
+  category: Supervised Learning
+  visual: Boundaries
+  description: >
+    Compare how classifiers partition the same feature space under different
+    assumptions. The visualization helps explain why model choice is not only
+    about accuracy: geometry, noise, class overlap, and inductive bias shape the
+    decisions a system will make.
+  skills:
+    - Classification
+    - Decision boundaries
+    - Supervised learning
+    - Model comparison
+    - Statistical learning
+  challenge: Understanding how classifier assumptions translate into operational decisions.
+  contribution: Built a visual comparison tool for linking model families to boundary geometry.
+  transferable: Segmentation, risk scoring, customer modeling, medical classification, anomaly triage.
+  related: Variable-star classification and production ML decision systems.
+
+- slug: regularization
+  source: regularization.html
+  title: Regularization Explorer
+  subtitle: Controlling model complexity with constraints and penalties.
+  category: Model Robustness
+  visual: Constraints
+  description: >
+    Visualize how regularization changes the feasible solutions and the models
+    that emerge from data. The demo highlights the engineering role of
+    regularization: not just improving metrics, but making models more stable,
+    interpretable, and reliable under limited or noisy evidence.
+  skills:
+    - Regularization
+    - L1/L2 penalties
+    - Model stability
+    - Feature selection
+    - Regression
+  challenge: Preventing models from becoming too sensitive to noise or weak signals.
+  contribution: Created an interactive view of how penalty geometry shapes learned parameters.
+  transferable: Risk estimation, price prediction, forecasting, sparse modeling, production regression.
+  related: DEEPz uncertainty-aware regression and ML model calibration.
+
+- slug: mixture-models
+  source: mixture-models.html
+  title: Gaussian Mixture and EM Explorer
+  subtitle: Probabilistic clustering with latent structure and uncertainty.
+  category: Unsupervised Learning
+  visual: EM
+  description: >
+    Interactively fit a mixture model and observe how expectation-maximization
+    alternates between assigning probability mass and updating component
+    parameters. The applet makes soft clustering and uncertainty visible, which
+    is central to segmentation problems where group membership is not obvious.
+  skills:
+    - EM algorithm
+    - Mixture models
+    - Clustering
+    - Probabilistic modeling
+    - Uncertainty
+  challenge: Recovering latent groups when the data are noisy, overlapping, or partially ambiguous.
+  contribution: Built a two-dimensional simulator that exposes the iterative mechanics behind soft clustering.
+  transferable: Customer segmentation, anomaly grouping, market discovery, spatial analytics.
+  related: Cosmic structure analysis and unsupervised pattern discovery.
+
+- slug: hierarchical-clustering
+  source: hierarchical-clustering.html
+  title: Hierarchical Clustering Lab
+  subtitle: Linkage choices, dendrograms, and multiscale structure.
+  category: Unsupervised Learning
+  visual: Hierarchy
+  description: >
+    Explore how hierarchical clustering builds structure from pairwise
+    distances and linkage rules. The applet is useful for understanding why
+    clustering is not one result but a modeling decision that depends on scale,
+    distance, noise, and the structure one wants to preserve.
+  skills:
+    - Clustering
+    - Linkage methods
+    - Dendrograms
+    - Distance metrics
+    - Pattern discovery
+  challenge: Identifying structure across scales without imposing a fixed number of groups too early.
+  contribution: Built an interactive clustering view that connects local distances to global grouping decisions.
+  transferable: Customer segmentation, document clustering, taxonomy design, operations analytics.
+  related: Cosmic void detection and large-scale spatial structure analysis.
+
+- slug: kernel-svm
+  source: kernel-svm.html
+  title: Kernel SVM Explorer
+  subtitle: Nonlinear classification through similarity and margin control.
+  category: Supervised Learning
+  visual: Kernel
+  description: >
+    Adjust the kernel behavior and see how nonlinear decision regions form.
+    The demo gives a practical view of the trade-off between flexibility and
+    stability: highly adaptive boundaries can capture complex patterns, but can
+    also become sensitive to noise.
+  skills:
+    - SVM
+    - RBF kernel
+    - Nonlinear models
+    - Margins
+    - Classification
+  challenge: Capturing nonlinear structure while preserving a stable decision rule.
+  contribution: Built a visual tool for understanding how kernel parameters reshape the classifier boundary.
+  transferable: Image classification, anomaly detection, quality control, risk models.
+  related: Computer vision pipelines and automated object detection.
+
+- slug: ensemble-variance
+  source: ensemble-variance.html
+  title: Ensemble Variance Explorer
+  subtitle: Why averaging many learners can produce more stable predictions.
+  category: Model Robustness
+  visual: Ensemble
+  description: >
+    Compare individual noisy learners with their aggregate behavior. The applet
+    shows the central intuition behind ensemble models: independent errors can
+    partially cancel out, reducing variance and improving reliability without
+    requiring every base model to be perfect.
+  skills:
+    - Ensembles
+    - Random Forests
+    - Variance reduction
+    - Model stability
+    - Bootstrap intuition
+  challenge: Improving prediction stability when individual models are sensitive to the data sample.
+  contribution: Created an interactive demonstration of variance reduction through aggregation.
+  transferable: Random Forest modeling, forecasting, ranking, noisy industrial prediction systems.
+  related: Random Forest classification in TOROS candidate ranking.
+
+- slug: tree-instability
+  source: tree-instability.html
+  title: Decision Tree Instability
+  subtitle: Small data changes, large boundary changes.
+  category: Model Robustness
+  visual: Trees
+  description: >
+    Observe how small perturbations in the training data can change a decision
+    tree. The applet captures a practical issue in interpretable modeling:
+    simple rules can be easy to explain, but their apparent clarity may hide
+    sensitivity to sampling noise.
+  skills:
+    - Decision trees
+    - Instability
+    - Validation
+    - Robustness
+    - Interpretability
+  challenge: Separating interpretable structure from unstable artifacts of a specific sample.
+  contribution: Built a focused visualization of tree boundary sensitivity under small data changes.
+  transferable: Credit policies, churn models, operational rules, interpretable ML governance.
+  related: Model validation and production experimentation.
+
+- slug: label-agreement
+  source: label-agreement.html
+  title: Agreement and Label Quality Explorer
+  subtitle: Measuring annotation reliability beyond raw accuracy.
+  category: Model Evaluation
+  visual: Labels
+  description: >
+    Explore how inter-rater agreement changes under different labeling patterns.
+    The applet highlights a frequent ML bottleneck: model quality is bounded by
+    the reliability of the data labels, and agreement metrics can reveal
+    problems that raw counts hide.
+  skills:
+    - Label quality
+    - Cohen's kappa
+    - Evaluation
+    - Annotation workflows
+    - Data quality
+  challenge: Quantifying whether labels are consistent enough to support reliable model training and evaluation.
+  contribution: Built a simulator for interpreting agreement metrics under changing base rates and disagreement patterns.
+  transferable: Human-in-the-loop ML, annotation QA, medical review, content moderation, audit workflows.
+  related: Human validation in TOROS and applied ML data quality work.

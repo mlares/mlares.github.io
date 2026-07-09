@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROC vs Precision-Recall Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        .control-slider {
+            accent-color: #10b981;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans">
+
+    <div class="min-h-screen p-4 md:p-8 max-w-7xl mx-auto">
+        <header class="mb-8 border-b border-slate-200 pb-6">
+            <h1 class="text-3xl font-bold text-slate-900">ROC vs. Precision-Recall</h1>
+            <p class="text-slate-500 font-medium italic">Visualización del impacto del desbalance de clases en las métricas</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Panel de Controles -->
+            <div class="lg:col-span-4 space-y-6">
+                <section class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                    <h2 class="text-lg font-bold mb-4 text-slate-800">Configuración</h2>
+                    
+                    <div class="space-y-6">
+                        <!-- Desbalance de Clases -->
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <label class="text-sm font-semibold text-slate-700">Frecuencia Clase Positiva</label>
+                                <span id="imbalance-val" class="text-emerald-600 font-mono font-bold">50%</span>
+                            </div>
+                            <input type="range" id="imbalance-slider" min="1" max="99" step="1" value="50" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer control-slider">
+                            <p class="text-[11px] text-slate-500 mt-1 italic">Afecta directamente la altura de la curva verde en la distribución.</p>
+                        </div>
+
+                        <!-- Separabilidad de Clases -->
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <label class="text-sm font-semibold text-slate-700">Dificultad (Separabilidad)</label>
+                                <span id="sep-val" class="text-emerald-600 font-mono font-bold">1.5</span>
+                            </div>
+                            <input type="range" id="sep-slider" min="0" max="4" step="0.1" value="1.5" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer control-slider">
+                        </div>
+
+                        <button id="regenerate-btn" class="w-full py-2 bg-slate-800 text-white rounded-xl hover:bg-slate-700 transition-colors font-bold text-sm shadow-lg shadow-slate-200">
+                            Regenerar Datos
+                        </button>
+                    </div>
+                </section>
+
+                <section class="bg-emerald-50 p-6 rounded-2xl border border-emerald-100">
+                    <h2 class="text-sm font-bold uppercase tracking-wider mb-3 text-emerald-900">Observación Pro</h2>
+                    <p class="text-sm text-emerald-800 leading-relaxed">
+                        Nota que al reducir la clase positiva (verde), la curva <strong>ROC</strong> apenas cambia su forma, pero la curva <strong>Precision-Recall</strong> se desploma. Esto ocurre porque la precisión penaliza fuertemente los Falsos Positivos en relación a una clase minoritaria pequeña.
+                    </p>
+                </section>
+            </div>
+
+            <!-- Visualización -->
+            <div class="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Gráfico ROC -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <h3 class="text-center font-bold text-slate-700 mb-2">Curva ROC</h3>
+                    <div class="chart-container">
+                        <canvas id="rocChart"></canvas>
+                    </div>
+                    <div class="mt-4 text-center border-t pt-2">
+                        <span class="text-xs font-bold text-slate-400 uppercase">AUC-ROC: </span>
+                        <span id="auc-roc" class="text-lg font-mono font-bold text-slate-900">0.000</span>
+                    </div>
+                </div>
+
+                <!-- Gráfico PR -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <h3 class="text-center font-bold text-slate-700 mb-2">Curva Precision-Recall</h3>
+                    <div class="chart-container">
+                        <canvas id="prChart"></canvas>
+                    </div>
+                    <div class="mt-4 text-center border-t pt-2">
+                        <span class="text-xs font-bold text-slate-400 uppercase">AUC-PR (AP): </span>
+                        <span id="auc-pr" class="text-lg font-mono font-bold text-slate-900">0.000</span>
+                    </div>
+                </div>
+
+                <!-- Gráfico de Distribución ESCALADO -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm md:col-span-2">
+                    <h3 class="text-center font-bold text-slate-700 mb-2">Distribución de Scores del Modelo</h3>
+                    <div class="chart-container" style="height: 180px;">
+                        <canvas id="distChart"></canvas>
+                    </div>
+                    <div class="flex justify-center gap-6 mt-2 text-[11px] font-bold uppercase tracking-tighter">
+                        <span class="flex items-center gap-1 text-purple-600"><span class="w-3 h-3 bg-purple-500 rounded-sm"></span> Clase Negativa</span>
+                        <span class="flex items-center gap-1 text-emerald-500"><span class="w-3 h-3 bg-emerald-500 rounded-sm"></span> Clase Positiva</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let rocChart, prChart, distChart;
+        const TOTAL_SAMPLES = 2000;
+
+        function initCharts() {
+            const ctxRoc = document.getElementById('rocChart').getContext('2d');
+            const ctxPr = document.getElementById('prChart').getContext('2d');
+            const ctxDist = document.getElementById('distChart').getContext('2d');
+
+            const curveOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: { duration: 400 },
+                plugins: { 
+                    legend: { display: false },
+                    tooltip: { enabled: true }
+                },
+                elements: { point: { radius: 0 }, line: { tension: 0.2 } }
+            };
+
+            rocChart = new Chart(ctxRoc, {
+                type: 'line',
+                data: { datasets: [{ label: 'ROC', data: [], borderColor: '#000000', borderWidth: 2, fill: true, backgroundColor: 'rgba(0, 0, 0, 0.05)' }] },
+                options: {
+                    ...curveOptions,
+                    scales: {
+                        x: { 
+                            type: 'linear', min: 0, max: 1, grid: { color: '#f1f5f9' },
+                            title: { display: true, text: 'Tasa Falsos Positivos (FPR)', color: '#64748b', font: { weight: 'bold' } }
+                        },
+                        y: { 
+                            type: 'linear', min: 0, max: 1, grid: { color: '#f1f5f9' },
+                            title: { display: true, text: 'Tasa Verdaderos Positivos (TPR)', color: '#64748b', font: { weight: 'bold' } }
+                        }
+                    }
+                }
+            });
+
+            prChart = new Chart(ctxPr, {
+                type: 'line',
+                data: { datasets: [{ label: 'PR', data: [], borderColor: '#000000', borderWidth: 2, fill: true, backgroundColor: 'rgba(0, 0, 0, 0.05)' }] },
+                options: {
+                    ...curveOptions,
+                    scales: {
+                        x: { 
+                            type: 'linear', min: 0, max: 1, grid: { color: '#f1f5f9' },
+                            title: { display: true, text: 'Recall (Sensibilidad)', color: '#64748b', font: { weight: 'bold' } }
+                        },
+                        y: { 
+                            type: 'linear', min: 0, max: 1, grid: { color: '#f1f5f9' },
+                            title: { display: true, text: 'Precisión', color: '#64748b', font: { weight: 'bold' } }
+                        }
+                    }
+                }
+            });
+
+            distChart = new Chart(ctxDist, {
+                type: 'line',
+                data: { datasets: [
+                    { label: 'Negativos', data: [], borderColor: '#a855f7', backgroundColor: 'rgba(168, 85, 247, 0.25)', fill: true, pointRadius: 0, borderWidth: 2.5 },
+                    { label: 'Positivos', data: [], borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.35)', fill: true, pointRadius: 0, borderWidth: 2.5 }
+                ]},
+                options: { 
+                    ...curveOptions, 
+                    scales: { 
+                        x: { type: 'linear', min: -1, max: 7, grid: { display: false }, title: { display: true, text: 'Score de Decisión', color: '#64748b', font: { weight: 'bold' } } }, 
+                        y: { display: true, min: 0, max: 0.6, ticks: { display: false }, grid: { display: false }, title: { display: true, text: 'Densidad', color: '#64748b', font: { weight: 'bold' } } } 
+                    } 
+                }
+            });
+        }
+
+        function normalPDF(x, mu, sigma) {
+            return (1 / (sigma * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * Math.pow((x - mu) / sigma, 2));
+        }
+
+        function calculateMetrics() {
+            const imbalance = parseInt(document.getElementById('imbalance-slider').value) / 100;
+            const separability = parseFloat(document.getElementById('sep-slider').value);
+            
+            document.getElementById('imbalance-val').innerText = `${(imbalance * 100).toFixed(0)}%`;
+            document.getElementById('sep-val').innerText = separability.toFixed(1);
+
+            const nPos = Math.floor(TOTAL_SAMPLES * imbalance);
+            const nNeg = TOTAL_SAMPLES - nPos;
+
+            let scores = [];
+            for (let i = 0; i < nNeg; i++) scores.push({ score: (Math.random() + Math.random() + Math.random() + Math.random() - 2) * 0.8 + 2, label: 0 }); 
+            for (let i = 0; i < nPos; i++) scores.push({ score: (Math.random() + Math.random() + Math.random() + Math.random() - 2) * 0.8 + 2 + separability, label: 1 });
+
+            scores.sort((a, b) => b.score - a.score);
+
+            let rocData = [{x: 0, y: 0}];
+            let prData = [];
+            let tp = 0, fp = 0;
+            let lastRecall = -1;
+
+            let aucRoc = 0;
+            let ap = 0;
+
+            for (let i = 0; i < scores.length; i++) {
+                if (scores[i].label === 1) {
+                    tp++;
+                    const precision = tp / (tp + fp);
+                    ap += precision;
+                } else {
+                    fp++;
+                }
+
+                const tpr = tp / nPos;
+                const fpr = fp / nNeg;
+                const precision = tp / (tp + fp);
+                const recall = tp / nPos;
+
+                rocData.push({ x: fpr, y: tpr });
+                
+                if (recall !== lastRecall) {
+                    prData.push({ x: recall, y: precision });
+                    lastRecall = recall;
+                }
+            }
+            
+            for (let i = 1; i < rocData.length; i++) {
+                aucRoc += (rocData[i].x - rocData[i-1].x) * (rocData[i].y + rocData[i-1].y) / 2;
+            }
+            const finalAP = nPos > 0 ? ap / nPos : 0;
+
+            document.getElementById('auc-roc').innerText = aucRoc.toFixed(3);
+            document.getElementById('auc-pr').innerText = finalAP.toFixed(3);
+
+            rocChart.data.datasets[0].data = rocData;
+            prChart.data.datasets[0].data = prData;
+
+            const distPointsX = [];
+            for (let x = -1; x <= 7; x += 0.1) distPointsX.push(x);
+            
+            distChart.data.datasets[0].data = distPointsX.map(x => ({ x: x, y: normalPDF(x, 2, 0.8) * (1 - imbalance) }));
+            distChart.data.datasets[1].data = distPointsX.map(x => ({ x: x, y: normalPDF(x, 2 + separability, 0.8) * imbalance }));
+
+            rocChart.update();
+            prChart.update();
+            distChart.update();
+        }
+
+        document.getElementById('imbalance-slider').addEventListener('input', calculateMetrics);
+        document.getElementById('sep-slider').addEventListener('input', calculateMetrics);
+        document.getElementById('regenerate-btn').addEventListener('click', calculateMetrics);
+
+        window.onload = () => {
+            initCharts();
+            calculateMetrics();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ensemble Variance Explorer</title>
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <style>
+        .slider-label { font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.85rem; }
+        .card { background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border: 1px solid #e5e7eb; }
+        input[type="range"] { accent-color: #2563eb; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <header class="mb-8 border-b border-slate-200 pb-6">
+            <h1 class="text-3xl font-extrabold text-blue-900">Visualización de Reducción de Varianza en Ensambles</h1>
+            <p class="text-slate-600 mt-2 max-w-3xl">
+                Una nota interactiva diseñada para explorar la descomposición de la varianza en métodos de promediado 
+                como <strong>Bagging</strong> y <strong>Random Forests</strong>.
+            </p>
+        </header>
+
+        <!-- Main Theory Box -->
+        <div class="card p-6 mb-8 bg-blue-50 border-blue-100">
+            <h3 class="text-lg font-bold text-blue-800 mb-2">Fundamento Estadístico (ESL / Stanford)</h3>
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="text-lg">
+                    $$ \text{Var}\left(\frac{1}{B}\sum_{b=1}^B Z_b\right) = \rho\sigma^2 + \frac{1-\rho}{B}\sigma^2 $$
+                </div>
+                <div class="text-sm text-blue-700 bg-white p-4 rounded-lg border border-blue-200 shadow-sm">
+                    <strong>Intuición:</strong> El primer término ($\rho\sigma^2$) es el "piso" de varianza impuesto por la 
+                    correlación entre modelos. El segundo término se desvanece a medida que $B \to \infty$.
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Controls Panel -->
+            <div class="lg:col-span-3 space-y-6">
+                <div class="card p-5 sticky top-4">
+                    <h2 class="text-sm uppercase tracking-wider font-bold text-slate-500 mb-4">Parámetros</h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="slider-label flex justify-between">Número de Modelos (B) <span id="val-b" class="text-blue-600">50</span></label>
+                            <input type="range" id="input-b" min="1" max="200" value="50" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                        </div>
+
+                        <div>
+                            <label class="slider-label flex justify-between">Correlación (ρ) <span id="val-rho" class="text-blue-600">0.3</span></label>
+                            <input type="range" id="input-rho" min="0" max="1" step="0.01" value="0.3" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                        </div>
+
+                        <div>
+                            <label class="slider-label flex justify-between">Varianza Base (σ²) <span id="val-sigma" class="text-blue-600">1.0</span></label>
+                            <input type="range" id="input-sigma" min="0.1" max="3" step="0.1" value="1" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                        </div>
+
+                        <div class="pt-4 border-t border-slate-100">
+                            <h3 class="text-xs font-bold text-slate-400 mb-2">ESCENARIOS PREDEFINIDOS</h3>
+                            <div class="grid grid-cols-1 gap-2">
+                                <button onclick="setScenario(0.9, 50)" class="text-xs bg-slate-100 hover:bg-slate-200 p-2 rounded text-left">🔴 Bagging (Alta Correlación)</button>
+                                <button onclick="setScenario(0.1, 50)" class="text-xs bg-slate-100 hover:bg-slate-200 p-2 rounded text-left">🟢 Random Forest (Baja Correlación)</button>
+                                <button onclick="setScenario(0, 100)" class="text-xs bg-slate-100 hover:bg-slate-200 p-2 rounded text-left">🔵 Ensamble Ideal (i.i.d)</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Plots Panel -->
+            <div class="lg:col-span-9 space-y-8">
+                <!-- Row 1: Line and Convergence -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="card p-4">
+                        <div id="plot-trajectories" class="w-full h-[350px]"></div>
+                        <p class="text-xs text-slate-500 italic mt-2 px-2 text-center">Observa cómo el promedio (rojo) se estabiliza según ρ.</p>
+                    </div>
+                    <div class="card p-4">
+                        <div id="plot-convergence" class="w-full h-[350px]"></div>
+                        <p class="text-xs text-slate-500 italic mt-2 px-2 text-center">El área sombreada muestra la reducción de varianza residual.</p>
+                    </div>
+                </div>
+
+                <!-- Live Commentary -->
+                <div id="commentary" class="card p-6 bg-slate-900 text-slate-100 border-none">
+                    <p class="text-lg font-light italic leading-relaxed" id="dynamic-text">
+                        Cargando análisis dinámico...
+                    </p>
+                </div>
+
+                <!-- Footer Summary -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="card p-4 text-center">
+                        <div class="text-xs uppercase text-slate-400 font-bold mb-1">Varianza Total Individual</div>
+                        <div class="text-2xl font-bold text-slate-800" id="stat-single">1.00</div>
+                    </div>
+                    <div class="card p-4 text-center">
+                        <div class="text-xs uppercase text-slate-400 font-bold mb-1">Piso de Varianza (ρσ²)</div>
+                        <div class="text-2xl font-bold text-orange-600" id="stat-floor">0.30</div>
+                    </div>
+                    <div class="card p-4 text-center border-blue-200 bg-blue-50">
+                        <div class="text-xs uppercase text-blue-400 font-bold mb-1">Varianza Actual Ensamble</div>
+                        <div class="text-2xl font-bold text-blue-700" id="stat-ensemble">0.45</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const bIn = document.getElementById('input-b');
+        const rhoIn = document.getElementById('input-rho');
+        const sigmaIn = document.getElementById('input-sigma');
+        
+        const bVal = document.getElementById('val-b');
+        const rhoVal = document.getElementById('val-rho');
+        const sigmaVal = document.getElementById('val-sigma');
+        const dynamicText = document.getElementById('dynamic-text');
+
+        const statSingle = document.getElementById('stat-single');
+        const statFloor = document.getElementById('stat-floor');
+        const statEnsemble = document.getElementById('stat-ensemble');
+
+        // State variables
+        let B = 50;
+        let rho = 0.3;
+        let sigma2 = 1.0;
+
+        function setScenario(newRho, newB) {
+            rhoIn.value = newRho;
+            bIn.value = newB;
+            update();
+        }
+
+        function generateData() {
+            const n = 100;
+            const x = Array.from({length: n}, (_, i) => i);
+            const commonNoise = Array.from({length: n}, () => Math.sqrt(rho * sigma2) * gaussianRandom());
+            
+            let models = [];
+            let ensembleSum = new Array(n).fill(0);
+
+            for (let b = 0; b < B; b++) {
+                let modelPred = [];
+                for (let i = 0; i < n; i++) {
+                    const individualNoise = Math.sqrt((1 - rho) * sigma2) * gaussianRandom();
+                    const val = commonNoise[i] + individualNoise;
+                    modelPred.push(val);
+                    ensembleSum[i] += val;
+                }
+                models.push(modelPred);
+            }
+
+            const ensembleMean = ensembleSum.map(v => v / B);
+            return { x, models, ensembleMean };
+        }
+
+        function gaussianRandom() {
+            let u = 0, v = 0;
+            while(u === 0) u = Math.random();
+            while(v === 0) v = Math.random();
+            return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+        }
+
+        function update() {
+            B = parseInt(bIn.value);
+            rho = parseFloat(rhoIn.value);
+            sigma2 = parseFloat(sigmaIn.value);
+
+            bVal.innerText = B;
+            rhoVal.innerText = rho.toFixed(2);
+            sigmaVal.innerText = sigma2.toFixed(1);
+
+            const { x, models, ensembleMean } = generateData();
+            renderTrajectories(x, models, ensembleMean);
+            renderConvergence();
+            updateCommentary();
+        }
+
+        function renderTrajectories(x, models, mean) {
+            const traces = [];
+            const displayLimit = Math.min(10, B);
+            
+            for (let i = 0; i < displayLimit; i++) {
+                traces.push({
+                    x: x, y: models[i], mode: 'lines',
+                    line: { color: 'rgba(100, 116, 139, 0.2)', width: 1 },
+                    showlegend: false
+                });
+            }
+
+            traces.push({
+                x: x, y: mean, mode: 'lines',
+                line: { color: '#ef4444', width: 3 },
+                name: 'Media del Ensamble'
+            });
+
+            const layout = {
+                title: { text: `Modelos Individuales vs Ensamble (B=${B})`, font: { size: 14 } },
+                margin: { l: 40, r: 20, t: 40, b: 40 },
+                xaxis: { showgrid: false },
+                yaxis: { range: [-6, 6], title: 'Predicción Z' },
+                template: 'plotly_white'
+            };
+
+            Plotly.newPlot('plot-trajectories', traces, layout, {displayModeBar: false});
+        }
+
+        function renderConvergence() {
+            const bRange = Array.from({length: 100}, (_, i) => i + 1);
+            const varCurve = bRange.map(b => rho * sigma2 + ((1 - rho) * sigma2) / b);
+            const floor = rho * sigma2;
+
+            const traceCurve = {
+                x: bRange, y: varCurve, mode: 'lines',
+                line: { color: '#2563eb', width: 3 },
+                fill: 'tozeroy', fillcolor: 'rgba(37, 99, 235, 0.1)',
+                name: 'Varianza Var(Ẑ)'
+            };
+
+            const traceFloor = {
+                x: bRange, y: new Array(100).fill(floor), mode: 'lines',
+                line: { color: '#f97316', width: 2, dash: 'dash' },
+                name: 'Piso de Varianza'
+            };
+
+            const layout = {
+                title: { text: 'Convergencia de la Varianza', font: { size: 14 } },
+                margin: { l: 40, r: 20, t: 40, b: 40 },
+                yaxis: { range: [0, sigma2 * 1.1], title: 'Varianza' },
+                xaxis: { title: 'B (Número de modelos)' },
+                template: 'plotly_white',
+                showlegend: false
+            };
+
+            Plotly.newPlot('plot-convergence', [traceCurve, traceFloor], layout, {displayModeBar: false});
+
+            // Update stats
+            const currentVar = rho * sigma2 + ((1 - rho) * sigma2) / B;
+            statSingle.innerText = sigma2.toFixed(2);
+            statFloor.innerText = floor.toFixed(2);
+            statEnsemble.innerText = currentVar.toFixed(3);
+        }
+
+        function updateCommentary() {
+            let text = "";
+            if (rho > 0.7) {
+                text = `⚠️ <strong>Alta Correlación:</strong> Los modelos son muy similares. Promediar aporta poco. Estás en un escenario de <strong>Bagging</strong> sobre predictores redundantes. El error sistémico domina.`;
+            } else if (rho < 0.2) {
+                text = `✅ <strong>Baja Correlación:</strong> Estás aprovechando el poder del ensamble. Como en <strong>Random Forests</strong>, la decorrelación permite que el promedio sea significativamente más estable que cualquier modelo individual.`;
+            } else {
+                text = `ℹ️ <strong>Efecto Mixto:</strong> El ensamble reduce la varianza rápidamente al principio, pero pronto choca con el piso de correlación de ${ (rho * sigma2).toFixed(2) }.`;
+            }
+            dynamicText.innerHTML = text;
+        }
+
+        bIn.addEventListener('input', update);
+        rhoIn.addEventListener('input', update);
+        sigmaIn.addEventListener('input', update);
+
+        window.onload = update;
+    </script>
+</body>
+</html>

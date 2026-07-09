@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hierarchical Clustering Lab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col font-sans selection:bg-indigo-100 selection:text-indigo-900 overflow-x-hidden">
+
+    <header class="border-b border-slate-200 bg-white px-6 py-3 shadow-sm">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <div>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded border border-indigo-100">
+                    Interactive Data Science Lab
+                </span>
+                <h1 class="text-xl font-bold mt-1 tracking-tight flex items-center gap-2 text-slate-800">
+                    <i data-lucide="git-merge" class="text-indigo-600 w-5 h-5"></i>
+                    Análisis Taxonómico: Agrupamiento Jerárquico Aglomerativo
+                </h1>
+            </div>
+            <div class="text-xs text-slate-600 font-mono bg-slate-100 border border-slate-200 px-3 py-1 rounded-md self-start sm:self-auto">
+                Corte del Dendrograma por Umbral de Distancia: $d_{corte}$
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 grid grid-cols-1 lg:grid-cols-12 gap-4">
+        
+        <!-- Panel Izquierdo: Espacio de Características (7/12 col) -->
+        <section class="lg:col-span-7 flex flex-col gap-3">
+            <div class="bg-white border border-slate-200 rounded-xl p-3 shadow-sm flex flex-wrap gap-4 items-center justify-between">
+                
+                <!-- Selector de Tipo de Enlace (Linkage) -->
+                <div class="flex items-center gap-2">
+                    <label class="text-xs text-slate-500 font-semibold flex items-center gap-1">
+                        <i data-lucide="layers" class="w-3.5 h-3.5 text-indigo-600"></i>
+                        Enlace:
+                    </label>
+                    <select id="linkage-select" class="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 font-medium focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                        <option value="average" selected>Promedio (Average)</option>
+                        <option value="complete">Máximo (Complete)</option>
+                        <option value="single">Mínimo (Single)</option>
+                    </select>
+                </div>
+
+                <!-- Escenarios Predefinidos -->
+                <div class="flex gap-1.5">
+                    <button onclick="loadScenario('clusters')" class="text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 px-3 py-1 rounded-lg transition-all font-medium">Nubes Dispersas</button>
+                    <button onclick="loadScenario('lineal')" class="text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 px-3 py-1 rounded-lg transition-all font-medium">Cadena Lineal</button>
+                </div>
+
+                <!-- Botones de Control de Datos -->
+                <div class="flex gap-1">
+                    <button id="btn-reset" class="bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200 text-xs p-1.5 rounded-lg transition-all" title="Reiniciar">
+                        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                    </button>
+                    <button id="btn-add" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs p-1.5 rounded-lg transition-all" title="Agregar Grupo de Ruido">
+                        <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Canvas de Puntos -->
+            <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm relative flex-1 flex flex-col min-h-[420px]">
+                <div class="bg-slate-50 px-3 py-1.5 border-b border-slate-200 flex justify-between items-center text-[11px] text-slate-500">
+                    <span class="font-medium">Espacio de Características $\mathbb{R}^2$</span>
+                    <span>Arrastrar puntos o doble clic para añadir/eliminar.</span>
+                </div>
+                <div class="flex-1 relative bg-white" id="canvas-container">
+                    <canvas id="scatter-canvas" class="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Panel Derecho: Dendrograma y Control de Umbral (5/12 col) -->
+        <section class="lg:col-span-5 flex flex-col gap-4">
+            
+            <!-- Control de Umbral de Corte -->
+            <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                            <i data-lucide="scissors" class="text-indigo-600 w-3.5 h-3.5"></i>
+                            Umbral de Dispersión / Corte
+                        </h3>
+                        <span id="threshold-display" class="font-mono text-xs font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded">
+                            d = 50.00
+                        </span>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <input type="range" id="threshold-slider" min="1" max="1000" value="250" class="flex-1 accent-indigo-600 bg-slate-200 rounded-lg h-1.5 cursor-pointer">
+                    </div>
+                    <div class="flex justify-between items-center text-[10px] text-slate-400 mt-1.5">
+                        <span>Fusión de Hojas (0)</span>
+                        <span>Corte Raíz Máxima</span>
+                    </div>
+                </div>
+
+                <!-- Estadísticas de la Taxonomía -->
+                <div class="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-slate-100 text-center text-[11px]">
+                    <div class="bg-slate-50 p-2 rounded border border-slate-100">
+                        <span class="text-slate-400 block font-semibold">Grupos Identificados</span>
+                        <span id="stat-clusters" class="text-base font-bold text-indigo-600">1</span>
+                    </div>
+                    <div class="bg-slate-50 p-2 rounded border border-slate-100">
+                        <span class="text-slate-400 block font-semibold">Total de Muestras</span>
+                        <span id="stat-points" class="text-base font-bold text-slate-700">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel de Visualización del Dendrograma -->
+            <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col flex-1 min-h-[300px]">
+                <div class="border-b border-slate-100 pb-2 mb-3">
+                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                        <i data-lucide="git-branch" class="text-indigo-600 w-4 h-4"></i>
+                        Dendrograma Taxonómico
+                    </h3>
+                </div>
+                <!-- Canvas para graficar el árbol jerárquico -->
+                <div class="flex-1 relative bg-slate-50 border border-slate-100 rounded-lg overflow-hidden" id="dendro-container">
+                    <canvas id="dendrogram-canvas" class="absolute inset-0 w-full h-full"></canvas>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 text-center py-3 text-[11px] text-slate-500 mt-auto">
+        Interactive technical note on hierarchical clustering and linkage decisions.
+    </footer>
+
+    <script>
+        lucide.createIcons();
+
+        // Controladores de Elementos
+        const scatterCanvas = document.getElementById('scatter-canvas');
+        const sCtx = scatterCanvas.getContext('2d');
+        const dendroCanvas = document.getElementById('dendrogram-canvas');
+        const dCtx = dendroCanvas.getContext('2d');
+
+        const thresholdSlider = document.getElementById('threshold-slider');
+        const thresholdDisplay = document.getElementById('threshold-display');
+        const linkageSelect = document.getElementById('linkage-select');
+        const canvasContainer = document.getElementById('canvas-container');
+        const dendroContainer = document.getElementById('dendro-container');
+
+        const btnReset = document.getElementById('btn-reset');
+        const btnAdd = document.getElementById('btn-add');
+
+        const statClusters = document.getElementById('stat-clusters');
+        const statPoints = document.getElementById('stat-points');
+
+        // Estado del Sistema
+        let points = [];
+        let dragIdx = -1;
+        let rootNode = null; // Nodo raíz del árbol de jerarquía
+        let leavesOrdered = []; // Hojas en orden secuencial para el eje X
+        let thresholdVal = 150;
+        let maxDistance = 1;
+        let clusterAssignments = {}; // Map: Point Index -> Cluster Color Index
+
+        // Colores de los grupos recortados
+        const clusterColors = [
+            '#4f46e5', // Indigo
+            '#db2777', // Rosa
+            '#d97706', // Ambar
+            '#16a34a', // Verde
+            '#0891b2', // Cyan
+            '#7c3aed', // Violeta
+            '#ea580c', // Naranja
+            '#0284c7', // Celeste
+            '#2563eb', // Azul
+            '#475569'  // Gris (para contingencias)
+        ];
+
+        // Redimensionar áreas de dibujo
+        function resizeCanvases() {
+            scatterCanvas.width = canvasContainer.clientWidth;
+            scatterCanvas.height = canvasContainer.clientHeight;
+
+            dendroCanvas.width = dendroContainer.clientWidth;
+            dendroCanvas.height = dendroContainer.clientHeight;
+
+            recomputeAll();
+        }
+        window.addEventListener('resize', resizeCanvases);
+
+        // Definición de puntos por escenarios
+        function loadScenario(type) {
+            const w = scatterCanvas.width || 600;
+            const h = scatterCanvas.height || 420;
+            points = [];
+
+            if (type === 'clusters') {
+                const centers = [
+                    { x: w * 0.25, y: h * 0.35 },
+                    { x: w * 0.75, y: h * 0.35 },
+                    { x: w * 0.5, y: h * 0.75 }
+                ];
+                centers.forEach((c) => {
+                    for (let i = 0; i < 5; i++) {
+                        points.push({
+                            x: c.x + (Math.random() - 0.5) * 50,
+                            y: c.y + (Math.random() - 0.5) * 50
+                        });
+                    }
+                });
+            } else if (type === 'lineal') {
+                // Puntos distribuidos en cadena con distancias secuenciales pequeñas
+                for (let i = 0; i < 15; i++) {
+                    points.push({
+                        x: w * 0.15 + (i * w * 0.05) + (Math.random() - 0.5) * 10,
+                        y: h * 0.5 + (Math.sin(i * 0.8) * 40)
+                    });
+                }
+            } else {
+                // Conjunto aleatorio predeterminado de muestra pequeña
+                for (let i = 0; i < 12; i++) {
+                    points.push({
+                        x: w * 0.2 + Math.random() * w * 0.6,
+                        y: h * 0.2 + Math.random() * h * 0.6
+                    });
+                }
+            }
+
+            recomputeAll();
+        }
+
+        // --- MOTOR DE CLUSTERING JERÁRQUICO AGLOMERATIVO ---
+
+        function calculateDistance(p1, p2) {
+            return Math.hypot(p1.x - p2.x, p1.y - p2.y);
+        }
+
+        function runHierarchicalClustering() {
+            const N = points.length;
+            if (N === 0) {
+                rootNode = null;
+                leavesOrdered = [];
+                maxDistance = 1;
+                return;
+            }
+
+            // Inicializar cada punto como un nodo de árbol de un solo elemento (Hoja)
+            let nodes = points.map((p, idx) => ({
+                id: idx,
+                leafId: idx,
+                isLeaf: true,
+                height: 0,
+                elements: [idx],
+                points: [p],
+                label: `P_${idx + 1}`
+            }));
+
+            // Encontrar la matriz de distancias para mantener los criterios de fusión
+            let nextNodeId = N;
+
+            while (nodes.length > 1) {
+                let minDistance = Infinity;
+                let mergeI = -1;
+                let mergeJ = -1;
+
+                const linkage = linkageSelect.value;
+
+                // Buscar los dos clusters con distancia de enlace mínima
+                for (let i = 0; i < nodes.length; i++) {
+                    for (let j = i + 1; j < nodes.length; j++) {
+                        let d = 0;
+
+                        if (linkage === 'single') {
+                            // Enlace mínimo (Single Linkage)
+                            d = Infinity;
+                            for (let ei of nodes[i].elements) {
+                                for (let ej of nodes[j].elements) {
+                                    const dist = calculateDistance(points[ei], points[ej]);
+                                    if (dist < d) d = dist;
+                                }
+                            }
+                        } else if (linkage === 'complete') {
+                            // Enlace máximo (Complete Linkage)
+                            d = -Infinity;
+                            for (let ei of nodes[i].elements) {
+                                for (let ej of nodes[j].elements) {
+                                    const dist = calculateDistance(points[ei], points[ej]);
+                                    if (dist > d) d = dist;
+                                }
+                            }
+                        } else {
+                            // Enlace promedio (Average Linkage / UPGMA) - Predeterminado
+                            let sumDist = 0;
+                            for (let ei of nodes[i].elements) {
+                                for (let ej of nodes[j].elements) {
+                                    sumDist += calculateDistance(points[ei], points[ej]);
+                                }
+                            }
+                            d = sumDist / (nodes[i].elements.length * nodes[j].elements.length);
+                        }
+
+                        if (d < minDistance) {
+                            minDistance = d;
+                            mergeI = i;
+                            mergeJ = j;
+                        }
+                    }
+                }
+
+                if (mergeI === -1) break;
+
+                // Combinar nodos i y j
+                const nodeA = nodes[mergeI];
+                const nodeB = nodes[mergeJ];
+
+                const mergedNode = {
+                    id: nextNodeId++,
+                    isLeaf: false,
+                    left: nodeA,
+                    right: nodeB,
+                    height: minDistance,
+                    elements: [...nodeA.elements, ...nodeB.elements]
+                };
+
+                // Remover los antiguos y agregar el fusionado
+                nodes = nodes.filter((n, idx) => idx !== mergeI && idx !== mergeJ);
+                nodes.push(mergedNode);
+            }
+
+            rootNode = nodes[0];
+            maxDistance = rootNode ? rootNode.height : 1;
+            if (maxDistance <= 0) maxDistance = 1;
+
+            // Establecer el orden secuencial de hojas mediante recorrido DFS para evitar cruces
+            leavesOrdered = [];
+            function traverseLeaves(node) {
+                if (!node) return;
+                if (node.isLeaf) {
+                    leavesOrdered.push(node);
+                } else {
+                    traverseLeaves(node.left);
+                    traverseLeaves(node.right);
+                }
+            }
+            traverseLeaves(rootNode);
+        }
+
+        // --- ASIGNACIÓN DE COLOR SEGÚN EL CORTE EN EL UMBRAL ---
+
+        function assignClusterColors() {
+            clusterAssignments = {};
+            if (!rootNode) return;
+
+            let currentClusterIdx = 0;
+
+            // Recorrido DFS para etiquetar clusters según el umbral
+            function cutTree(node, clusterColorIdx) {
+                if (!node) return;
+
+                // Si la distancia de fusión de este nodo es menor o igual al umbral,
+                // todo el subárbol pertenece a este grupo y toma el color actual.
+                if (node.height <= thresholdVal) {
+                    // Si ya tenía asignado un color válido, mantenerlo, de lo contrario asignar uno nuevo.
+                    let assignedColorIdx = clusterColorIdx;
+                    if (assignedColorIdx === -1) {
+                        assignedColorIdx = currentClusterIdx % clusterColors.length;
+                        currentClusterIdx++;
+                    }
+                    
+                    // Asignar el color a todos los descendientes hojas
+                    node.elements.forEach(ptIdx => {
+                        clusterAssignments[ptIdx] = assignedColorIdx;
+                    });
+                    
+                    // Guardar el id del cluster en el nodo para el render del dendrograma
+                    node.clusterColorIdx = assignedColorIdx;
+                    setSubtreeColor(node, assignedColorIdx);
+                } else {
+                    // Si está por encima del umbral, romper y continuar hacia abajo de manera independiente
+                    node.clusterColorIdx = -1; // Nodo por encima del nivel de corte (sin color unificado)
+                    
+                    cutTree(node.left, -1);
+                    cutTree(node.right, -1);
+                }
+            }
+
+            function setSubtreeColor(node, colorIdx) {
+                if (!node) return;
+                node.clusterColorIdx = colorIdx;
+                if (!node.isLeaf) {
+                    setSubtreeColor(node.left, colorIdx);
+                    setSubtreeColor(node.right, colorIdx);
+                }
+            }
+
+            cutTree(rootNode, -1);
+            
+            // Forzar que cualquier punto residual (si lo hay) tome un cluster index por defecto
+            points.forEach((_, idx) => {
+                if (clusterAssignments[idx] === undefined) {
+                    clusterAssignments[idx] = 0;
+                }
+            });
+
+            // Actualizar estadísticas en panel
+            statClusters.innerText = currentClusterIdx || 1;
+        }
+
+        // --- RENDERIZADO VISUAL ---
+
+        // Panel izquierdo: Espacio métrico con puntos y elipsoides de grupo
+        function drawScatterPlot() {
+            sCtx.clearRect(0, 0, scatterCanvas.width, scatterCanvas.height);
+
+            // Dibujar líneas de cuadrícula técnica
+            sCtx.strokeStyle = '#f1f5f9';
+            sCtx.lineWidth = 1;
+            const step = 40;
+            for (let x = 0; x < scatterCanvas.width; x += step) {
+                sCtx.beginPath(); sCtx.moveTo(x, 0); sCtx.lineTo(x, scatterCanvas.height); sCtx.stroke();
+            }
+            for (let y = 0; y < scatterCanvas.height; y += step) {
+                sCtx.beginPath(); sCtx.moveTo(0, y); sCtx.lineTo(scatterCanvas.width, y); sCtx.stroke();
+            }
+
+            // Agrupar puntos por su asignación actual para dibujar sus envolventes/centroides
+            const groups = {};
+            points.forEach((p, idx) => {
+                const cIdx = clusterAssignments[idx];
+                if (!groups[cIdx]) groups[cIdx] = [];
+                groups[cIdx].push(p);
+            });
+
+            // Dibujar sutilmente el centroide y radio de dispersión de cada subgrupo
+            Object.keys(groups).forEach(cIdx => {
+                const grpPoints = groups[cIdx];
+                if (grpPoints.length >= 2) {
+                    let cx = 0, cy = 0;
+                    grpPoints.forEach(p => { cx += p.x; cy += p.y; });
+                    cx /= grpPoints.length;
+                    cy /= grpPoints.length;
+
+                    // Encontrar radio máximo para envolvente circular
+                    let maxR = 0;
+                    grpPoints.forEach(p => {
+                        const d = Math.hypot(p.x - cx, p.y - cy);
+                        if (d > maxR) maxR = d;
+                    });
+
+                    // Dibujar área de cobertura difusa
+                    sCtx.save();
+                    sCtx.beginPath();
+                    sCtx.arc(cx, cy, maxR + 15, 0, 2 * Math.PI);
+                    sCtx.fillStyle = clusterColors[cIdx % clusterColors.length] + '0a'; // Opacidad muy baja
+                    sCtx.fill();
+                    sCtx.strokeStyle = clusterColors[cIdx % clusterColors.length] + '20'; // Opacidad baja
+                    sCtx.lineWidth = 1;
+                    sCtx.setLineDash([4, 4]);
+                    sCtx.stroke();
+                    sCtx.restore();
+                }
+            });
+
+            // Dibujar los puntos individuales de manera nítida
+            points.forEach((p, idx) => {
+                const cIdx = clusterAssignments[idx];
+                const color = clusterColors[cIdx % clusterColors.length];
+
+                sCtx.save();
+                sCtx.beginPath();
+                sCtx.arc(p.x, p.y, 6.5, 0, 2 * Math.PI);
+                sCtx.fillStyle = color;
+                sCtx.shadowColor = 'rgba(0,0,0,0.15)';
+                sCtx.shadowBlur = 4;
+                sCtx.fill();
+
+                sCtx.lineWidth = 1.5;
+                sCtx.strokeStyle = '#ffffff';
+                sCtx.shadowBlur = 0;
+                sCtx.stroke();
+
+                // Etiqueta formal
+                sCtx.fillStyle = '#64748b';
+                sCtx.font = 'bold 9px monospace';
+                sCtx.fillText(`P${idx + 1}`, p.x + 9, p.y - 4);
+                sCtx.restore();
+            });
+        }
+
+        // Panel derecho: Dibujo dinámico y recursivo de dendrograma
+        function drawDendrogram() {
+            dCtx.clearRect(0, 0, dendroCanvas.width, dendroCanvas.height);
+            if (!rootNode || leavesOrdered.length === 0) return;
+
+            const w = dendroCanvas.width;
+            const h = dendroCanvas.height;
+
+            const paddingLeft = 35;
+            const paddingRight = 20;
+            const paddingTop = 25;
+            const paddingBottom = 30;
+
+            const usableW = w - paddingLeft - paddingRight;
+            const usableH = h - paddingTop - paddingBottom;
+
+            // Guardar coordenadas de dibujado mapeadas para cada ID de nodo
+            const nodeCoords = {};
+
+            // 1. Asignar X a cada hoja de forma secuencial según el orden DFS
+            leavesOrdered.forEach((leaf, idx) => {
+                const x = paddingLeft + (idx * usableW) / (leavesOrdered.length - 1 || 1);
+                const y = h - paddingBottom;
+                nodeCoords[leaf.id] = { x, y };
+
+                // Dibujar etiqueta de la hoja
+                dCtx.save();
+                dCtx.fillStyle = '#475569';
+                dCtx.font = 'bold 9px monospace';
+                dCtx.textAlign = 'center';
+                dCtx.fillText(`P${leaf.leafId + 1}`, x, y + 14);
+                dCtx.restore();
+            });
+
+            // 2. Función recursiva para calcular las coordenadas y dibujar las conexiones
+            function renderNodeConnections(node) {
+                if (node.isLeaf) return nodeCoords[node.id];
+
+                // Renderizar descendientes primero
+                const coordLeft = renderNodeConnections(node.left);
+                const coordRight = renderNodeConnections(node.right);
+
+                // La coordenada X es el centro de sus dos hijos directos
+                const x = (coordLeft.x + coordRight.x) / 2;
+                
+                // Mapear la altura (distancia de fusión) de forma lineal e inversa al eje Y
+                const y = h - paddingBottom - (node.height / maxDistance) * usableH;
+
+                nodeCoords[node.id] = { x, y };
+
+                // Determinar el color de este segmento de línea
+                let strokeColor = '#cbd5e1'; // Gris por encima del umbral
+                let lineWidth = 1.5;
+
+                if (node.clusterColorIdx !== -1) {
+                    strokeColor = clusterColors[node.clusterColorIdx % clusterColors.length];
+                    lineWidth = 2.2;
+                }
+
+                // Trazar conexión lateral izquierda: vertical desde hijo izquierdo hasta y, luego horizontal
+                dCtx.beginPath();
+                dCtx.strokeStyle = strokeColor;
+                dCtx.lineWidth = lineWidth;
+                
+                dCtx.moveTo(coordLeft.x, coordLeft.y);
+                dCtx.lineTo(coordLeft.x, y); // Línea vertical izquierda
+                dCtx.lineTo(x, y);           // Mitad horizontal izquierda
+                dCtx.stroke();
+
+                // Trazar conexión lateral derecha: vertical desde hijo derecho hasta y, luego horizontal
+                dCtx.beginPath();
+                dCtx.moveTo(coordRight.x, coordRight.y);
+                dCtx.lineTo(coordRight.x, y); // Línea vertical derecha
+                dCtx.lineTo(x, y);            // Mitad horizontal derecha
+                dCtx.stroke();
+
+                return { x, y };
+            }
+
+            renderNodeConnections(rootNode);
+
+            // 3. Dibujar la línea de umbral móvil (Corte horizontal)
+            const thresholdY = h - paddingBottom - (thresholdVal / maxDistance) * usableH;
+            
+            dCtx.save();
+            dCtx.beginPath();
+            dCtx.setLineDash([5, 3]);
+            dCtx.strokeStyle = '#e11d48'; // Rosa intenso
+            dCtx.lineWidth = 1.8;
+            dCtx.moveTo(paddingLeft - 5, thresholdY);
+            dCtx.lineTo(w - paddingRight + 5, thresholdY);
+            dCtx.stroke();
+
+            // Etiqueta de la línea de corte
+            dCtx.fillStyle = '#e11d48';
+            dCtx.font = 'bold 9px sans-serif';
+            dCtx.fillText("CORTE", paddingLeft - 5, thresholdY - 5);
+            dCtx.restore();
+
+            // 4. Eje Y de distancias de enlace (Rigor formal)
+            dCtx.save();
+            dCtx.strokeStyle = '#94a3b8';
+            dCtx.lineWidth = 1;
+            dCtx.beginPath();
+            dCtx.moveTo(paddingLeft - 10, paddingTop);
+            dCtx.lineTo(paddingLeft - 10, h - paddingBottom);
+            dCtx.stroke();
+
+            // Divisiones y escala numérica del eje
+            const ticks = 4;
+            dCtx.fillStyle = '#64748b';
+            dCtx.font = '8px monospace';
+            dCtx.textAlign = 'right';
+            for (let i = 0; i <= ticks; i++) {
+                const val = (i / ticks) * maxDistance;
+                const ty = h - paddingBottom - (val / maxDistance) * usableH;
+                
+                dCtx.beginPath();
+                dCtx.moveTo(paddingLeft - 14, ty);
+                dCtx.lineTo(paddingLeft - 10, ty);
+                dCtx.stroke();
+
+                dCtx.fillText(val.toFixed(0), paddingLeft - 18, ty + 3);
+            }
+            dCtx.restore();
+        }
+
+        // --- SISTEMATIZACIÓN DE CÁLCULO Y EVENTOS ---
+
+        function recomputeAll() {
+            statPoints.innerText = points.length;
+
+            // Recalcular jerarquía estructural
+            runHierarchicalClustering();
+
+            // Ajustar dinámicamente el deslizador al tamaño de dispersión máximo del nuevo conjunto
+            const sVal = parseFloat(thresholdSlider.value);
+            const sMax = parseFloat(thresholdSlider.max);
+            
+            // Mapear el umbral absoluto según el valor normalizado del deslizador
+            thresholdVal = (sVal / sMax) * maxDistance;
+            thresholdDisplay.innerText = `d = ${thresholdVal.toFixed(2)}`;
+
+            // Asignar nuevos subclusters basados en el corte
+            assignClusterColors();
+
+            // Dibujar ambas representaciones
+            drawScatterPlot();
+            drawDendrogram();
+        }
+
+        // Control de umbral en tiempo real
+        thresholdSlider.addEventListener('input', (e) => {
+            const sVal = parseFloat(e.target.value);
+            const sMax = parseFloat(e.target.max);
+            thresholdVal = (sVal / sMax) * maxDistance;
+            thresholdDisplay.innerText = `d = ${thresholdVal.toFixed(2)}`;
+            
+            assignClusterColors();
+            drawScatterPlot();
+            drawDendrogram();
+        });
+
+        linkageSelect.addEventListener('change', recomputeAll);
+
+        // --- MANEJO DE EVENTOS DE ENTRADA (RATÓN Y GESTOS TÁCTILES) ---
+
+        function getPointAt(x, y) {
+            for (let i = 0; i < points.length; i++) {
+                if (Math.hypot(points[i].x - x, points[i].y - y) < 9) return i;
+            }
+            return -1;
+        }
+
+        scatterCanvas.addEventListener('mousedown', (e) => {
+            const rect = scatterCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            dragIdx = getPointAt(x, y);
+        });
+
+        scatterCanvas.addEventListener('mousemove', (e) => {
+            if (dragIdx !== -1) {
+                const rect = scatterCanvas.getBoundingClientRect();
+                points[dragIdx].x = Math.max(10, Math.min(scatterCanvas.width - 10, e.clientX - rect.left));
+                points[dragIdx].y = Math.max(10, Math.min(scatterCanvas.height - 10, e.clientY - rect.top));
+                recomputeAll();
+            }
+        });
+
+        window.addEventListener('mouseup', () => { dragIdx = -1; });
+
+        // Añadir o eliminar muestras por doble clic
+        scatterCanvas.addEventListener('dblclick', (e) => {
+            const rect = scatterCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const clickIdx = getPointAt(x, y);
+
+            if (clickIdx !== -1) {
+                points.splice(clickIdx, 1);
+            } else {
+                if (points.length < 35) { // Límite pedagógico para evitar saturar el dendrograma
+                    points.push({ x, y });
+                }
+            }
+            recomputeAll();
+        });
+
+        // Soporte táctil (Mobile Compatibility)
+        scatterCanvas.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                const rect = scatterCanvas.getBoundingClientRect();
+                const x = e.touches[0].clientX - rect.left;
+                const y = e.touches[0].clientY - rect.top;
+                dragIdx = getPointAt(x, y);
+            }
+        }, { passive: true });
+
+        scatterCanvas.addEventListener('touchmove', (e) => {
+            if (dragIdx !== -1 && e.touches.length === 1) {
+                const rect = scatterCanvas.getBoundingClientRect();
+                points[dragIdx].x = Math.max(10, Math.min(scatterCanvas.width - 10, e.touches[0].clientX - rect.left));
+                points[dragIdx].y = Math.max(10, Math.min(scatterCanvas.height - 10, e.touches[0].clientY - rect.top));
+                recomputeAll();
+            }
+        }, { passive: true });
+
+        scatterCanvas.addEventListener('touchend', () => { dragIdx = -1; });
+
+        // Control de botones de acción
+        btnReset.addEventListener('click', () => { loadScenario('default'); });
+        
+        btnAdd.addEventListener('click', () => {
+            const w = scatterCanvas.width;
+            const h = scatterCanvas.height;
+            // Generar un pequeño conjunto local para simular la aparición de un nuevo cluster
+            const cx = w * 0.25 + Math.random() * w * 0.5;
+            const cy = h * 0.25 + Math.random() * h * 0.5;
+            for (let i = 0; i < 3; i++) {
+                if (points.length < 35) {
+                    points.push({
+                        x: cx + (Math.random() - 0.5) * 40,
+                        y: cy + (Math.random() - 0.5) * 40
+                    });
+                }
+            }
+            recomputeAll();
+        });
+
+        // Carga inicial al cargar el documento
+        window.onload = () => {
+            resizeCanvases();
+            loadScenario('clusters');
+        };
+    </script>
+</body>
+</html>
