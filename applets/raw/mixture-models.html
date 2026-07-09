@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EM Algorithm - 2D GMM Visualizer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #f8fafc; font-family: 'Inter', sans-serif; height: 100vh; margin: 0; overflow: hidden; }
+        
+        /* Layout de dos columnas */
+        .app-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            height: 100vh;
+            gap: 1rem;
+            padding: 1rem;
+        }
+
+        /* Celdas mini de input: máx ~6 caracteres */
+        .input-mini { 
+            width: 4rem; 
+            padding: 2px 4px; 
+            border-radius: 4px; 
+            border: 1px solid #cbd5e1; 
+            font-size: 0.75rem; 
+            font-family: monospace; 
+            text-align: center; 
+        }
+
+        label { 
+            font-size: 0.55rem; 
+            font-weight: 800; 
+            color: #64748b; 
+            text-transform: uppercase; 
+            display: block; 
+            margin-bottom: 2px;
+        }
+
+        canvas {
+            max-width: 95%;
+            max-height: 95%;
+            cursor: crosshair;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Columna 1: Controles -->
+        <aside class="bg-white border border-slate-200 rounded-xl p-5 flex flex-col gap-4 shadow-sm overflow-y-auto">
+            <div>
+                <h1 class="text-xl font-black text-slate-800 leading-none">EM 2D</h1>
+                <p class="text-[0.65rem] text-slate-400 font-bold mt-1 uppercase tracking-tighter">Gaussian Mixture Model</p>
+            </div>
+
+            <!-- Parámetros de Generación -->
+            <div class="space-y-4">
+                <div class="flex gap-2">
+                    <div class="flex-1">
+                        <label>Puntos</label>
+                        <input type="number" id="numPoints" value="400" class="input-mini w-full">
+                    </div>
+                    <div class="flex-1">
+                        <label>Peso π₁</label>
+                        <input type="number" id="weightNum" value="0.5" step="0.05" class="input-mini w-full">
+                    </div>
+                </div>
+
+                <!-- Configuración Gaussiana 1 -->
+                <div class="p-3 bg-blue-50/50 rounded-lg border border-blue-100">
+                    <span class="text-[0.65rem] font-black text-blue-600 block mb-2 uppercase">G1 (Datos: ●)</span>
+                    <div class="flex justify-between gap-1">
+                        <div><label>µX</label><input type="number" id="m1x" value="200" class="input-mini"></div>
+                        <div><label>µY</label><input type="number" id="m1y" value="200" class="input-mini"></div>
+                        <div><label>Var</label><input type="number" id="v1" value="35" class="input-mini"></div>
+                    </div>
+                </div>
+
+                <!-- Configuración Gaussiana 2 -->
+                <div class="p-3 bg-indigo-50/50 rounded-lg border border-indigo-100">
+                    <span class="text-[0.65rem] font-black text-indigo-600 block mb-2 uppercase">G2 (Datos: □)</span>
+                    <div class="flex justify-between gap-1">
+                        <div><label>µX</label><input type="number" id="m2x" value="400" class="input-mini"></div>
+                        <div><label>µY</label><input type="number" id="m2y" value="350" class="input-mini"></div>
+                        <div><label>Var</label><input type="number" id="v2" value="50" class="input-mini"></div>
+                    </div>
+                </div>
+
+                <button id="btnGenerate" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg transition text-xs uppercase shadow-sm">
+                    Generar Datos
+                </button>
+            </div>
+
+            <!-- Ejecución del Algoritmo -->
+            <div class="mt-auto pt-4 border-t border-slate-100 space-y-3">
+                <div class="flex gap-2">
+                    <button id="btnInit" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 rounded-lg border border-slate-200 transition text-xs uppercase">
+                        Reset
+                    </button>
+                    <button id="btnStep" class="flex-[2] bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 rounded-lg shadow-md transition text-xs uppercase">
+                        Paso EM
+                    </button>
+                </div>
+                
+                <div class="bg-slate-900 text-white p-3 rounded-lg flex justify-between items-center">
+                    <span class="text-[0.6rem] font-bold text-slate-400 uppercase tracking-widest">Iteración</span>
+                    <span id="iterCount" class="text-xl font-mono text-amber-400">0</span>
+                </div>
+            </div>
+
+            <!-- Leyenda -->
+            <div class="text-[0.6rem] text-slate-400 space-y-1.5 mt-2">
+                <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-slate-400"></span> Datos G1 (Real)</div>
+                <div class="flex items-center gap-2"><span class="w-2 h-2 border border-slate-400"></span> Datos G2 (Real)</div>
+                <div class="flex items-center gap-2 font-bold text-slate-900"><span class="text-xs">+</span> Centro Verdadero</div>
+                <div class="flex items-center gap-2 text-slate-600"><span class="w-2.5 h-2.5 border border-black rounded-full"></span> Est. Actual G1</div>
+                <div class="flex items-center gap-2 text-slate-600"><span class="w-2.5 h-2.5 border border-black"></span> Est. Actual G2</div>
+            </div>
+        </aside>
+
+        <!-- Columna 2: Área del Gráfico -->
+        <main class="bg-white border border-slate-200 rounded-xl relative flex items-center justify-center shadow-lg overflow-hidden">
+            <canvas id="plotCanvas" width="850" height="650"></canvas>
+            
+            <!-- Cabecera Flotante -->
+            <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm border border-slate-200 px-3 py-1.5 rounded-full shadow-sm flex gap-4 text-[0.65rem] font-bold">
+                <span class="text-red-500">◯ Elipse EM G1</span>
+                <span class="text-blue-500">◯ Elipse EM G2</span>
+                <span class="text-slate-900 font-black">+ Centro Real</span>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('plotCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let points = []; 
+        let trueParams = {};
+        let emParams = {};
+        let iteration = 0;
+        let responsibilities = [];
+
+        document.getElementById('btnGenerate').onclick = generateData;
+        document.getElementById('btnInit').onclick = initEM;
+        document.getElementById('btnStep').onclick = stepEM;
+
+        canvas.onclick = (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+            emParams.m1 = { x: x - 50, y: y - 50 };
+            emParams.m2 = { x: x + 50, y: y + 50 };
+            iteration = 0;
+            responsibilities = [];
+            updateUI();
+            draw();
+        };
+
+        function gaussianRandom(mean, sigma) {
+            let u = 0, v = 0;
+            while(u === 0) u = Math.random();
+            while(v === 0) v = Math.random();
+            const z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+            return z * sigma + mean;
+        }
+
+        function generateData() {
+            points = [];
+            responsibilities = [];
+            iteration = 0;
+
+            const n = parseInt(document.getElementById('numPoints').value) || 400;
+            const w1 = parseFloat(document.getElementById('weightNum').value) || 0.5;
+            
+            trueParams = {
+                m1: { x: parseFloat(document.getElementById('m1x').value) || 200, y: parseFloat(document.getElementById('m1y').value) || 200 },
+                m2: { x: parseFloat(document.getElementById('m2x').value) || 400, y: parseFloat(document.getElementById('m2y').value) || 350 },
+                v1: parseFloat(document.getElementById('v1').value) || 35,
+                v2: parseFloat(document.getElementById('v2').value) || 50,
+                w1: w1
+            };
+
+            for (let i = 0; i < n; i++) {
+                const isG1 = Math.random() < w1;
+                points.push({
+                    x: gaussianRandom(isG1 ? trueParams.m1.x : trueParams.m2.x, isG1 ? trueParams.v1 : trueParams.v2),
+                    y: gaussianRandom(isG1 ? trueParams.m1.y : trueParams.m2.y, isG1 ? trueParams.v1 : trueParams.v2),
+                    realOrigin: isG1 ? 0 : 1
+                });
+            }
+            initEM();
+        }
+
+        function initEM() {
+            iteration = 0;
+            responsibilities = [];
+            emParams = {
+                m1: { x: 250, y: 250 },
+                m2: { x: 450, y: 450 },
+                v1: { xx: 5000, yy: 5000, xy: 0 },
+                v2: { xx: 5000, yy: 5000, xy: 0 },
+                w1: 0.5, w2: 0.5
+            };
+            updateUI();
+            draw();
+        }
+
+        function multivariateNormal(x, y, mu, sigma) {
+            const dx = x - mu.x;
+            const dy = y - mu.y;
+            const det = sigma.xx * sigma.yy - sigma.xy * sigma.xy;
+            if (det <= 1e-6) return 0;
+            const inv = { xx: sigma.yy / det, yy: sigma.xx / det, xy: -sigma.xy / det };
+            const quadForm = dx * (dx * inv.xx + dy * inv.xy) + dy * (dx * inv.xy + dy * inv.yy);
+            return (1 / (2 * Math.PI * Math.sqrt(det))) * Math.exp(-0.5 * quadForm);
+        }
+
+        function stepEM() {
+            if (points.length === 0) return;
+
+            // E-STEP
+            responsibilities = points.map(p => {
+                const p1 = multivariateNormal(p.x, p.y, emParams.m1, emParams.v1) * emParams.w1;
+                const p2 = multivariateNormal(p.x, p.y, emParams.m2, emParams.v2) * emParams.w2;
+                const sum = p1 + p2 || 1e-10;
+                return [p1 / sum, p2 / sum];
+            });
+
+            // M-STEP
+            let n1 = 0, n2 = 0;
+            let m1 = {x: 0, y: 0}, m2 = {x: 0, y: 0};
+            responsibilities.forEach((r, i) => {
+                n1 += r[0]; n2 += r[1];
+                m1.x += r[0] * points[i].x; m1.y += r[0] * points[i].y;
+                m2.x += r[1] * points[i].x; m2.y += r[1] * points[i].y;
+            });
+
+            if (n1 > 0.01) emParams.m1 = { x: m1.x / n1, y: m1.y / n1 };
+            if (n2 > 0.01) emParams.m2 = { x: m2.x / n2, y: m2.y / n2 };
+
+            let v1 = {xx: 0, yy: 0, xy: 0}, v2 = {xx: 0, yy: 0, xy: 0};
+            responsibilities.forEach((r, i) => {
+                const dx1 = points[i].x - emParams.m1.x;
+                const dy1 = points[i].y - emParams.m1.y;
+                v1.xx += r[0] * dx1 * dx1; v1.yy += r[0] * dy1 * dy1; v1.xy += r[0] * dx1 * dy1;
+                const dx2 = points[i].x - emParams.m2.x;
+                const dy2 = points[i].y - emParams.m2.y;
+                v2.xx += r[1] * dx2 * dx2; v2.yy += r[1] * dy2 * dy2; v2.xy += r[1] * dx2 * dy2;
+            });
+
+            if (n1 > 1) emParams.v1 = { xx: v1.xx / n1, yy: v1.yy / n1, xy: v1.xy / n1 };
+            if (n2 > 1) emParams.v2 = { xx: v2.xx / n2, yy: v2.yy / n2, xy: v2.xy / n2 };
+            emParams.w1 = n1 / points.length;
+            emParams.w2 = n2 / points.length;
+
+            iteration++;
+            updateUI();
+            draw();
+        }
+
+        function updateUI() {
+            document.getElementById('iterCount').textContent = iteration;
+        }
+
+        function drawEllipse(mu, sigma, color) {
+            const det = sigma.xx * sigma.yy - sigma.xy * sigma.xy;
+            if (det <= 1e-4) return;
+            const trace = sigma.xx + sigma.yy;
+            const term = Math.sqrt(Math.pow(sigma.xx - sigma.yy, 2) + 4 * Math.pow(sigma.xy, 2));
+            const l1 = (trace + term) / 2;
+            const l2 = (trace - term) / 2;
+            const angle = Math.atan2(l1 - sigma.xx, sigma.xy);
+
+            ctx.beginPath();
+            ctx.strokeStyle = color;
+            ctx.setLineDash([]);
+            ctx.lineWidth = 2.5;
+            ctx.ellipse(mu.x, mu.y, 2 * Math.sqrt(Math.abs(l1)), 2 * Math.sqrt(Math.abs(l2)), angle, 0, 2 * Math.PI);
+            ctx.stroke();
+            
+            // Dibujar icono de centro estimado (NEGRO, VACÍO, GRANDE)
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = 2;
+            if (color === '#ef4444') { // G1
+                ctx.beginPath();
+                ctx.arc(mu.x, mu.y, 6, 0, Math.PI * 2);
+                ctx.stroke();
+            } else { // G2
+                ctx.strokeRect(mu.x - 6, mu.y - 6, 12, 12);
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Dibujo de Puntos
+            points.forEach((p, i) => {
+                ctx.beginPath();
+                let color;
+                if (responsibilities.length > 0) {
+                    const r = responsibilities[i];
+                    color = `rgba(${Math.floor(r[0]*239)}, ${Math.floor(r[1]*59)}, ${Math.floor(r[1]*246 + r[0]*68)}, 0.7)`;
+                } else {
+                    color = '#cbd5e1';
+                }
+
+                if (p.realOrigin === 0) {
+                    ctx.fillStyle = color;
+                    ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
+                    ctx.fill();
+                } else {
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = 1.2;
+                    ctx.strokeRect(p.x - 2.5, p.y - 2.5, 5, 5);
+                }
+            });
+
+            // Centros Verdaderos Originales (+) COLOR NEGRO SÓLIDO
+            if (trueParams.m1) {
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 2; // Un poco más grueso para que destaque
+                [trueParams.m1, trueParams.m2].forEach(m => {
+                    ctx.beginPath();
+                    ctx.moveTo(m.x - 9, m.y); ctx.lineTo(m.x + 9, m.y);
+                    ctx.moveTo(m.x, m.y - 9); ctx.lineTo(m.x, m.y + 9);
+                    ctx.stroke();
+                });
+            }
+
+            // Estimaciones EM actuales
+            drawEllipse(emParams.m1, emParams.v1, '#ef4444');
+            drawEllipse(emParams.m2, emParams.v2, '#3b82f6');
+        }
+
+        window.onload = generateData;
+    </script>
+</body>
+</html>

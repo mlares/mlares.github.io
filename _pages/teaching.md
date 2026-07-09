@@ -35,6 +35,24 @@ author_profile: false
 </section>
 
 <section class="cv-section">
+  <h2>Academic Training</h2>
+  <div class="cv-grid">
+    <article>
+      <h3>PhD in Astronomy</h3>
+      <p>Universidad Nacional de Córdoba, 2003–2009. Thesis: <em>Low-luminosity satellite galaxies</em>. Advisor: Diego García Lambas.</p>
+    </article>
+    <article>
+      <h3>Licenciado in Astronomy</h3>
+      <p>Universidad Nacional de Córdoba, 1997–2003. Thesis: <em>Dynamics of galaxies in groups</em>.</p>
+    </article>
+    <article>
+      <h3>Chemical Technician</h3>
+      <p>Instituto El Obraje, Alta Gracia, Córdoba.</p>
+    </article>
+  </div>
+</section>
+
+<section class="cv-section">
   <h2>Courses</h2>
   <div class="cv-grid cv-grid--links">
     <article>
@@ -53,6 +71,18 @@ author_profile: false
       <h3><a href="https://oac.unc.edu.ar/academicas/seminarios/">Seminar Series</a></h3>
       <p>Co-organizer at the Observatorio Astronomico de Cordoba.</p>
     </article>
+  </div>
+</section>
+
+<section class="cv-section">
+  <h2>Complementary Education</h2>
+  <div class="modern-list compact-list">
+    <p><strong>2022:</strong> DevOps with GitLab, Platzi.</p>
+    <p><strong>2021:</strong> AWSome Day, Amazon.</p>
+    <p><strong>2020:</strong> Ley Micaela training, INAP.</p>
+    <p><strong>2014:</strong> Scientific Programming with Python, Observatorio Astronómico de Córdoba.</p>
+    <p><strong>2010:</strong> High Performance Computing: Models, Methods and Means, Louisiana State University.</p>
+    <p><strong>2000–2008:</strong> postgraduate courses in high-redshift cosmology, statistics and stochastic processes, numerical methods, first structures, quasar absorption lines, and gravitational lensing.</p>
   </div>
 </section>
 
@@ -81,7 +111,8 @@ author_profile: false
   <div class="cv-grid">
     <article>
       <h3>Students</h3>
-      <p>Advisor and mentor for PhD and undergraduate students, including Vanessa Daza Perilla and Federico Davila Kurban.</p>
+      <p>Advisor and mentor for Vanessa Daza Perilla and Federico Dávila Kurbán (PhD), Heliana Luparello (undergraduate thesis), and Bruno Sánchez (research-initiation fellowship).</p>
+      <p>Advisor to CONAE researcher Juan Bautista Cabral and co-advisor to CONAE researcher Laura Baravalle since 2022.</p>
     </article>
     <article>
       <h3>Evaluation</h3>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agreement and Label Quality Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .range-tp { accent-color: #16a34a; }
+        .range-fp { accent-color: #dc2626; }
+        .range-fn { accent-color: #ea580c; }
+        .range-tn { accent-color: #2563eb; }
+        
+        .circle-progress {
+            transition: stroke-dashoffset 0.7s ease-out;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans leading-relaxed">
+
+    <div class="min-h-screen p-4 md:p-8">
+        <header class="max-w-6xl mx-auto mb-8">
+            <h1 class="text-3xl font-bold text-slate-900 flex items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                Agreement and Label Quality Explorer
+            </h1>
+        </header>
+
+        <main class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Panel de Control - Matriz 2x2 -->
+            <div class="lg:col-span-5 flex flex-col gap-6">
+                <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h2 class="text-xl font-semibold mb-4 flex items-center gap-2 text-slate-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-500" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM14 11a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2a2 2 0 012-2h2z" />
+                        </svg>
+                        Matriz de Confusión (Frecuencias)
+                    </h2>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- Celda TP -->
+                        <div class="bg-green-50 p-4 rounded-xl border border-green-100 flex flex-col justify-between">
+                            <label class="block text-[10px] font-bold text-green-700 uppercase mb-2 tracking-wider text-center">Verdaderos Positivos (a)</label>
+                            <div id="val-tp" class="text-3xl font-black text-green-600 text-center mb-2">45</div>
+                            <input type="range" id="input-tp" min="0" max="200" value="45" class="w-full range-tp">
+                        </div>
+
+                        <!-- Celda FP -->
+                        <div class="bg-red-50 p-4 rounded-xl border border-red-100 flex flex-col justify-between">
+                            <label class="block text-[10px] font-bold text-red-700 uppercase mb-2 tracking-wider text-center">Falsos Positivos (b)</label>
+                            <div id="val-fp" class="text-3xl font-black text-red-600 text-center mb-2">5</div>
+                            <input type="range" id="input-fp" min="0" max="200" value="5" class="w-full range-fp">
+                        </div>
+
+                        <!-- Celda FN -->
+                        <div class="bg-orange-50 p-4 rounded-xl border border-orange-100 flex flex-col justify-between">
+                            <label class="block text-[10px] font-bold text-orange-700 uppercase mb-2 tracking-wider text-center">Falsos Negativos (c)</label>
+                            <div id="val-fn" class="text-3xl font-black text-orange-600 text-center mb-2">10</div>
+                            <input type="range" id="input-fn" min="0" max="200" value="10" class="w-full range-fn">
+                        </div>
+
+                        <!-- Celda TN -->
+                        <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 flex flex-col justify-between">
+                            <label class="block text-[10px] font-bold text-blue-700 uppercase mb-2 tracking-wider text-center">Verdaderos Negativos (d)</label>
+                            <div id="val-tn" class="text-3xl font-black text-blue-600 text-center mb-2">40</div>
+                            <input type="range" id="input-tn" min="0" max="200" value="40" class="w-full range-tn">
+                        </div>
+                    </div>
+
+                    <div class="mt-6 flex justify-between items-center bg-slate-100 p-3 rounded-lg border border-slate-200">
+                       <span class="text-sm font-semibold text-slate-600">Tamaño de la Muestra (N):</span>
+                       <span id="total-n" class="text-lg font-mono font-bold text-indigo-600">100</span>
+                    </div>
+                </section>
+
+                <section class="bg-indigo-900 text-white p-6 rounded-2xl shadow-lg border border-indigo-700">
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-300 mb-4">Métricas de Acuerdo</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="p-3 bg-white/10 rounded-lg">
+                            <p class="text-[10px] opacity-70 uppercase mb-1">Po (Observado)</p>
+                            <p id="stat-po" class="text-xl font-bold">0.850</p>
+                        </div>
+                        <div class="p-3 bg-white/10 rounded-lg">
+                            <p class="text-[10px] opacity-70 uppercase mb-1">Pe (Azar)</p>
+                            <p id="stat-pe" class="text-xl font-bold">0.500</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Visualizaciones -->
+            <div class="lg:col-span-7 flex flex-col gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 h-80">
+                        <h3 class="text-lg font-semibold mb-4 text-slate-700">Métricas Comparadas</h3>
+                        <div class="h-64 relative">
+                            <canvas id="metricsChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                        <h3 class="text-lg font-semibold mb-4 text-slate-700">Diagnóstico del Clasificador</h3>
+                        <div id="diagnostics-container" class="space-y-4">
+                            <!-- Inyectado por JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex-1 min-h-[300px]">
+                    <h3 class="text-lg font-semibold mb-4 text-slate-700">Análisis del Espacio de Decisión</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center h-full">
+                        <div class="flex flex-col gap-4">
+                            <div class="p-4 rounded-xl border border-blue-100 bg-blue-50/50">
+                                <h4 class="text-xs font-bold text-blue-600 uppercase mb-2">Compensación por Azar</h4>
+                                <p class="text-sm text-slate-600 leading-relaxed">
+                                    Note que Kappa (<span class="italic font-serif">κ</span>) es siempre menor o igual a la Exactitud. Esta diferencia representa el acuerdo esperado puramente por la distribución de las clases.
+                                </p>
+                            </div>
+                            <div class="p-4 rounded-xl border border-indigo-100 bg-indigo-50/50">
+                                <p class="text-sm text-slate-600 leading-relaxed italic font-serif">
+                                    Al ajustar los valores en la matriz 2x2, observe cómo el indicador circular refleja la concordancia real neta eliminando el efecto del azar.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-center relative">
+                            <div class="relative w-48 h-48 rounded-full flex items-center justify-center">
+                                <svg class="absolute inset-0 w-full h-full" viewBox="0 0 192 192">
+                                    <circle cx="96" cy="96" r="88" fill="none" stroke="#f1f5f9" stroke-width="12" />
+                                    <circle id="kappa-circle" cx="96" cy="96" r="88" fill="none" stroke="#4f46e5" stroke-width="12" 
+                                        stroke-dasharray="552.92" stroke-dashoffset="552.92" stroke-linecap="round" class="circle-progress" />
+                                </svg>
+                                <div class="text-center z-10">
+                                    <div id="kappa-percent" class="text-3xl font-black text-slate-800">0%</div>
+                                    <div class="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Ganancia Real</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="max-w-6xl mx-auto mt-8 pt-6 border-t border-slate-200 text-slate-400 text-sm flex justify-between">
+            <p>Technical note on agreement metrics</p>
+            <p>Interactive Data Science Lab</p>
+        </footer>
+    </div>
+
+    <script>
+        const inputs = {
+            tp: document.getElementById('input-tp'),
+            fp: document.getElementById('input-fp'),
+            fn: document.getElementById('input-fn'),
+            tn: document.getElementById('input-tn')
+        };
+
+        const displays = {
+            tp: document.getElementById('val-tp'),
+            fp: document.getElementById('val-fp'),
+            fn: document.getElementById('val-fn'),
+            tn: document.getElementById('val-tn'),
+            total: document.getElementById('total-n'),
+            po: document.getElementById('stat-po'),
+            pe: document.getElementById('stat-pe'),
+            kappaCircle: document.getElementById('kappa-circle'),
+            kappaPercent: document.getElementById('kappa-percent'),
+            diagnostics: document.getElementById('diagnostics-container')
+        };
+
+        let myChart;
+
+        function initChart() {
+            const ctx = document.getElementById('metricsChart').getContext('2d');
+            myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Kappa', 'Observado', 'Azar', 'F1-Score'],
+                    datasets: [{
+                        data: [0, 0, 0, 0],
+                        backgroundColor: ['#4f46e5', '#94a3b8', '#94a3b8', '#94a3b8'],
+                        borderRadius: 4,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: true }
+                    },
+                    scales: {
+                        x: { display: false, min: 0, max: 1 },
+                        y: { 
+                            grid: { display: false },
+                            ticks: { font: { size: 12, weight: 'bold' } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function calculateStats() {
+            const tp = parseInt(inputs.tp.value);
+            const fp = parseInt(inputs.fp.value);
+            const fn = parseInt(inputs.fn.value);
+            const tn = parseInt(inputs.tn.value);
+            const N = Math.max(1, tp + fp + fn + tn);
+
+            // Actualizar etiquetas numéricas
+            displays.tp.innerText = tp;
+            displays.fp.innerText = fp;
+            displays.fn.innerText = fn;
+            displays.tn.innerText = tn;
+            displays.total.innerText = N;
+
+            // Métricas base
+            const Po = (tp + tn) / N;
+            const p_ref_si = (tp + fn) / N;
+            const p_ref_no = (fp + tn) / N;
+            const p_eval_si = (tp + fp) / N;
+            const p_eval_no = (fn + tn) / N;
+            const Pe = (p_ref_si * p_eval_si) + (p_ref_no * p_eval_no);
+
+            // Kappa
+            const denominator = 1 - Pe;
+            const kappa = Math.abs(denominator) < 0.0001 ? 1 : (Po - Pe) / denominator;
+
+            // Otras métricas
+            const precision = tp / Math.max(1, tp + fp);
+            const recall = tp / Math.max(1, tp + fn);
+            const f1 = (precision + recall) === 0 ? 0 : 2 * (precision * recall) / (precision + recall);
+            const accuracy = Po;
+
+            // Actualizar visualizaciones secundarias
+            displays.po.innerText = Po.toFixed(3);
+            displays.pe.innerText = Pe.toFixed(3);
+
+            // Gráfico de barras
+            myChart.data.datasets[0].data = [
+                parseFloat(kappa.toFixed(2)), 
+                parseFloat(Po.toFixed(2)), 
+                parseFloat(Pe.toFixed(2)), 
+                parseFloat(f1.toFixed(2))
+            ];
+            myChart.update();
+
+            // Círculo de progreso (Circunferencia = 552.92 aprox para r=88)
+            const circ = 552.92;
+            const normKappa = Math.max(0, Math.min(1, kappa));
+            displays.kappaCircle.style.strokeDashoffset = circ - (normKappa * circ);
+            displays.kappaPercent.innerText = (normKappa * 100).toFixed(0) + "%";
+
+            // Diagnóstico
+            const diagnosticData = [
+                { label: 'Exactitud (Accuracy)', val: accuracy, color: 'bg-green-500' },
+                { label: 'Precisión', val: precision, color: 'bg-blue-500' },
+                { label: 'Sensibilidad (Recall)', val: recall, color: 'bg-orange-500' },
+                { label: 'F1 Score', val: f1, color: 'bg-purple-500' }
+            ];
+
+            displays.diagnostics.innerHTML = diagnosticData.map(m => `
+                <div>
+                    <div class="flex justify-between text-sm mb-1">
+                        <span>${m.label}</span>
+                        <span class="font-bold">${(m.val * 100).toFixed(1)}%</span>
+                    </div>
+                    <div class="w-full bg-slate-100 rounded-full h-2">
+                        <div class="h-2 rounded-full transition-all duration-500 ${m.color}" 
+                             style="width: ${Math.min(100, m.val * 100)}%"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Listeners
+        Object.values(inputs).forEach(input => {
+            input.addEventListener('input', calculateStats);
+        });
+
+        window.onload = () => {
+            initChart();
+            calculateStats();
+        };
+    </script>
+</body>
+</html>

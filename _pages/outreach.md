@@ -34,12 +34,41 @@ author_profile: false
 </section>
 
 <section class="cv-section">
+  <h2>Artificial Intelligence and Industry</h2>
+  <div class="cv-grid">
+    <article>
+      <h3>Synergies in Artificial Intelligence</h3>
+      <p>Organizer of a regional academy-industry event on machine learning, implementation, talent, and business applications, Córdoba, October 2022.</p>
+    </article>
+    <article>
+      <h3>Democratizing AI</h3>
+      <p>Speaker at “Democratizing AI: Tools for a Data-Driven Future,” organized by IThreex Global and H2O.ai, October 2022.</p>
+    </article>
+    <article>
+      <h3>Data mining and visualization</h3>
+      <p>Lead for CONICET high-level technological service ST1497, providing consulting and technical assistance from 2013 to 2016.</p>
+    </article>
+  </div>
+</section>
+
+<section class="cv-section">
   <h2>Media and Public Activities</h2>
   <div class="modern-list">
     <p><strong>Black holes and gravitational waves:</strong> <a href="https://www.youtube.com/watch?v=Dqv-MQRAw5k">Noticias UNSa interview</a>.</p>
     <p><strong>ARCOVID19:</strong> <a href="https://oac.unc.edu.ar/2020/04/04/proyecto-arcovid19-herramientas-para-ayudar-a-entender-y-combatir-el-coronavirus/">El virus de la curiosidad</a>, <a href="https://www.youtube.com/watch?v=zL3g5-NTP0c">Lagarto Show</a>, and <a href="https://www.youtube.com/watch?v=hXUvMZkJpzs">Canal U</a>.</p>
     <p><strong>Search for extraterrestrial life:</strong> Radio Nacional Mendoza, OTHER public conference, OAC, UNCIENCIA, IATE, Scientific American, Catholic Philly, UCANews, Perfil, America Magazine, Catholic News Service, and Agencia Iberoamericana para la difusion de la ciencia y la tecnologia.</p>
+    <p><strong>Communication with extraterrestrial life:</strong> public lecture at the Observatorio Astronómico de Córdoba, July 2022.</p>
     <p><strong>Other activities:</strong> Astroscratchathon, Instituto Villada, FoF Meeting 2018, and Noche de los Museos public talks.</p>
+  </div>
+</section>
+
+<section class="cv-section">
+  <h2>Long-Term Public Service</h2>
+  <div class="modern-list">
+    <p><strong>OAC Extension House:</strong> restoration, exhibition setup, and coordination during 2011–2012.</p>
+    <p><strong>Exhibitions:</strong> Gagarin 50, From Earth to the Universe, and the 140th anniversary of the Observatorio Astronómico de Córdoba.</p>
+    <p><strong>Public astronomy:</strong> Telescopio Itinerante, Proyecto Eratóstenes, public lectures, Noche de los Museos, and guided visits at OAC and Bosque Alegre.</p>
+    <p><strong>Digital communication:</strong> design, development, maintenance, analytics, and content production for the OAC website.</p>
   </div>
 </section>
 

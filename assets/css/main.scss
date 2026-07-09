@@ -150,6 +150,46 @@ body {
   margin-top: 1.4rem;
 }
 
+.profile-nav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.55rem;
+  margin: 0 0 2rem;
+  padding: 0.7rem;
+  border: 1px solid rgba(24, 33, 43, 0.1);
+  background: rgba(251, 252, 251, 0.96);
+  box-shadow: 0 8px 18px rgba(24, 33, 43, 0.06);
+  backdrop-filter: blur(10px);
+}
+
+.profile-nav a {
+  padding: 0.4rem 0.65rem;
+  color: var(--cv-ink);
+  font-family: $sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.profile-nav a:hover,
+.profile-nav a:focus-visible {
+  background: var(--cv-soft);
+  color: var(--cv-accent);
+}
+
+#impact,
+#experience,
+#capabilities,
+#profile,
+#evidence,
+#roles,
+#skills,
+#documents {
+  scroll-margin-top: 5rem;
+}
+
 .cv-band {
   display: grid;
   gap: 1px;
@@ -250,6 +290,81 @@ body {
   grid-column: 2;
 }
 
+.timeline .experience-fold {
+  grid-column: 2;
+}
+
+.experience-fold {
+  color: var(--cv-muted);
+}
+
+.experience-fold summary {
+  width: fit-content;
+  color: var(--cv-accent);
+  cursor: pointer;
+  font-family: $sans-serif;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.experience-fold ul {
+  margin: 0.8rem 0 0;
+}
+
+.role-accordion,
+.skill-groups {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.role-accordion details,
+.skill-groups details {
+  border: 1px solid rgba(24, 33, 43, 0.11);
+  background: #fff;
+  box-shadow: 0 6px 16px rgba(24, 33, 43, 0.05);
+}
+
+.role-accordion summary,
+.skill-groups summary {
+  padding: 0.95rem 1rem;
+  color: var(--cv-ink);
+  cursor: pointer;
+  font-family: $sans-serif;
+  font-weight: 750;
+}
+
+.role-accordion summary:hover,
+.role-accordion summary:focus-visible,
+.skill-groups summary:hover,
+.skill-groups summary:focus-visible {
+  background: var(--cv-soft);
+  color: var(--cv-accent);
+}
+
+.role-accordion summary span,
+.role-accordion summary strong {
+  display: block;
+}
+
+.role-accordion summary span {
+  margin-bottom: 0.2rem;
+  color: var(--cv-accent);
+  font-size: 0.78rem;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+.role-accordion__body,
+.skill-groups details > p {
+  padding: 0 1rem 1rem;
+  color: var(--cv-muted);
+}
+
+.role-accordion__body > :last-child,
+.skill-groups details > p:last-child {
+  margin-bottom: 0;
+}
+
 .project-list {
   display: grid;
   gap: 1.25rem;
@@ -262,6 +377,240 @@ body {
 
 .project-list ul {
   margin-bottom: 0;
+}
+
+.project-card-grid {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+
+.project-card {
+  border-top: 3px solid var(--cv-accent);
+  padding: 1.35rem;
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(24, 33, 43, 0.08);
+}
+
+.project-card:nth-child(2n) {
+  border-top-color: var(--cv-accent-2);
+}
+
+.project-card__header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: start;
+}
+
+.project-card h2,
+.project-card h3 {
+  margin-top: 0;
+  color: var(--cv-ink);
+}
+
+.project-card__subtitle,
+.project-card p {
+  color: var(--cv-muted);
+}
+
+.project-card__visual {
+  min-width: 7rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid rgba(0, 109, 119, 0.18);
+  background: var(--cv-soft);
+  color: var(--cv-accent);
+  font-family: $sans-serif;
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.project-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0.9rem 0;
+}
+
+.project-badges span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.85rem;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid rgba(24, 33, 43, 0.1);
+  background: #f8faf9;
+  color: var(--cv-ink);
+  font-family: $sans-serif;
+  font-size: 0.76rem;
+  font-weight: 750;
+}
+
+.project-highlights {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+  margin: 1rem 0;
+}
+
+.project-highlights span {
+  padding: 0.65rem 0.75rem;
+  border-left: 3px solid var(--cv-accent);
+  background: #f8faf9;
+  color: var(--cv-ink);
+  font-family: $sans-serif;
+  font-size: 0.8rem;
+  font-weight: 750;
+}
+
+.project-card details {
+  margin-top: 0.85rem;
+  color: var(--cv-muted);
+}
+
+.project-card summary {
+  width: fit-content;
+  color: var(--cv-accent);
+  cursor: pointer;
+  font-family: $sans-serif;
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.project-card details ul {
+  margin: 0.75rem 0 0;
+}
+
+.lab-shell {
+  display: grid;
+  grid-template-columns: 16rem minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.lab-sidebar {
+  position: sticky;
+  top: 1rem;
+  max-height: calc(100vh - 2rem);
+  padding: 1rem;
+  overflow-y: auto;
+  border: 1px solid rgba(24, 33, 43, 0.1);
+  background: rgba(251, 252, 251, 0.96);
+  box-shadow: 0 10px 24px rgba(24, 33, 43, 0.07);
+}
+
+.lab-sidebar__home {
+  display: block;
+  margin-bottom: 0.8rem;
+  color: var(--cv-ink);
+  font-family: $sans-serif;
+  font-size: 0.9rem;
+  font-weight: 850;
+}
+
+.lab-sidebar nav {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.lab-sidebar nav a {
+  display: block;
+  padding: 0.55rem 0.65rem;
+  border-left: 3px solid transparent;
+  color: var(--cv-ink);
+  font-family: $sans-serif;
+  font-size: 0.82rem;
+  font-weight: 750;
+  line-height: 1.25;
+}
+
+.lab-sidebar nav a span {
+  display: block;
+  margin-bottom: 0.15rem;
+  color: var(--cv-muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.lab-sidebar nav a:hover,
+.lab-sidebar nav a:focus-visible,
+.lab-sidebar nav a.is-active {
+  border-left-color: var(--cv-accent);
+  background: var(--cv-soft);
+  color: var(--cv-accent);
+}
+
+.lab-detail {
+  min-width: 0;
+}
+
+.lab-detail__hero {
+  margin-bottom: 1.25rem;
+}
+
+.lab-summary,
+.lab-notes {
+  display: grid;
+  gap: 1rem;
+}
+
+.lab-summary {
+  margin-bottom: 1.25rem;
+  padding: 1.2rem;
+  border-top: 3px solid var(--cv-accent);
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(24, 33, 43, 0.08);
+}
+
+.lab-summary h2 {
+  margin-top: 0;
+}
+
+.lab-summary p {
+  color: var(--cv-muted);
+}
+
+.lab-frame-section {
+  margin: 1.25rem 0;
+  padding: 0.6rem;
+  border: 1px solid rgba(24, 33, 43, 0.1);
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(24, 33, 43, 0.08);
+}
+
+.lab-frame {
+  display: block;
+  width: 100%;
+  min-height: 820px;
+  border: 0;
+  background: #fff;
+}
+
+.lab-notes {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.lab-notes article {
+  padding: 1rem 1.1rem;
+  border-top: 3px solid var(--cv-accent);
+  background: #fff;
+  box-shadow: 0 8px 20px rgba(24, 33, 43, 0.06);
+}
+
+.lab-notes article:nth-child(2n) {
+  border-top-color: var(--cv-accent-2);
+}
+
+.lab-notes h3 {
+  margin-top: 0;
+  color: var(--cv-ink);
+}
+
+.lab-notes p {
+  color: var(--cv-muted);
 }
 
 .modern-list {
@@ -357,10 +706,168 @@ body {
   border-top: 1px solid rgba(24, 33, 43, 0.08);
 }
 
+.cv-full-nav {
+  margin: 1.5rem 0;
+  padding: 1rem 1.1rem;
+  border: 1px solid rgba(24, 33, 43, 0.1);
+  border-radius: 12px;
+  background: #f7f9fb;
+}
+
+/* The full CV keeps the author menu. Reserve a separate content column for it. */
+.cv-modern.cv-full .page {
+  min-width: 0;
+  max-width: none;
+
+  @include breakpoint($large) {
+    float: right;
+    width: calc(100% - #{$right-sidebar-width-narrow} + 1em);
+    margin-right: 0;
+    margin-left: 0;
+    padding-right: 0;
+    padding-left: 1em;
+  }
+
+  @include breakpoint($x-large) {
+    width: calc(100% - #{$right-sidebar-width} + 1em);
+  }
+}
+
+.cv-modern.cv-full .page__inner-wrap,
+.cv-modern.cv-full .page__content,
+.cv-modern.cv-full .cv-full-nav,
+.cv-modern.cv-full .cv-fold {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.cv-full-nav > strong {
+  display: block;
+  margin-bottom: 0.65rem;
+  color: var(--cv-ink);
+}
+
+.cv-full-nav__links,
+.cv-fold-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 0.8rem;
+}
+
+.cv-full-nav__links a {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.cv-fold-actions {
+  margin-top: 0.9rem;
+}
+
+.cv-fold-actions button {
+  padding: 0.45rem 0.75rem;
+  border: 1px solid var(--cv-accent);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--cv-accent);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.cv-fold-actions button:hover,
+.cv-fold-actions button:focus-visible {
+  background: var(--cv-accent);
+  color: #fff;
+}
+
+.cv-fold {
+  margin: 0 0 0.85rem;
+  border: 1px solid rgba(24, 33, 43, 0.11);
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 5px 14px rgba(24, 33, 43, 0.04);
+}
+
+.cv-fold > summary {
+  padding: 0.9rem 1rem;
+  color: var(--cv-ink);
+  cursor: pointer;
+  font-size: 1.05rem;
+  font-weight: 750;
+  scroll-margin-top: 5rem;
+}
+
+.cv-fold > summary:hover,
+.cv-fold > summary:focus-visible {
+  color: var(--cv-accent);
+  background: #f7f9fb;
+}
+
+.cv-fold[open] > summary {
+  border-bottom: 1px solid rgba(24, 33, 43, 0.09);
+}
+
+.cv-fold__content {
+  min-width: 0;
+  padding: 0.35rem 1.1rem 1rem;
+  overflow-wrap: anywhere;
+}
+
+.cv-fold__content pre,
+.cv-fold__content table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.cv-fold__content > :last-child {
+  margin-bottom: 0;
+}
+
+@media print {
+  .cv-full-nav {
+    display: none;
+  }
+
+  .cv-fold {
+    border: 0;
+    box-shadow: none;
+  }
+
+  .cv-fold > summary {
+    padding-left: 0;
+    list-style: none;
+  }
+
+  .cv-fold > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .cv-fold:not([open]) > .cv-fold__content {
+    display: block;
+  }
+}
+
 @media (max-width: 900px) {
   .cv-band--metrics,
   .cv-grid,
-  .altmetric-grid {
+  .altmetric-grid,
+  .lab-notes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .lab-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .lab-sidebar {
+    position: static;
+    max-height: none;
+  }
+
+  .lab-sidebar nav {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -382,13 +889,29 @@ body {
   .cv-grid,
   .timeline article,
   .compact-list,
-  .altmetric-grid {
+  .altmetric-grid,
+  .project-highlights,
+  .lab-notes,
+  .lab-sidebar nav {
     grid-template-columns: 1fr;
   }
 
   .timeline h3,
-  .timeline p {
+  .timeline p,
+  .timeline .experience-fold {
     grid-column: 1;
+  }
+
+  .profile-nav {
+    position: static;
+  }
+
+  .project-card__header {
+    grid-template-columns: 1fr;
+  }
+
+  .project-card__visual {
+    width: fit-content;
   }
 
   .cv-page-hero {
@@ -397,5 +920,15 @@ body {
 
   .cv-page-hero h1 {
     font-size: 1.5rem;
+  }
+
+  .lab-frame-section {
+    margin-right: -0.75rem;
+    margin-left: -0.75rem;
+    padding: 0.35rem;
+  }
+
+  .lab-frame {
+    min-height: 760px;
   }
 }

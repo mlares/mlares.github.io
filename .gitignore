@@ -27,3 +27,6 @@ codekit-config.json
 .sass-cache
 _asset_bundler_cache
 _site
+
+# Source CV contains personal identifiers and must not be published
+documents/CurriculumVitae_largo.pdf

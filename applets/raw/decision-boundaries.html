@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaussian Decision Boundary Visualizer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; }
+        .slider-group { margin-bottom: 0.75rem; }
+        canvas { background: white; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); touch-action: none; }
+        input[type="range"] { accent-color: #3b82f6; }
+        .red-accent { accent-color: #ef4444; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-6xl mx-auto">
+        <header class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-slate-800">Gaussian Decision Boundary</h1>
+                <p class="text-slate-600">Explore Bayesian classification with independent X/Y variances.</p>
+            </div>
+            <button id="resetBtn" class="px-6 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors font-medium shadow-md">
+                Reset Parameters
+            </button>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Controls -->
+            <div class="space-y-6 bg-white p-6 rounded-xl shadow-sm border border-slate-200 overflow-y-auto max-h-[80vh]">
+                <!-- Class A -->
+                <div class="p-4 rounded-lg bg-blue-50/50 border border-blue-100">
+                    <h2 class="text-lg font-semibold text-blue-700 mb-3 flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-blue-500"></span> Class A
+                    </h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="slider-group">
+                            <label class="block text-xs font-bold text-slate-500 uppercase">Mean X: <span id="val-ax" class="text-blue-600">-1.5</span></label>
+                            <input type="range" id="ax" min="-4" max="4" step="0.1" value="-1.5" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                        </div>
+                        <div class="slider-group">
+                            <label class="block text-xs font-bold text-slate-500 uppercase">Mean Y: <span id="val-ay" class="text-blue-600">0.0</span></label>
+                            <input type="range" id="ay" min="-4" max="4" step="0.1" value="0.0" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mt-2">
+                        <div class="slider-group">
+                            <label class="block text-xs font-bold text-slate-500 uppercase">Var X: <span id="val-avx" class="text-blue-600">1.0</span></label>
+                            <input type="range" id="avx" min="0.1" max="4" step="0.1" value="1.0" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                        </div>
+                        <div class="slider-group">
+                            <label class="block text-xs font-bold text-slate-500 uppercase">Var Y: <span id="val-avy" class="text-blue-600">1.0</span></label>
+                            <input type="range" id="avy" min="0.1" max="4" step="0.1" value="1.0" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Class B -->
+                <div class="p-4 rounded-lg bg-red-50/50 border border-red-100">
+                    <h2 class="text-lg font-semibold text-red-700 mb-3 flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-red-500"></span> Class B
+                    </h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="slider-group">
+                            <label class="block text-xs font-bold text-slate-500 uppercase">Mean X: <span id="val-bx" class="text-red-600">1.5</span></label>
+                            <input type="range" id="bx" min="-4" max="4" step="0.1" value="1.5" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer red-accent">
+                        </div>
+                        <div class="slider-group">
+                            <label class="block text-xs font-bold text-slate-500 uppercase">Mean Y: <span id="val-by" class="text-red-600">0.0</span></label>
+                            <input type="range" id="by" min="-4" max="4" step="0.1" value="0.0" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer red-accent">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mt-2">
+                        <div class="slider-group">
+                            <label class="block text-xs font-bold text-slate-500 uppercase">Var X: <span id="val-bvx" class="text-red-600">1.5</span></label>
+                            <input type="range" id="bvx" min="0.1" max="4" step="0.1" value="1.5" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer red-accent">
+                        </div>
+                        <div class="slider-group">
+                            <label class="block text-xs font-bold text-slate-500 uppercase">Var Y: <span id="val-bvy" class="text-red-600">1.5</span></label>
+                            <input type="range" id="bvy" min="0.1" max="4" step="0.1" value="1.5" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer red-accent">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-xs text-slate-400 leading-relaxed">
+                    Adjusting variances independently creates elliptical distributions. The decision boundary represents points where $P(Class A | x) = P(Class B | x)$, assuming equal priors.
+                </div>
+            </div>
+
+            <!-- Canvas Visualization -->
+            <div class="lg:col-span-2 flex flex-col items-center">
+                <canvas id="plot" width="600" height="600" class="max-w-full h-auto"></canvas>
+                <div class="mt-4 flex gap-4 text-xs font-medium text-slate-500">
+                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-500"></span> Class A Area</span>
+                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-red-500"></span> Class B Area</span>
+                    <span class="flex items-center gap-1"><span class="w-2 h-0.5 bg-slate-700"></span> Decision Boundary</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('plot');
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+        const scale = 60; 
+
+        const inputs = ['ax', 'ay', 'avx', 'avy', 'bx', 'by', 'bvx', 'bvy'];
+        const defaults = {
+            ax: -1.5, ay: 0, avx: 1.0, avy: 1.0,
+            bx: 1.5, by: 0, bvx: 1.5, bvy: 1.5
+        };
+        const params = {};
+
+        function updateLabels() {
+            inputs.forEach(id => {
+                const el = document.getElementById(id);
+                const val = el.value;
+                document.getElementById(`val-${id}`).textContent = parseFloat(val).toFixed(1);
+                params[id] = parseFloat(val);
+            });
+        }
+
+        function logLikelihood(x, y, mx, my, vx, vy) {
+            const term1 = -0.5 * Math.log(vx * vy);
+            const term2 = -0.5 * (Math.pow(x - mx, 2) / vx + Math.pow(y - my, 2) / vy);
+            return term1 + term2;
+        }
+
+        function draw() {
+            updateLabels();
+            ctx.clearRect(0, 0, width, height);
+
+            const step = 4;
+            const imageData = ctx.createImageData(width, height);
+            const data = imageData.data;
+
+            for (let y = 0; y < height; y += step) {
+                for (let x = 0; x < width; x += step) {
+                    const mx = (x - width / 2) / scale;
+                    const my = -(y - height / 2) / scale;
+
+                    const logA = logLikelihood(mx, my, params.ax, params.ay, params.avx, params.avy);
+                    const logB = logLikelihood(mx, my, params.bx, params.by, params.bvx, params.bvy);
+
+                    const isA = logA > logB;
+                    
+                    for (let sy = 0; sy < step; sy++) {
+                        for (let sx = 0; sx < step; sx++) {
+                            const idx = ((y + sy) * width + (x + sx)) * 4;
+                            if (idx >= data.length) continue;
+                            if (isA) {
+                                data[idx] = 59; data[idx+1] = 130; data[idx+2] = 246; data[idx+3] = 25;
+                            } else {
+                                data[idx] = 239; data[idx+1] = 68; data[idx+2] = 68; data[idx+3] = 25;
+                            }
+                        }
+                    }
+                }
+            }
+            ctx.putImageData(imageData, 0, 0);
+
+            ctx.strokeStyle = '#f1f5f9';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            for(let i = -5; i <= 5; i++) {
+                const p = width/2 + i * scale;
+                ctx.moveTo(p, 0); ctx.lineTo(p, height);
+                const q = height/2 + i * scale;
+                ctx.moveTo(0, q); ctx.lineTo(width, q);
+            }
+            ctx.stroke();
+
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.beginPath();
+            ctx.moveTo(width/2, 0); ctx.lineTo(width/2, height);
+            ctx.moveTo(0, height/2); ctx.lineTo(width, height/2);
+            ctx.stroke();
+
+            function drawEllipse(mx, my, vx, vy, color) {
+                const px = width / 2 + mx * scale;
+                const py = height / 2 - my * scale;
+                const rx = Math.sqrt(vx) * scale;
+                const ry = Math.sqrt(vy) * scale;
+
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 1.5;
+                ctx.setLineDash([4, 4]);
+                ctx.beginPath();
+                ctx.ellipse(px, py, rx, ry, 0, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.globalAlpha = 0.2;
+                ctx.beginPath();
+                ctx.ellipse(px, py, rx * 2, ry * 2, 0, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.globalAlpha = 1.0;
+                ctx.setLineDash([]);
+            }
+
+            drawEllipse(params.ax, params.ay, params.avx, params.avy, '#3b82f6');
+            drawEllipse(params.bx, params.by, params.bvx, params.bvy, '#ef4444');
+
+            ctx.fillStyle = '#334155';
+            for (let x = 0; x < width; x += 2) {
+                for (let y = 0; y < height; y += 2) {
+                    const mx = (x - width / 2) / scale;
+                    const my = -(y - height / 2) / scale;
+                    const logA = logLikelihood(mx, my, params.ax, params.ay, params.avx, params.avy);
+                    const logB = logLikelihood(mx, my, params.bx, params.by, params.bvx, params.bvy);
+                    
+                    if (Math.abs(logA - logB) < 0.02) {
+                        ctx.fillRect(x-1, y-1, 2, 2);
+                    }
+                }
+            }
+
+            ctx.fillStyle = '#1e40af';
+            ctx.beginPath();
+            ctx.arc(width/2 + params.ax * scale, height/2 - params.ay * scale, 5, 0, Math.PI*2);
+            ctx.fill();
+
+            ctx.fillStyle = '#991b1b';
+            ctx.beginPath();
+            ctx.arc(width/2 + params.bx * scale, height/2 - params.by * scale, 5, 0, Math.PI*2);
+            ctx.fill();
+        }
+
+        function reset() {
+            inputs.forEach(id => {
+                document.getElementById(id).value = defaults[id];
+            });
+            draw();
+        }
+
+        inputs.forEach(id => {
+            document.getElementById(id).addEventListener('input', draw);
+        });
+        
+        document.getElementById('resetBtn').addEventListener('click', reset);
+
+        window.onload = draw;
+    </script>
+</body>
+</html>

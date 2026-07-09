@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Efecto de la Regularización</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        canvas { touch-action: none; background: #ffffff; }
+        .slider-label { font-size: 0.7rem; font-weight: 800; color: #334155; text-transform: uppercase; letter-spacing: 0.05em; }
+        input[type=range] { accent-color: #4338ca; }
+        .chart-container { border: 1px solid #cbd5e1; background: #ffffff; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-900">
+
+    <div class="max-w-7xl mx-auto p-4 md:p-6">
+        <header class="mb-8 flex justify-between items-end border-b-2 border-slate-300 pb-4">
+            <div>
+                <h1 class="text-3xl font-black tracking-tight text-slate-900">Efecto de la Regularización</h1>
+                <p class="text-slate-600 text-sm font-bold mt-1">Visualización de Estabilidad y Sensibilidad de Pesos</p>
+            </div>
+            <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest bg-slate-200 px-3 py-1 rounded-md">Laboratorio de IA</div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- PANEL DE CONTROL -->
+            <div class="lg:col-span-4 space-y-6">
+                <div class="p-6 rounded-3xl bg-white border-2 border-slate-200 shadow-xl space-y-8">
+                    
+                    <!-- Magnitud de Pesos -->
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="slider-label">Magnitud de Pesos ($\|\mathbf{w}\|$)</span>
+                            <span id="wLabel" class="text-xs font-mono font-bold text-white bg-indigo-600 px-3 py-1 rounded-lg">1.0</span>
+                        </div>
+                        <input type="range" id="wRange" min="0.1" max="25" step="0.1" value="10" class="w-full h-3 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                    </div>
+
+                    <!-- Frecuencia / Complejidad -->
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="slider-label">Complejidad (Frecuencia)</span>
+                            <span id="freqLabel" class="text-xs font-mono font-bold text-white bg-emerald-600 px-3 py-1 rounded-lg">1.5</span>
+                        </div>
+                        <input type="range" id="freqRange" min="0.5" max="5" step="0.1" value="1.5" class="w-full h-3 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                    </div>
+                </div>
+
+                <!-- DIAGNÓSTICO -->
+                <div class="p-6 rounded-3xl bg-white border-2 border-slate-200 shadow-xl">
+                    <h3 class="slider-label mb-6 border-b-2 border-slate-50 pb-2">Métricas de Inestabilidad</h3>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <div class="flex justify-between text-xs font-black mb-2 uppercase tracking-tighter">
+                                <span>Gradiente Máximo (Lipschitz)</span>
+                                <span id="gradVal" class="text-rose-700">0.00</span>
+                            </div>
+                            <div class="w-full bg-slate-200 h-4 rounded-full overflow-hidden border border-slate-300">
+                                <div id="gradBar" class="bg-rose-600 h-full transition-all duration-300 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)]" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div id="insightContainer" class="p-5 rounded-2xl border-2 transition-all duration-500 shadow-inner">
+                            <h4 class="text-[10px] font-black uppercase mb-1 opacity-60">Análisis del Paisaje</h4>
+                            <p id="insightTxt" class="text-xs leading-normal font-bold">Ajuste los parámetros para observar el cambio de fase.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VISUALIZACIÓN PRINCIPAL -->
+            <div class="lg:col-span-8 flex flex-col gap-6">
+                
+                <!-- MAPA 2D -->
+                <div class="relative rounded-[2.5rem] overflow-hidden border-2 border-slate-300 shadow-2xl bg-white aspect-[16/9]">
+                    <canvas id="landscapeCanvas"></canvas>
+                    <div class="absolute top-6 left-6 px-4 py-2 bg-white border-2 border-slate-900 rounded-xl text-[11px] font-black uppercase tracking-tighter text-slate-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                        Superficie de Decisión $g(x,y)$
+                    </div>
+                </div>
+
+                <!-- CORTE TRANSVERSAL (CURVA) -->
+                <div class="relative rounded-[2.5rem] overflow-hidden border-2 border-slate-300 shadow-2xl bg-white h-56">
+                    <canvas id="curveCanvas"></canvas>
+                    <div class="absolute top-6 left-6 px-4 py-2 bg-indigo-600 rounded-xl text-[11px] font-black uppercase tracking-tighter text-white shadow-lg">
+                        Corte Transversal (Perfil de Sensibilidad)
+                    </div>
+                    <div class="absolute bottom-4 right-8 text-[10px] font-black text-slate-400 uppercase tracking-widest opacity-50">Visualización de Oscilación</div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const lCanvas = document.getElementById('landscapeCanvas');
+        const cCanvas = document.getElementById('curveCanvas');
+        const lCtx = lCanvas.getContext('2d');
+        const cCtx = cCanvas.getContext('2d');
+        
+        const wRange = document.getElementById('wRange');
+        const freqRange = document.getElementById('freqRange');
+        const wLabel = document.getElementById('wLabel');
+        const freqLabel = document.getElementById('freqLabel');
+        const gradVal = document.getElementById('gradVal');
+        const gradBar = document.getElementById('gradBar');
+        const insightTxt = document.getElementById('insightTxt');
+        const insightContainer = document.getElementById('insightContainer');
+
+        let dpr = window.devicePixelRatio || 1;
+
+        function resize() {
+            [lCanvas, cCanvas].forEach(c => {
+                const w = c.parentElement.clientWidth;
+                const h = c.parentElement.clientHeight;
+                c.width = w * dpr;
+                c.height = h * dpr;
+                c.style.width = w + 'px';
+                c.style.height = h + 'px';
+            });
+        }
+
+        function functionValue(x, y, w, freq, canvasW, canvasH) {
+            const nx = (x / canvasW) * 10 - 5;
+            const ny = (y / canvasH) * 10 - 5;
+            return w * (Math.sin(nx * freq) + Math.cos(ny * freq));
+        }
+
+        function drawLandscape() {
+            const w = lCanvas.width / dpr;
+            const h = lCanvas.height / dpr;
+            const weight = parseFloat(wRange.value);
+            const freq = parseFloat(freqRange.value);
+
+            lCtx.clearRect(0, 0, w, h);
+            const step = 5; // Más resolución
+            let maxGrad = 0;
+
+            for (let x = 0; x < w; x += step) {
+                for (let y = 0; y < h; y += step) {
+                    const val = functionValue(x, y, weight, freq, w, h);
+                    
+                    const eps = 2;
+                    const valX = functionValue(x + eps, y, weight, freq, w, h);
+                    const valY = functionValue(x, y + eps, weight, freq, w, h);
+                    const grad = Math.sqrt(Math.pow((valX - val)/eps, 2) + Math.pow((valY - val)/eps, 2));
+                    if (grad > maxGrad) maxGrad = grad;
+
+                    // Colores más intensos
+                    const norm = Math.max(-1, Math.min(1, val / 15));
+                    let r, g, b;
+                    
+                    if (norm > 0) {
+                        // Azul saturado
+                        r = Math.max(0, 220 - (norm * 200));
+                        g = Math.max(0, 230 - (norm * 180));
+                        b = 255;
+                    } else {
+                        // Rojo saturado
+                        const anorm = Math.abs(norm);
+                        r = 255;
+                        g = Math.max(0, 230 - (anorm * 200));
+                        b = Math.max(0, 230 - (anorm * 200));
+                    }
+                    
+                    // Sombreado basado en gradiente para efecto 3D
+                    const shadow = Math.max(0.4, 1 - (grad / 10));
+                    lCtx.fillStyle = `rgb(${r * shadow}, ${g * shadow}, ${b * shadow})`;
+                    lCtx.fillRect(x, y, step, step);
+
+                    // Línea de corte más visible
+                    if (Math.abs(y - h/2) < 2) {
+                        lCtx.fillStyle = "rgba(0, 0, 0, 0.5)";
+                        lCtx.fillRect(x, y, step, 1);
+                    }
+                }
+            }
+            return maxGrad;
+        }
+
+        function drawCurve(weight, freq) {
+            const w = cCanvas.width / dpr;
+            const h = cCanvas.height / dpr;
+            cCtx.clearRect(0, 0, w, h);
+
+            // Rejilla de alto contraste
+            cCtx.strokeStyle = "#e2e8f0";
+            cCtx.lineWidth = 1;
+            for(let i=0; i<=10; i++) {
+                const lx = (w/10)*i;
+                cCtx.beginPath(); cCtx.moveTo(lx, 0); cCtx.lineTo(lx, h); cCtx.stroke();
+                const ly = (h/10)*i;
+                cCtx.beginPath(); cCtx.moveTo(0, ly); cCtx.lineTo(w, ly); cCtx.stroke();
+            }
+
+            // Eje central fuerte
+            cCtx.strokeStyle = "#94a3b8";
+            cCtx.lineWidth = 2;
+            cCtx.beginPath();
+            cCtx.moveTo(0, h/2); cCtx.lineTo(w, h/2);
+            cCtx.stroke();
+
+            // Sombra de área
+            cCtx.beginPath();
+            cCtx.moveTo(0, h/2);
+            for (let x = 0; x <= w; x++) {
+                const val = functionValue(x, h/2, weight, freq, w, h);
+                const py = h/2 - (val * (h / 60)); 
+                cCtx.lineTo(x, py);
+            }
+            cCtx.lineTo(w, h/2);
+            const areaGrad = cCtx.createLinearGradient(0, 0, 0, h);
+            areaGrad.addColorStop(0, 'rgba(67, 56, 202, 0.4)');
+            areaGrad.addColorStop(1, 'rgba(67, 56, 202, 0)');
+            cCtx.fillStyle = areaGrad;
+            cCtx.fill();
+
+            // Línea de la curva principal
+            cCtx.strokeStyle = "#312e81";
+            cCtx.lineWidth = 5;
+            cCtx.lineCap = "round";
+            cCtx.beginPath();
+            for (let x = 0; x <= w; x++) {
+                const val = functionValue(x, h/2, weight, freq, w, h);
+                const py = h/2 - (val * (h / 60)); 
+                if (x === 0) cCtx.moveTo(x, py);
+                else cCtx.lineTo(x, py);
+            }
+            cCtx.stroke();
+        }
+
+        function update() {
+            const weight = parseFloat(wRange.value);
+            const freq = parseFloat(freqRange.value);
+            
+            wLabel.innerText = weight.toFixed(1);
+            freqLabel.innerText = freq.toFixed(1);
+
+            const mGrad = drawLandscape();
+            drawCurve(weight, freq);
+
+            gradVal.innerText = mGrad.toFixed(2);
+            const gradPercent = Math.min((mGrad / 10) * 100, 100);
+            gradBar.style.width = gradPercent + '%';
+
+            if (weight > 15) {
+                insightTxt.innerText = "SISTEMA INESTABLE: La función oscila violentamente. El modelo es hipersensible al ruido de entrada (Alta Varianza).";
+                insightContainer.className = "p-5 rounded-2xl bg-rose-600 border-rose-700 text-white shadow-lg";
+            } else if (weight < 6) {
+                insightTxt.innerText = "FUERTE REGULARIZACIÓN: La curva es suave y estable. Ideal para evitar el sobreajuste a costa de un posible sesgo.";
+                insightContainer.className = "p-5 rounded-2xl bg-emerald-600 border-emerald-700 text-white shadow-lg";
+            } else {
+                insightTxt.innerText = "ESTADO BALANCEADO: La pendiente es controlada pero permite capturar la estructura de los datos.";
+                insightContainer.className = "p-5 rounded-2xl bg-indigo-600 border-indigo-700 text-white shadow-lg";
+            }
+        }
+
+        window.onload = () => {
+            resize();
+            wRange.oninput = freqRange.oninput = update;
+            update();
+        };
+
+        window.onresize = () => {
+            resize();
+            update();
+        };
+    </script>
+</body>
+</html>

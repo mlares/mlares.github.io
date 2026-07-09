@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PCA: Dinámico y Proyectado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #f8fafc; font-family: 'Inter', sans-serif; }
+        canvas { background-color: white; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); width: 100%; touch-action: none; }
+        .panel { background: white; padding: 1.25rem; border-radius: 12px; box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1); }
+        input[type=range] { width: 100%; height: 6px; background: #e2e8f0; border-radius: 5px; appearance: none; outline: none; }
+        input[type=range]::-webkit-slider-thumb { appearance: none; width: 18px; height: 18px; background: #6366f1; border-radius: 50%; cursor: pointer; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-7xl mx-auto space-y-6">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-slate-800">Análisis de Componentes Principales (PCA)</h1>
+            <p class="text-slate-500 mt-2">Visualización de proyecciones con puntos base fijos.</p>
+        </header>
+
+        <!-- Controles Superiores -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="panel">
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Varianza Principal (L1): <span id="l1Val" class="text-indigo-600">3.0</span></label>
+                <input type="range" id="l1Slider" min="0.1" max="5" step="0.1" value="3.0">
+            </div>
+            <div class="panel">
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Varianza Perpendicular (L2): <span id="l2Val" class="text-indigo-600">0.8</span></label>
+                <input type="range" id="l2Slider" min="0.1" max="5" step="0.1" value="0.8">
+            </div>
+            <div class="panel">
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Ángulo de Correlación: <span id="angleVal" class="text-indigo-600">30</span>°</label>
+                <input type="range" id="angleSlider" min="0" max="180" step="1" value="30">
+            </div>
+        </div>
+
+        <!-- Canvases -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Espacio 2D -->
+            <div class="space-y-2">
+                <h3 class="text-center font-bold text-slate-700 text-sm uppercase tracking-wider">Espacio Original (2D)</h3>
+                <canvas id="canvas2D"></canvas>
+            </div>
+
+            <!-- Proyección 1D -->
+            <div class="space-y-2">
+                <h3 class="text-center font-bold text-slate-700 text-sm uppercase tracking-wider">Reconstrucción (PC1)</h3>
+                <canvas id="canvas1D"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas2D = document.getElementById('canvas2D');
+        const canvas1D = document.getElementById('canvas1D');
+        const ctx2D = canvas2D.getContext('2d');
+        const ctx1D = canvas1D.getContext('2d');
+
+        const l1Slider = document.getElementById('l1Slider');
+        const l2Slider = document.getElementById('l2Slider');
+        const angleSlider = document.getElementById('angleSlider');
+
+        const numPoints = 80;
+        let basePoints = [];
+
+        // Generamos los puntos una sola vez al inicio
+        function generatePoints() {
+            basePoints = [];
+            for (let i = 0; i < numPoints; i++) {
+                // Distribución normal estándar aproximada
+                basePoints.push({
+                    u: (Math.random() + Math.random() + Math.random() + Math.random() - 2),
+                    v: (Math.random() + Math.random() + Math.random() + Math.random() - 2)
+                });
+            }
+        }
+
+        function init() {
+            generatePoints();
+            resize();
+            window.addEventListener('resize', resize);
+            
+            // Los listeners ahora solo llaman a draw(), manteniendo basePoints
+            [l1Slider, l2Slider, angleSlider].forEach(s => {
+                s.oninput = draw;
+            });
+        }
+
+        function resize() {
+            const w = canvas2D.parentElement.clientWidth;
+            canvas2D.width = w;
+            canvas2D.height = w * 0.75;
+            canvas1D.width = w;
+            canvas1D.height = w * 0.75;
+            draw();
+        }
+
+        function toScreen(ctx, x, y) {
+            const s = Math.min(ctx.canvas.width, ctx.canvas.height) / 12;
+            return {
+                x: ctx.canvas.width / 2 + x * s,
+                y: ctx.canvas.height / 2 - y * s,
+                scale: s
+            };
+        }
+
+        function drawGrid(ctx) {
+            ctx.strokeStyle = '#f1f5f9';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            for(let i=-10; i<=10; i++) {
+                let p1 = toScreen(ctx, i, -10), p2 = toScreen(ctx, i, 10);
+                ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y);
+                let p3 = toScreen(ctx, -10, i), p4 = toScreen(ctx, 10, i);
+                ctx.moveTo(p3.x, p3.y); ctx.lineTo(p4.x, p4.y);
+            }
+            ctx.stroke();
+            
+            ctx.strokeStyle = '#e2e8f0';
+            ctx.beginPath();
+            let h1 = toScreen(ctx, -10, 0), h2 = toScreen(ctx, 10, 0);
+            ctx.moveTo(h1.x, h1.y); ctx.lineTo(h2.x, h2.y);
+            let v1 = toScreen(ctx, 0, -10), v2 = toScreen(ctx, 0, 10);
+            ctx.moveTo(v1.x, v1.y); ctx.lineTo(v2.x, v2.y);
+            ctx.stroke();
+        }
+
+        function draw() {
+            const l1 = parseFloat(l1Slider.value);
+            const l2 = parseFloat(l2Slider.value);
+            const angleDeg = parseFloat(angleSlider.value);
+            const rad = angleDeg * Math.PI / 180;
+
+            document.getElementById('l1Val').textContent = l1.toFixed(1);
+            document.getElementById('l2Val').textContent = l2.toFixed(1);
+            document.getElementById('angleVal').textContent = angleDeg;
+
+            const cos = Math.cos(rad);
+            const sin = Math.sin(rad);
+            const pc1Dir = { x: cos, y: sin };
+
+            // Aplicamos la transformación a los mismos puntos base originales
+            const points = basePoints.map(p => {
+                const x_prime = p.u * Math.sqrt(l1);
+                const y_prime = p.v * Math.sqrt(l2);
+                return {
+                    x: x_prime * cos - y_prime * sin,
+                    y: x_prime * sin + y_prime * cos
+                };
+            });
+
+            // --- PANEL IZQUIERDO (2D) ---
+            ctx2D.clearRect(0, 0, canvas2D.width, canvas2D.height);
+            drawGrid(ctx2D);
+
+            const lineP1 = toScreen(ctx2D, pc1Dir.x * 10, pc1Dir.y * 10);
+            const lineP2 = toScreen(ctx2D, -pc1Dir.x * 10, -pc1Dir.y * 10);
+            ctx2D.strokeStyle = '#94a3b8';
+            ctx2D.lineWidth = 1;
+            ctx2D.setLineDash([10, 5]);
+            ctx2D.beginPath(); 
+            ctx2D.moveTo(lineP1.x, lineP1.y); 
+            ctx2D.lineTo(lineP2.x, lineP2.y); 
+            ctx2D.stroke();
+            ctx2D.setLineDash([]);
+
+            points.forEach(p => {
+                const sP = toScreen(ctx2D, p.x, p.y);
+                const dot = p.x * pc1Dir.x + p.y * pc1Dir.y;
+                const sProj = toScreen(ctx2D, dot * pc1Dir.x, dot * pc1Dir.y);
+
+                ctx2D.strokeStyle = '#6366f115';
+                ctx2D.beginPath(); ctx2D.moveTo(sP.x, sP.y); ctx2D.lineTo(sProj.x, sProj.y); ctx2D.stroke();
+
+                ctx2D.fillStyle = '#6366f1';
+                ctx2D.beginPath(); ctx2D.arc(sP.x, sP.y, 3.5, 0, Math.PI * 2); ctx2D.fill();
+            });
+
+            // --- PANEL DERECHO (RECONSTRUCCIÓN 1D) ---
+            ctx1D.clearRect(0, 0, canvas1D.width, canvas1D.height);
+            drawGrid(ctx1D);
+
+            ctx1D.strokeStyle = '#1e293b';
+            ctx1D.lineWidth = 2;
+            ctx1D.setLineDash([10, 5]);
+            ctx1D.beginPath(); 
+            ctx1D.moveTo(lineP1.x, lineP1.y); 
+            ctx1D.lineTo(lineP2.x, lineP2.y); 
+            ctx1D.stroke();
+            ctx1D.setLineDash([]);
+
+            points.forEach(p => {
+                const dot = p.x * pc1Dir.x + p.y * pc1Dir.y;
+                const projX = dot * pc1Dir.x;
+                const projY = dot * pc1Dir.y;
+                const sProj = toScreen(ctx1D, projX, projY);
+
+                ctx1D.fillStyle = '#1e293b';
+                ctx1D.beginPath(); ctx1D.arc(sProj.x, sProj.y, 3, 0, Math.PI * 2); ctx1D.fill();
+                
+                ctx1D.fillStyle = '#6366f122';
+                ctx1D.beginPath(); ctx1D.arc(sProj.x, sProj.y, 8, 0, Math.PI * 2); ctx1D.fill();
+            });
+
+            // Etiquetas de varianza en el gráfico
+            ctx1D.fillStyle = '#1e293b';
+            ctx1D.font = 'bold 12px Inter, sans-serif';
+            ctx1D.textAlign = 'left';
+            const infoS = toScreen(ctx1D, -5.5, 5.5);
+            ctx1D.fillText(`Varianza Capturada (PC1): ${l1.toFixed(1)}`, infoS.x, infoS.y);
+            ctx1D.fillText(`Varianza Descartada: ${l2.toFixed(1)}`, infoS.x, infoS.y + 20);
+        }
+
+        init();
+    </script>
+</body>
+</html>

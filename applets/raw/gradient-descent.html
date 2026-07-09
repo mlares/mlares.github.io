@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gradient Descent Playground</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #ffffff; }
+        canvas { display: block; cursor: crosshair; }
+        .ui-panel { pointer-events: none; }
+        .ui-panel * { pointer-events: auto; }
+        .parameter-badge { @apply bg-white/95 backdrop-blur-md border border-slate-200 p-3 rounded-lg shadow-md; }
+    </style>
+</head>
+<body class="font-sans text-slate-800">
+
+    <div class="fixed inset-0 p-6 flex flex-col justify-between ui-panel z-10">
+        
+        <!-- Top Interface -->
+        <div class="flex justify-between items-start">
+            <div>
+                <h1 class="text-2xl font-black tracking-tighter text-slate-900 italic uppercase">Gradient Descent</h1>
+                <p class="text-xs font-mono text-slate-500 uppercase tracking-widest">Grilla de Alta Precisión | \(\eta\) Máx: 5.0</p>
+            </div>
+            <div class="flex flex-col gap-2 items-end">
+                <div class="parameter-badge">
+                    <p class="text-[10px] text-slate-400 uppercase font-bold">Estado del Sistema</p>
+                    <p class="font-mono text-sm">w: <span id="valW" class="text-red-600 font-bold">0.00</span> | b: <span id="valB" class="text-red-600 font-bold">0.00</span></p>
+                    <p class="font-mono text-sm">Costo J: <span id="valJ" class="text-orange-600">0.00</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Controls -->
+        <div class="flex flex-col gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                
+                <div class="parameter-badge">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase block mb-2">Superficie de Error</label>
+                    <select id="surfaceType" class="bg-slate-50 border border-slate-200 text-xs p-2 rounded w-full focus:ring-2 focus:ring-orange-500 outline-none">
+                        <option value="convex">Cuadrática Pronunciada</option>
+                        <option value="local">Mínimos Locales</option>
+                        <option value="saddle">Punto de Silla</option>
+                    </select>
+                </div>
+
+                <div class="parameter-badge">
+                    <div class="flex justify-between mb-2">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">Learning Rate (\(\eta\))</label>
+                        <span id="lrText" class="text-xs font-mono text-red-600 font-bold">0.050</span>
+                    </div>
+                    <input type="range" id="lrRange" min="0.01" max="5.0" step="0.01" value="0.05" class="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-red-600">
+                </div>
+
+                <div class="flex gap-2">
+                    <button id="resetBtn" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-3 rounded-lg text-xs font-bold uppercase transition-all">Reset Total</button>
+                    <button id="playBtn" class="flex-[2] bg-orange-600 hover:bg-orange-700 py-3 rounded-lg text-xs font-bold uppercase transition-all shadow-lg text-white">Descender</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let scene, camera, renderer, surface, agent, trail, stepPoints = [];
+        let raycaster = new THREE.Raycaster();
+        let mouse = new THREE.Vector2();
+        
+        let isRunning = false;
+        let params = { w: 15, b: 15 };
+        let history = [];
+        let learningRate = 0.05;
+        let currentSurfaceMode = 'convex';
+
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+        let cameraAngleTheta = Math.PI / 4; 
+        let cameraAnglePhi = Math.PI / 6;   
+        let cameraDistance = 45;
+
+        const costFunctions = {
+            convex: {
+                z: (w, b) => (w*w + b*b) * 0.5, 
+                grad: (w, b) => ({ dw: 1.0 * w, db: 1.0 * b })
+            },
+            local: {
+                z: (w, b) => (Math.sin(w) + Math.sin(b) + (w*w + b*b)*0.06) * 2,
+                grad: (w, b) => ({ 
+                    dw: (Math.cos(w) + 0.12 * w) * 2, 
+                    db: (Math.cos(b) + 0.12 * b) * 2
+                })
+            },
+            saddle: {
+                z: (w, b) => (w*w - b*b) * 0.3,
+                grad: (w, b) => ({ dw: 0.6 * w, db: -0.6 * b })
+            }
+        };
+
+        function init() {
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0xffffff);
+            
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
+            updateCameraPosition();
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            document.body.appendChild(renderer.domElement);
+
+            const ambient = new THREE.AmbientLight(0xffffff, 0.8);
+            scene.add(ambient);
+            const directional = new THREE.DirectionalLight(0xffffff, 0.6);
+            directional.position.set(10, 40, 10);
+            scene.add(directional);
+
+            createSurface();
+            createAgent();
+            createGrid();
+
+            window.addEventListener('mousedown', () => isDragging = true);
+            window.addEventListener('mouseup', () => isDragging = false);
+            window.addEventListener('mousemove', handleMouseMove);
+            window.addEventListener('dblclick', onDoubleClick);
+            window.addEventListener('wheel', handleZoom);
+            window.addEventListener('resize', onWindowResize);
+            
+            animate();
+        }
+
+        function onDoubleClick(event) {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObject(surface);
+
+            if (intersects.length > 0) {
+                params.w = intersects[0].point.x;
+                params.b = -intersects[0].point.z;
+                clearTrail();
+                updateAgentVisuals();
+            }
+        }
+
+        function handleMouseMove(e) {
+            if (isDragging) {
+                const deltaX = e.clientX - previousMousePosition.x;
+                const deltaY = e.clientY - previousMousePosition.y;
+                cameraAngleTheta -= deltaX * 0.007;
+                cameraAnglePhi += deltaY * 0.007;
+                cameraAnglePhi = Math.max(0.05, Math.min(Math.PI / 2 - 0.05, cameraAnglePhi));
+                updateCameraPosition();
+            }
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        }
+
+        function handleZoom(e) {
+            cameraDistance += e.deltaY * 0.05;
+            cameraDistance = Math.max(10, Math.min(400, cameraDistance));
+            updateCameraPosition();
+        }
+
+        function updateCameraPosition() {
+            camera.position.x = cameraDistance * Math.sin(cameraAngleTheta) * Math.cos(cameraAnglePhi);
+            camera.position.y = cameraDistance * Math.sin(cameraAnglePhi);
+            camera.position.z = cameraDistance * Math.cos(cameraAngleTheta) * Math.cos(cameraAnglePhi);
+            camera.lookAt(0, 0, 0);
+        }
+
+        function createSurface() {
+            if (surface) scene.remove(surface);
+            const geometry = new THREE.PlaneGeometry(100, 100, 200, 200);
+            const positions = geometry.attributes.position.array;
+            const func = costFunctions[currentSurfaceMode].z;
+
+            for (let i = 0; i < positions.length; i += 3) {
+                positions[i + 2] = func(positions[i], positions[i + 1]);
+            }
+            geometry.computeVertexNormals();
+
+            const material = new THREE.MeshPhongMaterial({
+                color: 0x94a3b8,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.2,
+                side: THREE.DoubleSide
+            });
+
+            surface = new THREE.Mesh(geometry, material);
+            surface.rotation.x = -Math.PI / 2;
+            scene.add(surface);
+        }
+
+        function createAgent() {
+            if (agent) scene.remove(agent);
+            if (trail) scene.remove(trail);
+            
+            const sphereGeom = new THREE.SphereGeometry(0.8, 32, 32);
+            const sphereMat = new THREE.MeshPhongMaterial({ 
+                color: 0xef4444, 
+                emissive: 0x991b1b, 
+                emissiveIntensity: 0.5 
+            });
+            agent = new THREE.Mesh(sphereGeom, sphereMat);
+            agent.renderOrder = 20; 
+            scene.add(agent);
+
+            const trailMat = new THREE.LineBasicMaterial({ color: 0xf97316 });
+            const trailGeom = new THREE.BufferGeometry();
+            trail = new THREE.Line(trailGeom, trailMat);
+            trail.renderOrder = 15; 
+            scene.add(trail);
+
+            updateAgentVisuals();
+        }
+
+        function clearTrail() {
+            history = [];
+            stepPoints.forEach(p => scene.remove(p));
+            stepPoints = [];
+            if (trail) {
+                trail.geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(0), 3));
+            }
+        }
+
+        function createGrid() {
+            // Se aumenta el número de divisiones a 100 para una grilla más fina
+            const grid = new THREE.GridHelper(100, 100, 0xe2e8f0, 0xf1f5f9);
+            grid.position.y = -0.1;
+            scene.add(grid);
+        }
+
+        function updateAgentVisuals() {
+            const z = costFunctions[currentSurfaceMode].z(params.w, params.b);
+            agent.position.set(params.w, z + 0.6, -params.b);
+
+            document.getElementById('valW').innerText = params.w.toFixed(2);
+            document.getElementById('valB').innerText = params.b.toFixed(2);
+            document.getElementById('valJ').innerText = z.toFixed(4);
+
+            const newPos = new THREE.Vector3(params.w, z + 0.3, -params.b);
+            history.push(newPos);
+            
+            const dotGeom = new THREE.SphereGeometry(0.2, 8, 8);
+            const dotMat = new THREE.MeshBasicMaterial({ color: 0xf97316 });
+            const dot = new THREE.Mesh(dotGeom, dotMat);
+            dot.position.copy(newPos);
+            scene.add(dot);
+            stepPoints.push(dot);
+
+            if (history.length > 1000) {
+                history.shift();
+                const oldDot = stepPoints.shift();
+                if(oldDot) scene.remove(oldDot);
+            }
+
+            const trailPos = new Float32Array(history.length * 3);
+            history.forEach((p, i) => {
+                trailPos[i * 3] = p.x;
+                trailPos[i * 3 + 1] = p.y;
+                trailPos[i * 3 + 2] = p.z;
+            });
+            trail.geometry.setAttribute('position', new THREE.BufferAttribute(trailPos, 3));
+            trail.geometry.attributes.position.needsUpdate = true;
+        }
+
+        function step() {
+            const g = costFunctions[currentSurfaceMode].grad(params.w, params.b);
+            params.w -= learningRate * g.dw;
+            params.b -= learningRate * g.db;
+            
+            if (Math.abs(params.w) > 1000 || Math.abs(params.b) > 1000) {
+                isRunning = false;
+                document.getElementById('playBtn').innerText = "Divergencia (Reset)";
+                return;
+            }
+            updateAgentVisuals();
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            if (isRunning) step();
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        document.getElementById('surfaceType').onchange = (e) => {
+            currentSurfaceMode = e.target.value;
+            resetAll();
+            createSurface();
+        };
+
+        document.getElementById('lrRange').oninput = (e) => {
+            learningRate = parseFloat(e.target.value);
+            document.getElementById('lrText').innerText = learningRate.toFixed(3);
+        };
+
+        document.getElementById('playBtn').onclick = function() {
+            if (this.innerText.includes("Reset")) {
+                resetAll();
+                return;
+            }
+            isRunning = !isRunning;
+            this.innerText = isRunning ? "Pausar" : "Descender";
+            this.classList.toggle('bg-orange-600', !isRunning);
+            this.classList.toggle('bg-slate-700', isRunning);
+        };
+
+        function resetAll() {
+            params = { w: 15, b: 15 };
+            clearTrail();
+            isRunning = false;
+            document.getElementById('playBtn').innerText = "Descender";
+            document.getElementById('playBtn').className = "flex-[2] bg-orange-600 hover:bg-orange-700 py-3 rounded-lg text-xs font-bold uppercase transition-all shadow-lg text-white";
+            updateAgentVisuals();
+        }
+
+        document.getElementById('resetBtn').onclick = resetAll;
+
+        window.onload = init;
+    </script>
+</body>
+</html>
