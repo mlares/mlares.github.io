@@ -14,9 +14,10 @@ author_profile: false
     A recruiter-facing overview of impact, experience, and technical depth. Detailed evidence is expandable; the long-form academic record remains available separately.
   </p>
   <div class="cv-actions">
-    <a class="btn btn--primary" href="/documents/cv.pdf">Current CV</a>
-    <a class="btn" href="/documents/RESUME.pdf">One-page resume</a>
-    <a class="btn" href="/cv/full/">HTML archive</a>
+    <a class="btn btn--primary" href="/documents/RESUME.pdf">Resume PDF</a>
+    <a class="btn" href="/documents/cv.pdf">Short CV PDF</a>
+    <a class="btn" href="/documents/CV_long.pdf">Long CV PDF</a>
+    <a class="btn" href="/cv/full/">Detailed CV HTML</a>
   </div>
 </section>
 
@@ -58,7 +59,7 @@ author_profile: false
   <h2>Experience</h2>
   <div class="role-accordion">
     <details open>
-      <summary><span>Mercado Libre · 2024–2026</span><strong>Senior Data Scientist / Machine Learning Engineer</strong></summary>
+      <summary><span>Mercado Libre · 2024–June 2026</span><strong>Senior Data Scientist / Machine Learning Engineer</strong></summary>
       <div class="role-accordion__body">
         <p>Primary data science owner for a production online ranking model serving recommendations to millions of users in Argentina, Brazil, and Mexico.</p>
         <ul>
