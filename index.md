@@ -4,10 +4,10 @@ title: "Marcelo Lares"
 permalink: /
 excerpt: "Applied AI technical leader, Lead Data Scientist, and Machine Learning Engineer"
 header:
-  overlay_image: /assets/images/galaxia2.jpg
+  overlay_image: /assets/images/banner.jpeg
   overlay_filter: 0.45
   actions:
-    - label: "Download CV"
+    - label: "Short CV PDF"
       url: "/documents/cv.pdf"
     - label: "View Projects"
       url: "/projects/"
@@ -20,9 +20,11 @@ header:
     I turn ambiguous problems into measurable data products, combining model-building depth with technical leadership, experimentation strategy, and cross-functional execution. I have guided production recommendation experiments at Mercado Libre, led an eight-person data science team at IThreex, and developed researchers through CONICET and twenty years of teaching at Universidad Nacional de Córdoba.
   </p>
   <div class="cv-actions">
-    <a class="btn btn--primary" href="/documents/cv.pdf">Download current CV</a>
-    <a class="btn" href="/documents/RESUME.pdf">Download one-page resume</a>
-    <a class="btn" href="/projects/">See selected projects</a>
+    <a class="btn btn--primary" href="https://askml-b2d6wau7ua-rj.a.run.app" target="_blank" rel="noopener noreferrer">Chat with AskML</a>
+    <a class="btn btn--primary" href="/documents/RESUME.pdf">Resume PDF</a>
+    <a class="btn" href="/documents/cv.pdf">Short CV PDF</a>
+    <a class="btn" href="/documents/CV_long.pdf">Long CV PDF</a>
+    <a class="btn" href="/cv/full/">Detailed CV HTML</a>
   </div>
 </section>
 
@@ -113,7 +115,7 @@ header:
   <h2>Selected Experience</h2>
   <div class="timeline">
     <article>
-      <span>2024-2026</span>
+      <span>2024-June 2026</span>
       <h3>Senior Data Scientist / Machine Learning Engineer, Mercado Libre</h3>
       <p>Primary data science owner for an online ranking model used by dozens of internal clients and millions of users across three LATAM markets.</p>
       <details class="experience-fold">

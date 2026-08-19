@@ -95,7 +95,7 @@ Professor at Universidad Nacional de Córdoba, with a research career at CONICET
   + Professor and university teacher since 2000; regular teaching appointment since 2007.
   + Courses include Models and Simulation, Probability and Statistics, Astrometry, Numerical Methods, Mathematical Analysis III, Algebra I and II, Physics I and II, Computing, and Introduction to Physics.
 + **CONICET** — Scientific and Technological Research Career, 2012–2023 (on leave during 2022–2023).
-+ **Mercado Libre** — Senior Data Science and Machine Learning Engineer, 2024–2026.
++ **Mercado Libre** — Senior Data Science and Machine Learning Engineer, 2024–June 2026.
 + **IThreex Global** — Senior Data Scientist and Data Science Team Lead, 2022–2024.
 + **Observatorio Astronómico de Córdoba** — Council member, 2007–2010; coordinator of an ad-hoc advisory section in 2009; alternate member of the electoral committee from 2015.
 + **Asociación Argentina de Astronomía** — associate editor of its newsletter, 2009–2010; technical editor of its scientific bulletin since 2012.
@@ -843,20 +843,20 @@ readthedocs, shell programming, Latex, HPC, parallel programming, machine learni
 
 <div class="cv-grid cv-grid--links">
   <article>
-    <h3><a href="/documents/cv.pdf">Current CV</a></h3>
-    <p>Applied AI and Data Science technical leadership profile, updated July 2026.</p>
+    <h3><a href="/documents/RESUME.pdf">Resume PDF</a></h3>
+    <p>One-page recruiter-facing summary.</p>
   </article>
   <article>
-    <h3><a href="/documents/RESUME.pdf">One-page Resume</a></h3>
-    <p>Short recruiter-facing summary.</p>
+    <h3><a href="/documents/cv.pdf">Short CV PDF</a></h3>
+    <p>Concise applied AI and Data Science profile.</p>
   </article>
   <article>
-    <h3><a href="/documents/Coursera_Agile_Jira.pdf">Agile + Jira Certificate</a></h3>
-    <p>Supporting credential for industry project work.</p>
+    <h3><a href="/documents/CV_long.pdf">Long CV PDF</a></h3>
+    <p>Long-form academic and professional curriculum vitae.</p>
   </article>
   <article>
-    <h3><a href="/documents/CCyG2021.pdf">Gender Parity Presentation</a></h3>
-    <p>Data analysis and public communication project.</p>
+    <h3><a href="/cv/full/">Detailed CV HTML</a></h3>
+    <p>Expanded web archive with publications, teaching, outreach, service, and supporting details.</p>
   </article>
 </div>
 

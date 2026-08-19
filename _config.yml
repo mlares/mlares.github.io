@@ -266,5 +266,5 @@ defaults:
       share: true
       related: true
     header:
-      overlay_image: /assets/images/banner1.png
+      overlay_image: /assets/images/banner.jpeg
       overlay_filter: 0.5

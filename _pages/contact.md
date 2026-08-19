@@ -25,5 +25,8 @@ classes:
 </section>
 
 <p>
-  You can also download my <a href="/documents/CV.pdf">current CV</a> or <a href="/documents/RESUME.pdf">one-page resume</a>.
+  You can also download my <a href="/documents/RESUME.pdf">resume PDF</a>,
+  <a href="/documents/cv.pdf">short CV PDF</a>, or
+  <a href="/documents/CV_long.pdf">long CV PDF</a>, and view the
+  <a href="/cv/full/">detailed CV in HTML</a>.
 </p>
