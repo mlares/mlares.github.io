@@ -150,6 +150,45 @@ body {
   margin-top: 1.4rem;
 }
 
+.ask-marcelo-callout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(18rem, 0.8fr);
+  gap: 2rem;
+  align-items: center;
+  max-width: 900px;
+  margin: 2.5rem auto;
+  padding: 1.75rem 2rem;
+  border-left: 5px solid var(--cv-accent);
+  background:
+    linear-gradient(135deg, rgba(0, 109, 119, 0.11), rgba(162, 62, 72, 0.05)),
+    #fff;
+  box-shadow: 0 18px 40px rgba(24, 33, 43, 0.08);
+}
+
+.ask-marcelo-callout h2 {
+  margin: 0 0 0.65rem;
+  color: var(--cv-ink);
+  font-size: 1.55rem;
+  line-height: 1.18;
+}
+
+.ask-marcelo-callout p:not(.cv-kicker) {
+  margin: 0;
+  color: var(--cv-muted);
+  line-height: 1.6;
+}
+
+.ask-marcelo-callout__action {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.ask-marcelo-callout__examples {
+  font-size: 0.88rem;
+}
+
 .profile-nav {
   position: sticky;
   top: 0;
@@ -869,6 +908,10 @@ body {
 
   .lab-sidebar nav {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ask-marcelo-callout {
+    grid-template-columns: 1fr;
   }
 }
 
