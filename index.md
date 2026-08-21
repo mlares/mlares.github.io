@@ -20,7 +20,6 @@ header:
     I turn ambiguous problems into measurable data products, combining model-building depth with technical leadership, experimentation strategy, and cross-functional execution. I have guided production recommendation experiments at Mercado Libre, led an eight-person data science team at IThreex, and developed researchers through CONICET and twenty years of teaching at Universidad Nacional de Córdoba.
   </p>
   <div class="cv-actions">
-    <a class="btn btn--primary" href="https://askml-b2d6wau7ua-rj.a.run.app" target="_blank" rel="noopener noreferrer">Ask Marcelo about my work</a>
     <a class="btn btn--primary" href="/documents/RESUME.pdf">Resume PDF</a>
     <a class="btn" href="/documents/cv.pdf">Short CV PDF</a>
     <a class="btn" href="/documents/CV_long.pdf">Long CV PDF</a>
