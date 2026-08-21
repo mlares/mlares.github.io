@@ -7,8 +7,8 @@ header:
   overlay_image: /assets/images/banner.jpeg
   overlay_filter: 0.45
   actions:
-    - label: "Short CV PDF"
-      url: "/documents/cv.pdf"
+    - label: "Ask Marcelo"
+      url: "https://askml-b2d6wau7ua-rj.a.run.app"
     - label: "View Projects"
       url: "/projects/"
 ---
@@ -20,11 +20,22 @@ header:
     I turn ambiguous problems into measurable data products, combining model-building depth with technical leadership, experimentation strategy, and cross-functional execution. I have guided production recommendation experiments at Mercado Libre, led an eight-person data science team at IThreex, and developed researchers through CONICET and twenty years of teaching at Universidad Nacional de Córdoba.
   </p>
   <div class="cv-actions">
-    <a class="btn btn--primary" href="https://askml-b2d6wau7ua-rj.a.run.app" target="_blank" rel="noopener noreferrer">Chat with AskML</a>
     <a class="btn btn--primary" href="/documents/RESUME.pdf">Resume PDF</a>
     <a class="btn" href="/documents/cv.pdf">Short CV PDF</a>
     <a class="btn" href="/documents/CV_long.pdf">Long CV PDF</a>
     <a class="btn" href="/cv/full/">Detailed CV HTML</a>
+  </div>
+</section>
+
+<section class="ask-marcelo-callout" aria-labelledby="ask-marcelo-heading">
+  <div>
+    <p class="cv-kicker">Explore the portfolio interactively</p>
+    <h2 id="ask-marcelo-heading">Ask Marcelo about the work behind the CV.</h2>
+    <p>Use my evidence-backed AI assistant to explore applied AI, production machine learning, technical leadership, research, teaching, and selected projects. Every answer points you to public sources you can check.</p>
+  </div>
+  <div class="ask-marcelo-callout__action">
+    <p class="ask-marcelo-callout__examples">Try: “Do you have experience with recommendation systems?” · “What AI teams have you led?”</p>
+    <a class="btn btn--primary" href="https://askml-b2d6wau7ua-rj.a.run.app" target="_blank" rel="noopener noreferrer">Start a conversation <span aria-hidden="true">→</span></a>
   </div>
 </section>
 
