@@ -30,12 +30,15 @@ header:
 <section class="ask-marcelo-callout" aria-labelledby="ask-marcelo-heading">
   <div>
     <p class="cv-kicker">Explore the portfolio interactively</p>
-    <h2 id="ask-marcelo-heading">Ask Marcelo about the work behind the CV.</h2>
-    <p>Use my evidence-backed AI assistant to explore applied AI, production machine learning, technical leadership, research, teaching, and selected projects. Every answer points you to public sources you can check.</p>
+    <h2 id="ask-marcelo-heading">Choose how you’d like to connect.</h2>
+    <p>Chat with my evidence-backed virtual assistant to explore applied AI, production machine learning, technical leadership, research, teaching, and selected projects. Or book a meeting to discuss an opportunity, project, or collaboration directly with me.</p>
   </div>
   <div class="ask-marcelo-callout__action">
-    <p class="ask-marcelo-callout__examples">Try: “Do you have experience with recommendation systems?” · “What AI teams have you led?”</p>
-    <a class="btn btn--primary" href="https://askml-b2d6wau7ua-rj.a.run.app" target="_blank" rel="noopener noreferrer">Start a conversation <span aria-hidden="true">→</span></a>
+    <p class="ask-marcelo-callout__examples">Two ways to connect: explore the portfolio now, or start a conversation with Marcelo.</p>
+    <div class="ask-marcelo-callout__buttons">
+      <a class="btn btn--primary" href="https://askml-b2d6wau7ua-rj.a.run.app" target="_blank" rel="noopener noreferrer">Chat with my virtual assistant <span aria-hidden="true">→</span></a>
+      <a class="btn ask-marcelo-callout__meeting" href="https://calendly.com/marcelo-lares/30min" target="_blank" rel="noopener noreferrer">Book a meeting with Marcelo</a>
+    </div>
   </div>
 </section>
 

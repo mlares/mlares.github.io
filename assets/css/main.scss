@@ -181,12 +181,34 @@ body {
 .ask-marcelo-callout__action {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: stretch;
   gap: 1rem;
 }
 
 .ask-marcelo-callout__examples {
   font-size: 0.88rem;
+}
+
+.ask-marcelo-callout__buttons {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.ask-marcelo-callout__buttons .btn {
+  margin: 0;
+  text-align: center;
+}
+
+.ask-marcelo-callout__meeting {
+  border: 1px solid var(--cv-accent);
+  color: var(--cv-accent);
+  background: #fff;
+}
+
+.ask-marcelo-callout__meeting:hover,
+.ask-marcelo-callout__meeting:focus {
+  color: #fff;
+  background: var(--cv-accent);
 }
 
 .profile-nav {
