@@ -997,3 +997,275 @@ body {
     min-height: 760px;
   }
 }
+
+/* Personal homepage proposal: an open layout with a clear reading order. */
+.welcome-page #main {
+  max-width: 1120px;
+}
+
+.welcome-page .page__content {
+  color: var(--cv-ink);
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.welcome-page .welcome-eyebrow {
+  margin: 0 0 0.75rem;
+  color: var(--cv-accent);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.welcome-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 223px;
+  align-items: center;
+  gap: 4rem;
+  padding: 3.5rem 0 3rem;
+}
+
+.welcome-page h1 {
+  margin: 0 0 1rem;
+  font-size: clamp(2.4rem, 5vw, 3.8rem);
+  line-height: 1.08;
+  letter-spacing: -0.04em;
+}
+
+.welcome-page .welcome-lead {
+  max-width: 34ch;
+  font-size: 1.4rem;
+  line-height: 1.45;
+}
+
+.welcome-intro p:not(.welcome-eyebrow) {
+  max-width: 58ch;
+}
+
+.welcome-portrait {
+  display: block;
+  margin: 0;
+}
+
+.welcome-portrait img {
+  display: block;
+  width: 223px;
+  max-width: 100%;
+  height: auto;
+  border-radius: 45% 45% 12px 12px;
+}
+
+.welcome-portrait figcaption {
+  margin-top: 0.8rem;
+  color: var(--cv-muted);
+  text-align: center;
+  font-size: 0.75rem;
+}
+
+.welcome-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin: 1.5rem 0 0.6rem;
+}
+
+.welcome-page .btn {
+  padding: 0.85em 1.2em;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.welcome-page .btn--primary {
+  background: var(--cv-accent);
+  color: #fff;
+}
+
+.welcome-page .btn--primary:hover {
+  background: #00515a;
+}
+
+.welcome-page .welcome-button-secondary {
+  border: 1px solid var(--cv-accent);
+  color: var(--cv-accent);
+  background: transparent;
+}
+
+.welcome-resume,
+.welcome-assistant {
+  font-size: 0.8rem;
+}
+
+.welcome-section {
+  margin: 0;
+  padding: 3rem 0;
+  border-top: 1px solid var(--cv-rule);
+}
+
+.welcome-page h2 {
+  margin: 0 0 1.5rem;
+  padding: 0;
+  border: 0;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.welcome-projects {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.6rem;
+}
+
+.welcome-projects article {
+  min-width: 0;
+}
+
+.welcome-projects h3 {
+  margin: 0 0 0.8rem;
+  font-size: 1.15rem;
+  line-height: 1.35;
+}
+
+.welcome-projects p:not(.welcome-eyebrow),
+.welcome-projects a {
+  font-size: 0.86rem;
+}
+
+.welcome-diagram {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 7rem;
+  margin-bottom: 1.2rem;
+  padding: 0.8rem;
+  border-radius: 8px;
+  background: var(--cv-soft);
+  color: #00515a;
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+.welcome-projects article:nth-child(2) .welcome-diagram {
+  background: #f3eeef;
+  color: #81323a;
+}
+
+.welcome-projects article:nth-child(3) .welcome-diagram {
+  background: var(--cv-warm);
+  color: #645331;
+}
+
+.welcome-lab {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 2.5rem;
+  margin: 1rem 0 3rem;
+  padding: 2.25rem;
+  border-radius: 12px;
+  background: var(--cv-soft);
+}
+
+.welcome-lab-note {
+  padding-left: 1.5rem;
+  border-left: 2px solid var(--cv-accent);
+}
+
+.welcome-lab-note strong {
+  display: block;
+  margin-bottom: 0.6rem;
+}
+
+.welcome-lab-note span {
+  color: var(--cv-muted);
+  font-size: 0.8rem;
+}
+
+.welcome-text-link {
+  display: inline-block;
+  margin: 0.6rem 0.8rem;
+  font-size: 0.85rem;
+}
+
+.welcome-about {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 3rem;
+}
+
+.welcome-contact {
+  padding-bottom: 1rem;
+}
+
+.welcome-assistant {
+  margin-top: 1.5rem;
+  color: var(--cv-muted);
+}
+
+.footer-explore {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.footer-explore a {
+  display: inline-block;
+  padding: 0.5rem 0;
+}
+
+.welcome-page a:focus-visible,
+.footer-explore a:focus-visible {
+  outline: 3px solid var(--cv-accent-2);
+  outline-offset: 4px;
+}
+
+#recommendations,
+#toros,
+#corral {
+  scroll-margin-top: 2rem;
+}
+
+@media (max-width: 760px) {
+  .welcome-intro {
+    grid-template-columns: minmax(0, 1fr) 130px;
+    gap: 1.5rem;
+    padding-top: 2rem;
+  }
+
+  .welcome-projects,
+  .welcome-lab,
+  .welcome-about {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .welcome-diagram {
+    min-height: 5rem;
+  }
+
+  .welcome-lab {
+    padding: 1.4rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .welcome-intro {
+    grid-template-columns: 1fr;
+  }
+
+  .welcome-portrait {
+    width: 130px;
+  }
+
+  .welcome-section {
+    padding: 2rem 0;
+  }
+
+  .welcome-text-link {
+    margin-left: 0;
+  }
+}

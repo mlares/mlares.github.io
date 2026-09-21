@@ -29,7 +29,7 @@ classes:
       <div class="project-card__header">
         <div>
           <p class="cv-kicker">E-commerce recommendations</p>
-          <h3>Recommendation Systems at Mercado Libre</h3>
+          <h3 id="recommendations">Recommendation Systems at Mercado Libre</h3>
           <p class="project-card__subtitle">Production ranking model serving millions of users across Argentina, Brazil, and Mexico.</p>
         </div>
         <div class="project-card__visual">Ranking graph</div>
@@ -80,7 +80,7 @@ classes:
       <div class="project-card__header">
         <div>
           <p class="cv-kicker">Real-time event detection</p>
-          <h3>TOROS: Gravitational-Wave Counterpart Detection</h3>
+          <h3 id="toros">TOROS: Gravitational-Wave Counterpart Detection</h3>
           <p class="project-card__subtitle">Real-time computer vision pipeline for rare-event discovery.</p>
         </div>
         <div class="project-card__visual">Alert pipeline</div>
@@ -110,7 +110,7 @@ classes:
       <div class="project-card__header">
         <div>
           <p class="cv-kicker">Data-intensive pipeline framework</p>
-          <h3>Corral Framework</h3>
+          <h3 id="corral">Corral Framework</h3>
           <p class="project-card__subtitle">SQL-backed Python framework for reproducible data-processing pipelines.</p>
         </div>
         <div class="project-card__visual">Pipeline engine</div>
