@@ -11,7 +11,7 @@ author_profile: false
   <p class="cv-kicker">Interactive technical notes</p>
   <h1>Data science ideas you can manipulate.</h1>
   <p>
-    Small interactive demonstrations that expose the mechanics behind statistical learning: thresholds, trade-offs, projections, uncertainty, and model behavior. They are compact technical notes for people who want to see how the concepts work.
+    Explore how models work by changing their assumptions. These interactive experiments cover statistical learning, uncertainty, and a Monte Carlo model of how civilizations might make contact in the Milky Way.
   </p>
 </section>
 
