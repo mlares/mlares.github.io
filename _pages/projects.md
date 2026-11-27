@@ -106,6 +106,20 @@ classes:
       </details>
     </article>
 
+    {% assign galactic = site.data.applets | where: 'slug', 'galactic-contact-simulator' | first %}
+    <article class="project-card">
+      <p class="cv-kicker">Astrobiology research</p>
+      <h3 id="galactic-contact-simulator">{{ galactic.title }}</h3>
+      <p class="project-card__subtitle">{{ galactic.subtitle }}</p>
+      <p>I coauthored a Monte Carlo study on when civilizations in the Milky Way could make contact. In the simulator, you can change how many civilizations arise and how long they can communicate, then watch signals travel and compare the odds of a one-way message and a two-way exchange.</p>
+      <div class="project-badges">
+        {% for skill in galactic.skills %}
+          <span>{{ skill }}</span>
+        {% endfor %}
+      </div>
+      <p><a class="btn btn--primary" href="{% link _pages/lab/galactic-contact-simulator.md %}">Try the simulator</a> <a href="{{ galactic.publication.url }}">Read the paper</a></p>
+    </article>
+
     <article class="project-card">
       <div class="project-card__header">
         <div>

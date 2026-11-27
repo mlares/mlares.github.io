@@ -75,6 +75,14 @@ author_profile: false
   </div>
 </section>
 
+{% assign galactic = site.data.applets | where: 'slug', 'galactic-contact-simulator' | first %}
+<section class="cv-section">
+  <h2>Interactive Research</h2>
+  <div class="modern-list">
+    <p><strong><a href="{% link _pages/lab/galactic-contact-simulator.md %}">{{ galactic.title }}</a></strong> explores how civilization lifetimes and light-travel time affect the chance of contact. <a href="{{ galactic.publication.url }}">Read the 2020 paper</a>.</p>
+  </div>
+</section>
+
 <section class="cv-section">
   <h2>Talks</h2>
   <div class="modern-list">
