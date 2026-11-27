@@ -1,6 +1,7 @@
 {% assign applet = site.data.applets | where: "slug", page.applet | first %}
 
 {% if applet %}
+{% assign applet_url = applet.source | prepend: '/applets/raw/' | relative_url %}
 <section class="lab-shell">
   <aside class="lab-sidebar" aria-label="Interactive lab navigation">
     <a class="lab-sidebar__home" href="/lab/">Interactive Lab</a>
@@ -25,6 +26,12 @@
       <div>
         <h2>What This Shows</h2>
         <p>{{ applet.description }}</p>
+        {% if applet.try_it %}
+        <p><strong>Try this.</strong> {{ applet.try_it }}</p>
+        {% endif %}
+        {% if applet.publication %}
+        <p>Based on <a href="{{ applet.publication.url }}">{{ applet.publication.title }}</a>. {{ applet.publication.citation }}</p>
+        {% endif %}
       </div>
       <div class="project-badges">
         {% for skill in applet.skills %}
@@ -33,10 +40,13 @@
       </div>
     </section>
 
+    {% if applet.standalone %}
+    <a class="btn btn--primary" href="{{ applet_url }}">Open simulator in full window</a>
+    {% endif %}
     <section class="lab-frame-section" aria-label="{{ applet.title }}">
       <iframe
         class="lab-frame"
-        src="/applets/raw/{{ applet.source }}"
+        src="{{ applet_url }}"
         title="{{ applet.title }}"
         loading="lazy"></iframe>
     </section>

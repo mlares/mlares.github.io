@@ -1,3 +1,31 @@
+- slug: galactic-contact-simulator
+  source: GalacticContactSimulator.html
+  title: Galactic Contact Simulator
+  subtitle: Could two civilizations exchange signals before time runs out?
+  category: Statistical Simulation
+  visual: Monte Carlo
+  description: >
+    Explore when hypothetical civilizations in a model of the Milky Way could
+    receive a signal or exchange messages. Follow signals across a single
+    simulated galaxy, then compare contact estimates across many random galaxies.
+  skills:
+    - Monte Carlo simulation
+    - Sensitivity analysis
+    - Scientific visualization
+  challenge: Accounting for both light-travel time and how long each civilization can communicate.
+  contribution: I coauthored the underlying Monte Carlo study with J. G. Funes and L. Gramajo.
+  transferable: Estimating rare-event probabilities and testing how assumptions affect those estimates.
+  related: Search for extraterrestrial intelligence (SETI).
+  standalone: true
+  try_it: >
+    Under Scenarios, compare Short lives (1,000 years) with Long lives
+    (10 million years). Then use Galaxy and signals to switch from a two-way
+    conversation to a one-way message and see how the estimates change.
+  publication:
+    title: Monte Carlo estimation of the probability of causal contacts between communicating civilizations
+    citation: M. Lares, J. G. Funes, and L. Gramajo. International Journal of Astrobiology 19(5), 393–405 (2020).
+    url: https://doi.org/10.1017/S147355042000018X
+
 - slug: roc-pr
   source: roc-pr.html
   title: ROC and Precision-Recall Explorer

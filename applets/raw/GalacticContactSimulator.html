@@ -1,0 +1,1573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Galactic Contact Simulator</title>
+<style>
+:root{
+  --bg:#eef1f6; --panel:#ffffff; --ink:#14213d; --muted:#586179; --line:#d3d9e6;
+  --accent:#0b7f8c; --machine:#b9740a; --lonely:#c0432f; --good:#17794a; --track:#dde3ef;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0a0f1e; --panel:#121a30; --ink:#e7ebf5; --muted:#98a3c0; --line:#26304d;
+    --accent:#4fd1e0; --machine:#f2b84b; --lonely:#f08068; --good:#5fd39a; --track:#222c47;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.app{max-width:1640px;margin:0 auto;height:100vh;height:100svh;min-height:610px;padding:14px clamp(12px,2.2vw,32px);display:flex;flex-direction:column}
+.page-header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+h1{font:600 clamp(26px,3vw,39px)/1.1 Georgia,serif;margin:0;letter-spacing:-.025em}
+.navigation{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.navigation > button,.navigation summary{display:inline-flex;align-items:center;gap:8px;font-size:.875rem;white-space:nowrap}
+.navigation .current{background:var(--accent);border-color:var(--accent);color:var(--panel);font-weight:650}
+.workspace{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(344px, min(37%, 460px));gap:12px}
+.main-panel,.console{min-width:0;min-height:0}
+.main-panel{display:flex;flex-direction:column}
+.viz{min-width:0;min-height:185px;flex:1;display:grid;grid-template-rows:auto minmax(0,1fr);gap:8px}
+.console{display:grid;grid-template-rows:auto auto minmax(0,1fr);overflow:hidden}
+@media(max-width:760px), (max-height:590px){
+  html{--pinned-map-height:clamp(148px,26svh,270px);scroll-padding-top:calc(var(--pinned-map-height) + 8px)}
+  .app{height:auto;min-height:100svh}
+  .page-header{align-items:flex-start;flex-direction:column}
+  .workspace{display:flex;flex-direction:column}
+  .main-panel{display:contents}
+  .viz{position:sticky;top:0;z-index:2;flex:none;height:var(--pinned-map-height);min-height:0;
+    margin:-1px -1px 0;padding:8px 1px 2px;background:var(--panel);box-shadow:0 5px 8px #070b1717}
+  .map-tools{order:1;padding:5px 8px 9px;background:var(--panel);border-radius:0 0 7px 7px}
+  .console{order:2;display:block}
+}
+.nav-disclosure{position:relative}
+.nav-disclosure summary{list-style:none;cursor:pointer;min-height:40px;border:1px solid var(--line);border-radius:6px;padding:6px 12px}
+.nav-disclosure summary::-webkit-details-marker{display:none}
+.nav-disclosure summary::after{content:"▾";transition:transform .2s}
+.nav-disclosure:not([open]) summary::after{transform:rotate(-90deg)}
+.nav-disclosure summary:hover{border-color:var(--accent)}
+.nav-disclosure summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.nav-popover{position:absolute;right:0;top:calc(100% + 8px);z-index:4;width:min(690px,calc(100vw - 44px));box-shadow:0 8px 26px #070b172e;max-height:72vh;overflow:auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:14px}
+.scenario-group + .scenario-group{border-inline-start:1px solid var(--line);padding-inline-start:14px}
+@media(max-width:760px), (max-height:590px){
+  .nav-popover{position:fixed;top:auto;left:12px;right:auto;width:min(690px,calc(100vw - 24px));margin-top:8px;max-height:60svh}
+}
+@media(max-width:560px){
+  .nav-popover{grid-template-columns:minmax(0,1fr)}
+  .scenario-group + .scenario-group{border-inline-start:0;padding-inline-start:0;border-top:1px solid var(--line);padding-top:12px}
+}
+.cg{font:600 12px/1.2 system-ui,sans-serif;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:12px 0 6px}
+.cg:first-child{margin-top:2px}
+.caselist{display:flex;flex-direction:column;gap:5px}
+.cb{text-align:left;font-size:13.5px;padding:6px 10px;width:100%}
+.cb.on{border-color:var(--accent);color:var(--accent);font-weight:600}
+.marks{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.mk{font-size:12.5px;padding:3px 9px}
+.mk.on{border-color:var(--accent);color:var(--accent);font-weight:600}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:11px 13px}
+.card.console{padding:0}
+.card h2{font:600 16px/1.3 "Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;margin:0 0 2px}
+.card .sub{color:var(--muted);font-size:13px;margin:0 0 10px}
+canvas{display:block;width:100%;background:#070b17;border-radius:5px}
+#cvGalaxy{height:100%;min-height:0;border:1px solid #202d4a}
+.map-heading{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.map-heading h2{margin:0}
+@media(max-width:760px), (max-height:590px){.map-heading{padding:0 8px}}
+.map-time{font:600 .9rem ui-monospace,monospace;color:var(--accent);white-space:nowrap}
+.map-tools{font-size:.85rem;min-width:0}
+.map-controls{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:9px 0 6px}
+.map-controls button{min-height:32px;padding:3px 8px;font-size:.82rem}
+.playback,.overlays{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.overlays label{display:flex;align-items:center;gap:4px;white-space:nowrap}
+.primary{background:var(--accent);border-color:var(--accent);color:var(--panel);font-weight:650}
+.primary:hover{border-color:var(--ink);filter:brightness(.92)}
+button:disabled{opacity:.55;cursor:default}
+.event-caption{margin:6px 0;padding:6px 9px;border-inline-start:3px solid var(--accent);background:var(--bg);font-size:.83rem;line-height:1.4}
+.timeline{display:grid;gap:4px}
+.timeline .timebar,.timeline .hint2{margin:0}
+.position-value{font-size:.75rem;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.keys{margin-top:4px}
+.keys summary,.notes summary{cursor:pointer;font-size:.82rem;font-weight:650;width:fit-content}
+.keys .legend{margin-top:4px;gap:3px 11px}
+.map-tools .legend{font-size:.71rem;gap:2px 10px;margin-top:4px}
+.keys .hint2{margin:3px 0 0}
+@media(max-width:520px){.timebar{flex-wrap:wrap}.zoom-label{width:100%}}
+.zoom-label{display:flex;align-items:center;gap:6px;font-size:.875rem;white-space:nowrap}
+.zoom-label select{min-width:0;margin:0;font-size:inherit;padding:4px 6px}
+.snapshot{padding:12px 14px;background:#0b1226;color:#e7ebf5;border-radius:7px 7px 0 0}
+.snapshot h2{font:650 .78rem/1.25 system-ui,sans-serif;color:#c6d2ec;margin:0 0 7px}
+.instr{display:grid;grid-template-columns:minmax(84px,1fr) minmax(0,2.9fr);align-items:start;gap:6px 10px;color:#cbd5f0}
+#cvClock{width:72px;height:72px;margin:0 auto;border-radius:50%;background:transparent}
+.clock{grid-row:span 2;text-align:center;min-width:0}
+.clock .digits{margin-top:2px}
+.clock .clksub{font-size:10.5px}
+@media(max-width:380px){.snapshot{padding-inline:9px}.instr{grid-template-columns:minmax(72px,1fr) minmax(0,2.9fr);gap:5px}.card{padding-inline:10px}.console{padding-inline:0}}
+.digits{font:600 13px/1.15 ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;color:#4fd1e0;text-shadow:0 0 8px rgba(79,209,224,.45);margin-top:6px;overflow-wrap:anywhere}
+.digits small{font-size:11px;color:#8fe3ee;margin-left:4px}
+.clksub{font-size:11.5px;color:#93a0c4;margin-top:3px;line-height:1.35}
+.clock select{max-width:100%;background:#0b1226;color:#cbd5f0;border:1px solid #26304d;font-size:12px;padding:2px 6px;margin-top:6px;width:auto}
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.tile{background:#070b17;border:1px solid #1f2a47;border-radius:5px;padding:5px}
+.tile .lbl{font-size:.68rem;color:#aab6d4;line-height:1.15;min-height:2.3em;overflow-wrap:anywhere}
+.tile .num{font:600 clamp(12px,1.45vw,19px)/1.2 ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;color:#ffd479;text-shadow:0 0 7px rgba(255,212,121,.35)}
+.tile .num .z{opacity:.28}
+.tile .bar{height:3px;background:#1a2340;border-radius:2px;margin-top:4px;overflow:hidden}
+.tile .bar i{display:block;height:100%;width:0;background:#ffd479;transition:width .2s}
+.lamp{grid-column:2;display:flex;align-items:center;gap:8px;font-size:.75rem;background:#070b17;border:1px solid #1f2a47;border-radius:5px;padding:4px 7px}
+.lamp i{width:12px;height:12px;border-radius:50%;background:#394261;flex:none}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;margin:0!important;min-height:0!important}
+#cvTimeline,#cvOverview{cursor:crosshair;touch-action:pan-y}
+#cvTimeline{height:59px}
+#cvOverview{height:27px}
+#cvSweep{height:212px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin:8px 0 0;font-size:12.5px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.legend i.bar{width:14px;height:4px;border-radius:2px;vertical-align:2px}
+.legend i.line{width:16px;height:0;border-radius:0;border-top:2px solid #e8c36a;vertical-align:3px}
+.legend i.line.dashed{border-top-style:dashed}
+.timebar{display:flex;align-items:center;gap:8px;margin:5px 0 6px}
+.timebar input[type=range]{flex:1}
+button{font:inherit;font-size:.9rem;min-height:40px;color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:6px;padding:6px 12px;cursor:pointer}
+button:hover{border-color:var(--accent)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.status{font-size:13px;color:var(--muted);min-height:20px;margin-top:6px;font-variant-numeric:tabular-nums}
+
+/* Dashboard */
+.outcomes{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:5px}
+.outcome{display:grid;align-content:start;gap:2px;padding:5px 7px;background:#070b17;border:1px solid #1f2a47;border-radius:5px}
+.outcome .cap{color:#aab6d4;font-size:.72rem;line-height:1.2}
+.outcome .num{font:600 clamp(17px,1.7vw,24px)/1.15 ui-monospace,monospace;color:#73e0ec}
+.contact-summary{margin-top:9px;padding-top:8px;border-top:1px solid #2a3552}
+.estimate-note{margin:4px 0 0;font-size:.73rem;line-height:1.25;color:#aab6d4}
+.tool-tabs{display:flex;gap:4px;padding:6px 10px 0;border-bottom:1px solid var(--line)}
+.tool-tabs button{flex:1;min-height:38px;border-color:transparent;border-radius:5px 5px 0 0;border-bottom:3px solid transparent}
+.tool-tabs button[aria-selected="true"]{color:var(--accent);font-weight:700;border-bottom-color:var(--accent);background:var(--bg)}
+.tool-panel{min-height:0;overflow-y:auto;scrollbar-gutter:stable;padding:11px 13px 14px;overscroll-behavior-y:contain}
+.tool-panel:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.tool-panel dl.m{font-size:.85rem;line-height:1.4}
+.tool-panel .prog{margin:6px 0 0}
+.tool-panel .verdict{margin:8px 0;font-size:.83rem}
+.lesson p{margin:6px 0}
+.case-arrivals{list-style:none;padding:0;margin:6px 0}
+.case-arrivals li+li{margin-top:4px}
+.case-arrivals button{width:100%;text-align:left;font-size:.8rem;min-height:34px}
+#cardSweep{margin-top:15px}
+@media(max-width:760px), (max-height:590px){.tool-panel{overflow:visible;scrollbar-gutter:auto}}
+.legend i.diamond{border-radius:0;background:#fff;outline:1px solid #7d89a6;transform:rotate(45deg);width:8px;height:8px}
+.verdict{padding:9px 12px;border-left:4px solid var(--muted);background:var(--bg);border-radius:0 5px 5px 0;margin:0 0 12px;font-size:14px}
+.verdict.good{border-color:var(--good)} .verdict.bad{border-color:var(--lonely)} .verdict.mid{border-color:var(--machine)}
+dl.m{display:grid;grid-template-columns:1fr auto;gap:5px 14px;margin:0}
+dl.m dt{color:var(--muted)}
+dl.m dd{margin:0;text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
+dd.ok{color:var(--good)} dd.no{color:var(--lonely)}
+.prog{font-size:12px;color:var(--muted);margin-top:8px;min-height:16px}
+
+/* controls */
+.presets{display:grid;gap:5px}
+.presets button{text-align:left;font-size:.84rem;min-height:36px}
+.parameter-group{--group-color:#087f79;margin:0 0 8px;border:1px solid var(--line);border-inline-start:4px solid var(--group-color);border-radius:6px}
+.parameter-group.artificial{--group-color:#7544a8}
+.parameter-group.galaxy{--group-color:#2865b5}
+.parameter-group.sun{--group-color:#926100}
+@media(prefers-color-scheme:dark){
+  .parameter-group{--group-color:#62d7c8}
+  .parameter-group.artificial{--group-color:#c8a7f7}
+  .parameter-group.galaxy{--group-color:#91beff}
+  .parameter-group.sun{--group-color:#ffd768}
+}
+.parameter-group summary{cursor:pointer;font-size:.875rem;font-weight:650;padding:9px 11px;color:var(--group-color);background:var(--bg);background:color-mix(in srgb,var(--group-color) 10%,var(--panel));border-radius:3px 5px 5px 3px}
+.parameter-group[open] summary{border-bottom:1px solid var(--line);border-radius:3px 5px 0 0}
+.parameter-group summary:focus-visible{outline:2px solid var(--group-color);outline-offset:2px}
+.parameter-fields{padding:10px 11px}
+.parameter-fields .ctl:last-child{margin-bottom:0}
+.parameter-note{margin:0;padding:0 11px 10px}
+.ctl{margin:0 0 13px}
+.ctl .row{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.ctl label{font-weight:600;font-size:14px}
+.ctl output{font-variant-numeric:tabular-nums;color:var(--accent);font-weight:600;white-space:nowrap}
+.ctl input[type=range]{width:100%;margin:4px 0 0;accent-color:var(--group-color)}
+.ctl .hint{font-size:12.5px;color:var(--muted);margin-top:1px}
+select{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:5px 8px;margin-top:4px}
+.notes{margin-top:14px;padding-top:8px;border-top:1px solid var(--line);font-size:13.5px;color:var(--muted)}
+.notes summary{color:var(--ink)}
+.notes ul{margin:6px 0 0;padding-left:18px}
+.notes li{margin:3px 0}
+[hidden]{display:none!important}
+.legend i.halo{width:12px;height:12px;background:transparent;border:1px solid #7d89a6}
+.legend i.origin{background:transparent;border:2px solid #7d89a6}
+.h3{font:600 14px/1.3 system-ui,sans-serif;margin:16px 0 6px;padding-top:12px;border-top:1px solid var(--line)}
+.tl{font-size:.875rem;white-space:nowrap}.timebar input[type=range]{min-width:0;accent-color:var(--accent)}
+.hint2{font-size:12.5px;color:var(--muted);margin-top:8px;line-height:1.45}
+.legend i.ring{width:12px;height:12px;background:transparent;border:2px solid #4fd1e0}
+.legend i.ring.d{border:2px dashed var(--muted)}
+.legend i.ring.solar{border-color:#ffdf55;background:#8b680d}
+@media (prefers-reduced-motion:reduce){.tile .bar i,.nav-disclosure summary::after{transition:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="page-header">
+    <h1>Galactic Contact Simulator</h1>
+    <nav class="navigation" aria-label="Simulator views">
+      <button id="btnExplore" class="current" type="button" aria-current="true">Random galaxy</button>
+      <details class="nav-disclosure" id="scenarioMenu">
+        <summary id="scenarioMenuButton">Scenarios</summary>
+        <div class="card nav-popover">
+          <section class="scenario-group" aria-labelledby="presetGroupTitle">
+            <h2 id="presetGroupTitle">Galaxy simulation presets</h2>
+            <p class="sub">Apply a configuration to the random galaxy.</p>
+            <div class="presets" id="presets"></div>
+          </section>
+          <section class="scenario-group" aria-labelledby="caseGroupTitle">
+            <h2 id="caseGroupTitle">Particular cases</h2>
+            <p class="sub">Zoom in on a specific event or concept.</p>
+            <div class="caselist" id="caseList"></div>
+          </section>
+        </div>
+      </details>
+    </nav>
+  </header>
+
+  <main class="workspace">
+    <div class="card main-panel">
+      <section class="viz" aria-labelledby="mapTitle">
+        <div class="map-heading">
+          <h2 id="mapTitle" tabindex="-1">The galaxy through time</h2>
+          <span class="map-time" id="timeReadout"></span>
+        </div>
+        <canvas id="cvGalaxy" role="img" aria-label="Face-on galaxy showing civilizations and signal arrivals" aria-describedby="eventCaption"></canvas>
+      </section>
+      <div class="map-tools">
+        <div class="map-controls">
+          <div class="playback">
+            <button id="btnPlay" class="primary" type="button">Play</button>
+            <button id="btnPrevEvent" type="button">Previous event</button>
+            <button id="btnNextEvent" type="button">Next event</button>
+            <button id="btnContact" type="button">Jump to signal arrival</button>
+          </div>
+          <div class="overlays">
+            <label><input type="checkbox" id="chkBub" checked> Light bubbles</label>
+            <label><input type="checkbox" id="chkArr" checked> Arrival arrows</label>
+            <button id="btnUs" type="button">Jump to Sun’s awakening</button>
+          </div>
+        </div>
+        <p class="event-caption" id="eventCaption"></p>
+        <p class="sr" id="eventAnnouncement" role="status"></p>
+        <div class="timebar">
+          <label class="tl" id="tLabel" for="tSlider">Time</label>
+          <input id="tSlider" type="range" min="0" max="1000" step="any" value="0" aria-describedby="timeHint">
+          <label class="zoom-label">Zoom <select id="zoomSel" aria-label="Time zoom"></select></label>
+        </div>
+        <section class="timeline" aria-labelledby="timelineTitle">
+          <h2 class="sr" id="timelineTitle">Civilization lifetimes</h2>
+          <canvas id="cvTimeline" role="img" aria-label="Civilization lifetimes in the selected time range" aria-describedby="timeHint"></canvas>
+          <canvas id="cvOverview" role="img" aria-label="Whole history overview. Select a position to move the zoom window." hidden></canvas>
+          <div class="timebar" id="posRow" hidden>
+            <label class="tl" for="posSlider">Move zoom window</label>
+            <input id="posSlider" type="range" min="0" max="1000" step="any" value="0" aria-describedby="windowStart">
+            <output class="position-value" id="windowStart" for="posSlider"></output>
+          </div>
+          <p class="hint2" id="timeHint"></p>
+        </section>
+        <div class="legend">
+          <span><i style="background:#4fd1e0"></i>Biological</span>
+          <span><i style="background:#f2b84b"></i>Machine successor</span>
+          <span><i class="diamond"></i>Sun</span>
+          <span><i class="origin"></i>Extinct source</span>
+          <span id="silentKey" hidden><i style="background:#e6ebfa"></i>Silent listener</span>
+          <span><i class="line dashed"></i>One-way only</span>
+          <span><i class="line"></i>Two-way possible</span>
+          <span><i class="ring"></i>First-contact surface</span>
+          <span><i class="ring d"></i>Last-contact surface</span>
+          <span id="sunBubbleKey"><i class="ring solar"></i>Sun’s signal bubble</span>
+          <span><i class="halo"></i>Receiving now</span>
+        </div>
+        <details class="keys">
+          <summary>Timeline and clock keys</summary>
+          <div class="legend">
+            <span><i class="bar" style="background:#4fd1e0"></i>Biological, possible contact</span>
+            <span><i class="bar" style="background:#f2b84b"></i>Machine, possible contact</span>
+            <span><i class="bar" style="background:#d4604a"></i>No possible contact</span>
+            <span><i class="bar" style="background:#f4f7ff"></i>Sun</span>
+          </div>
+          <p class="hint2">Clock hands: cyan for the whole history, gold for the zoom window.</p>
+        </details>
+        <div class="status sr" id="status" aria-live="off"></div>
+      </div>
+    </div>
+
+    <aside class="card console" aria-label="Live dashboard and simulator tools">
+      <div class="snapshot">
+        <section aria-labelledby="liveTitle">
+          <h2 id="liveTitle">At the selected time</h2>
+          <div class="instr" id="instr">
+            <div class="clock">
+              <canvas id="cvClock" role="img" aria-label="Clock with two hands: the short thick hand shows the time in the whole history, the long thin hand shows the time inside the visible window"></canvas>
+              <div class="digits"><span id="clkVal">0</span><small id="clkUnit">yr</small></div>
+              <div class="clksub" id="clkSub"></div>
+              <select id="clkUnitSel" aria-label="Clock units">
+                <option value="auto">units: auto</option><option value="yr">years</option><option value="kyr">thousand years</option><option value="Myr">million years</option><option value="Gyr">billion years</option>
+              </select>
+            </div>
+            <div class="tiles">
+              <div class="tile"><div class="lbl">Awake now</div><div class="num" id="gAlive"></div><div class="bar"><i id="b_gAlive"></i></div></div>
+              <div class="tile"><div class="lbl">Receiving now</div><div class="num" id="gListen"></div><div class="bar"><i id="b_gListen"></i></div></div>
+              <div class="tile"><div class="lbl">Active one-way links</div><div class="num" id="gLinks"></div><div class="bar"><i id="b_gLinks"></i></div></div>
+              <div class="tile"><div class="lbl">Have heard a signal</div><div class="num" id="gHeard"></div><div class="bar"><i id="b_gHeard"></i></div></div>
+              <div class="tile"><div class="lbl">Earth active (yr)</div><div class="num" id="gEarth"></div><div class="bar"><i id="b_gEarth"></i></div></div>
+              <div class="tile"><div class="lbl">Sources Earth has heard</div><div class="num" id="gHeardUs"></div><div class="bar"><i id="b_gHeardUs"></i></div></div>
+            </div>
+            <div class="lamp"><i id="lampDot"></i><span id="lampTxt">Sun</span></div>
+          </div>
+        </section>
+
+        <section class="contact-summary" aria-labelledby="statsTitle">
+          <h2 id="statsTitle">Contact estimates across simulations</h2>
+          <div id="cardResults">
+            <div class="outcomes">
+              <div class="outcome"><span class="cap">Any contact in the galaxy</span><strong class="num" id="rP">–</strong></div>
+              <div class="outcome" id="sunOutcome"><span class="cap">Contact at the Sun</span><strong class="num" id="rSun">–</strong></div>
+              <div class="outcome"><span class="cap">Civilizations that make contact</span><strong class="num" id="rCiv">–</strong></div>
+            </div>
+            <p class="estimate-note" id="estimateNote"></p>
+          </div>
+          <div class="outcomes" id="caseResults" hidden>
+            <div class="outcome"><span class="cap">Civilizations</span><strong class="num" id="caseCivs"></strong></div>
+            <div class="outcome"><span class="cap">One-way arrivals</span><strong class="num" id="caseArrivals"></strong></div>
+            <div class="outcome"><span class="cap">Civilizations that receive a signal</span><strong class="num" id="caseListeners"></strong></div>
+          </div>
+        </section>
+      </div>
+
+      <div class="tool-tabs" role="tablist" aria-label="Simulator tools">
+        <button id="parametersTab" type="button" role="tab" aria-selected="true" aria-controls="parameterCard">Parameters</button>
+        <button id="statisticsTab" type="button" role="tab" aria-selected="false" aria-controls="statisticsCard" tabindex="-1">Full statistics</button>
+      </div>
+
+      <div class="tool-panel controls" id="parameterCard" role="tabpanel" aria-labelledby="parametersTab" tabindex="0">
+        <div id="parameterControls">
+          <details class="parameter-group organic">
+            <summary>Organic civilizations</summary>
+            <div class="parameter-fields" id="organicControls"></div>
+          </details>
+          <details class="parameter-group artificial">
+            <summary>Artificial (machine successors)</summary>
+            <div class="parameter-fields" id="machineControls"></div>
+          </details>
+          <details class="parameter-group galaxy">
+            <summary>Galaxy and signals</summary>
+            <div class="parameter-fields" id="galaxyControls"></div>
+          </details>
+          <details class="parameter-group sun">
+            <summary>The Sun</summary>
+            <div class="parameter-fields" id="sunControls"></div>
+            <p class="hint2 parameter-note" id="sunTimeLimit" hidden></p>
+          </details>
+        </div>
+        <section class="lesson" id="caseBox" aria-label="Example guide" hidden>
+          <p id="caseText"></p>
+          <div class="marks" id="caseMarks" aria-label="Worked example events"></div>
+          <p class="hint2" id="caseLook"></p>
+          <button id="btnConfigure" type="button">Configure the random galaxy</button>
+        </section>
+      </div>
+
+      <div class="tool-panel" id="statisticsCard" role="tabpanel" aria-labelledby="statisticsTab" tabindex="0" hidden>
+        <div id="randomStatistics">
+          <p class="sub" id="defline"></p>
+          <p class="prog" id="rProg" role="status"></p>
+          <p class="verdict" id="rVerdict">Computing…</p>
+          <dl class="m">
+            <dt>Possible contact pairs (average)</dt><dd id="rK">–</dd>
+            <dt>Civilizations alive at once (average)</dt><dd id="rAlive">–</dd>
+            <dt>Typical distance between those alive</dt><dd id="rSpace">–</dd>
+            <dt>Round-trip time ÷ lifetime</dt><dd id="rRatio">–</dd>
+          </dl>
+          <section id="cardSweep" aria-labelledby="sweepTitle">
+            <h2 id="sweepTitle">How much does lifetime matter?</h2>
+            <p class="sub">The curves vary the mean biological lifetime. The dots mark the current setting.</p>
+            <canvas id="cvSweep" role="img" aria-label="Probability of contact as a function of mean lifetime"></canvas>
+            <div class="legend">
+              <span><i class="bar" style="background:#4fd1e0"></i>chance that at least one contact happens</span>
+              <span><i class="bar" style="background:#f08068"></i>share of civilizations that make contact</span>
+              <span id="sunSweepKey"><i class="bar" style="background:#ffe28a"></i>chance that we (the Sun) make contact</span>
+            </div>
+          </section>
+          <div id="pointBox">
+            <h3 class="h3">The Sun as a point in space</h3>
+            <dl class="m">
+              <dt id="ptDt">Chance of receiving a signal in a random period</dt><dd id="pW">–</dd>
+              <dt>Share of all time the Sun lies inside a signal ring</dt><dd id="pFrac">–</dd>
+            </dl>
+            <p class="hint2">One-way listening at the Sun's position, whether or not we are awake. Another civilization's ring has to be passing over us during the period.</p>
+          </div>
+          <div id="usBox" hidden>
+            <h3 class="h3">One-way signals at the Sun</h3>
+            <dl class="m">
+              <dt>We hear at least one civilization</dt><dd id="uHear">–</dd>
+              <dt>At least one civilization hears us</dt><dd id="uHeard">–</dd>
+            </dl>
+            <p class="hint2">For the awakening time and lifetime you chose, across many random galaxies.</p>
+          </div>
+        </div>
+        <section id="exampleStatistics" aria-labelledby="exampleStatsTitle" hidden>
+          <h2 id="exampleStatsTitle">One-way signal arrivals</h2>
+          <p class="sub" id="caseArrivalNote"></p>
+          <ul class="case-arrivals" id="caseArrivalList"></ul>
+        </section>
+        <details class="notes">
+          <summary>How the model works</summary>
+          <ul>
+            <li>Each civilization gets a random birth time within the time window and a random position in a thin galactic disk. Its lifetime is drawn from the chosen distribution with the mean you set.</li>
+            <li>Signals travel at the speed of light (1 light-year per year). <b>Message received</b>: some moment in the sender's life exists at which a signal reaches the other civilization while it is alive, even if the sender is already gone. <b>Conversation</b>: the reply must also get back while the first sender is alive.</li>
+            <li>"Chance a possible link is noticed" stands in for the search problem: pointing at the right star, at the right frequency, at the right time. At 100% the result is an upper limit on what is physically possible.</li>
+            <li><b>Light bubbles.</b> When a civilization starts to communicate, a bubble of signal grows around it at the speed of light: its edge is the <i>first-contact surface</i>. When the civilization ends, the signals it already sent keep traveling, so a second surface, the <i>last-contact surface</i>, leaves the place where it died. Between the two surfaces is a ring (a shell in 3D) where the civilization can still be heard after it shuts down. A hollow marker identifies the source of those signals. The picture is flat, so the radius is the distance traveled. An arrow runs from the sender to the civilization receiving its signal. A dashed arrow marks a one-way arrival. A solid arrow marks an arrival that can be answered while the sender is still awake. The statistics follow the "What counts as contact" setting. On the whole-window time scale the rings cross the galaxy within a tiny fraction of a time step, so zoom in to see them.</li>
+            <li><b>The Sun.</b> Tick "Include the Sun" and we become one more civilization, placed where the Sun really is in the disk. It awakens at the time you set and lasts as long as you set. It is drawn as a white diamond, grows its own bubbles, and hears or is heard like any other. The contact estimates show the chance at the Sun for the selected contact definition, alongside separate one-way estimates. The Sun is not counted in the other statistics.</li>
+            <li><b>The Sun as a point.</b> For a point in space at the Sun's position, we ask when it lies between the first-contact and last-contact surfaces of some civilization, which is when a signal from that civilization is passing over it. The panel gives the chance that this happens at some moment of a random period of the length you choose (default 100 years), and the share of all time the Sun is covered.</li>
+            <li>Results are averages over many simulated galaxies. The galaxy drawn above is one of them.</li>
+            <li>Machine scenarios vary the share of long-lived communicators and their mean lifetime. Each simulated civilization has one continuous active period.</li>
+            <li>Simplifications: no expansion or probes, no change of birth rate with cosmic time, no habitability zones beyond the position presets, and "reach" is a hard cutoff rather than a power budget.</li>
+          </ul>
+        </details>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<script>
+/*CORE-START*/
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function randn(rng){var u=0,v;while(u===0)u=rng();v=rng();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function sampleLife(rng,mean,shape){
+  if(shape==='fixed')return mean;
+  if(shape==='heavy'){var s=1.5;return Math.exp(Math.log(mean)-s*s/2+s*randn(rng));}
+  return -mean*Math.log(1-rng());
+}
+function sampleR(rng,R,dist){
+  if(dist==='ring'){var r1=0.4*R,r2=0.75*R;return Math.sqrt(r1*r1+rng()*(r2*r2-r1*r1));}
+  if(dist==='exp'){var h=R/4,r;do{r=-h*(Math.log(1-rng())+Math.log(1-rng()));}while(r>R);return r;}
+  return R*Math.sqrt(rng());
+}
+var THICK=1000;
+function simulate(p,seed,collect){
+  var rng=mulberry32(seed),N0=p.N,N=N0+(p.us?1:0),usI=p.us?N0:-1,R=p.D/2;
+  var b=new Float64Array(N),e=new Float64Array(N),x=new Float64Array(N),y=new Float64Array(N),z=new Float64Array(N);
+  var mach=new Uint8Array(N),k=new Int32Array(N),aliveSum=0,i,j;
+  for(i=0;i<N0;i++){
+    b[i]=rng()*p.T;
+    var m=rng()<p.f; mach[i]=m?1:0;
+    e[i]=b[i]+sampleLife(rng,m?p.Lm:p.L,p.shape);
+    var r=sampleR(rng,R,p.dist),th=rng()*6.283185307179586;
+    x[i]=r*Math.cos(th);y[i]=r*Math.sin(th);z[i]=(rng()-0.5)*THICK;
+    aliveSum+=(Math.min(e[i],p.T)-b[i])/p.T;
+  }
+  if(p.us){b[N0]=p.usT;e[N0]=p.usT+p.usL;x[N0]=0.54*R;y[N0]=0;z[N0]=0;mach[N0]=2;}
+  var Dm=Math.min(p.reach,p.D+THICK),K=0,O=0,links=[],hear=[],usHear=0,usHeard=0,usK=0,one=(p.mode==='one');
+  for(i=0;i<N-1;i++){
+    var a0=b[i],a1=e[i],xi=x[i],yi=y[i],zi=z[i];
+    for(j=i+1;j<N;j++){
+      var b0=b[j],b1=e[j];
+      var isUs=(j===usI);
+      if(!isUs&&a0<b1&&b0<a1)O++;
+      if(a0>b1+Dm||b0>a1+Dm)continue;
+      var dx=xi-x[j],dy=yi-y[j],dz=zi-z[j];
+      var d=Math.sqrt(dx*dx+dy*dy+dz*dz);
+      if(d>p.reach)continue;
+      if(collect&&hear.length<16000){
+        var ts=Math.max(a0+d,b0),te=Math.min(a1+d,b1);
+        if(ts<te)hear.push(i,j,ts,te);
+        ts=Math.max(b0+d,a0);te=Math.min(b1+d,a1);
+        if(ts<te)hear.push(j,i,ts,te);
+      }
+      var ok;
+      if(one){
+        ok=(Math.max(a0,b0-d)<=Math.min(a1,b1-d))||(Math.max(b0,a0-d)<=Math.min(b1,a1-d));
+      }else{
+        ok=(Math.max(a0,b0-d)<=Math.min(a1-2*d,b1-d))||(Math.max(b0,a0-d)<=Math.min(b1-2*d,a1-d));
+      }
+      if(isUs){
+        if(Math.max(a0+d,b0)<Math.min(a1+d,b1))usHear++;
+        if(Math.max(b0+d,a0)<Math.min(b1+d,a1))usHeard++;
+        if(ok)usK++;
+        continue;
+      }
+      if(ok){K++;k[i]++;k[j]++;if(collect&&links.length<1800)links.push(i,j);}
+    }
+  }
+  return {b:b,e:e,x:x,y:y,z:z,mach:mach,k:k,K:K,O:O,links:links,hear:hear,alive:aliveSum,usHear:usHear,usHeard:usHeard,usK:usK};
+}
+function pointStats(p,s,W){
+  var R=p.D/2,sx=0.54*R,ev=[],i,T=p.T;
+  for(i=0;i<p.N;i++){
+    var dx=s.x[i]-sx,dy=s.y[i],dz=s.z[i],d=Math.sqrt(dx*dx+dy*dy+dz*dz);
+    if(d>p.reach)continue;
+    var lo=Math.max(0,s.b[i]+d-W),hi=Math.min(T,s.e[i]+d);
+    if(lo<hi){ev.push([lo,1],[hi,-1]);}
+  }
+  ev.sort(function(a,c){return a[0]-c[0];});
+  var n=0,last=0,acc=0,base=1-p.q,k;
+  for(k=0;k<ev.length;k++){
+    var t=ev[k][0];
+    if(n>0)acc+=(t-last)*(1-Math.pow(base,n));
+    n+=ev[k][1];last=t;
+  }
+  return acc/T;
+}
+function trialStats(p,s){
+  var base=1-p.q,c=0,i;
+  for(i=0;i<p.N;i++){if(s.k[i]>0)c+=1-Math.pow(base,s.k[i]);}
+  var pu=function(n){return n>0?1-Math.pow(base,n):0;};
+  return {pany:s.K>0?1-Math.pow(base,s.K):0,pciv:c/p.N,K:s.K,O:s.O,alive:s.alive,uHear:pu(s.usHear),uHeard:pu(s.usHeard),uK:pu(s.usK),
+    pW:p.skipPoint?0:pointStats(p,s,p.obsW),pFrac:p.skipPoint?0:pointStats(p,s,0)};
+}
+function avgStats(p,trials,seed0){
+  var a={pany:0,pciv:0,K:0,O:0,alive:0,uHear:0,uHeard:0,uK:0,pW:0,pFrac:0},t,key;
+  for(t=0;t<trials;t++){var r=trialStats(p,simulate(p,seed0+t*7919,false));for(key in a)a[key]+=r[key];}
+  for(key in a)a[key]/=trials;
+  return a;
+}
+/*CORE-END*/
+
+/* ---------- formatting ---------- */
+function sig(v){return parseFloat(v.toPrecision(2)).toString();}
+function fy(x){if(x>=1e9)return sig(x/1e9)+' Gyr';if(x>=1e6)return sig(x/1e6)+' Myr';if(x>=1e3)return sig(x/1e3)+' kyr';return sig(x)+' yr';}
+function fly(x){return Math.round(+x.toPrecision(2)).toLocaleString('en-US')+' ly';}
+function pct(v){var p=v*100;return (p>=10?p.toFixed(0):p>=1?p.toFixed(1):p.toFixed(2).replace(/0+$/,'').replace(/\.$/,''))+'%';}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+
+/* ---------- controls ---------- */
+var els={};
+var defs=[
+  {g:'organicControls'},
+  {id:'N',label:'Civilizations created',min:1,max:3.7,step:.001,val:Math.log10(300),fmt:function(v){return Math.round(Math.pow(10,v)).toLocaleString('en-US');},hint:'How many technological civilizations arise during the whole time window.'},
+  {id:'L',label:'Mean lifetime of a civilization',min:1,max:10,step:.01,val:7,fmt:function(v){return fy(Math.pow(10,v));},hint:'How long a civilization stays able to communicate. Ours: about 100 years so far.'},
+  {sel:'shape',label:'Shape of the lifetime distribution',opts:[['exp','Random end (exponential)'],['heavy','Heavy tail: many die young, a few last very long'],['fixed','Everyone lasts exactly the mean']]},
+  {g:'machineControls'},
+  {id:'f',label:'Share that leave a durable machine successor',min:0,max:100,step:1,val:0,lin:true,fmt:function(v){return v+'%';},hint:'This fraction is modeled as machine communicators from awakening.'},
+  {id:'Lm',label:'Mean communicating lifetime of machines',min:5,max:10,step:.01,val:9,fmt:function(v){return fy(Math.pow(10,v));},hint:'Only used if the share above is above zero.'},
+  {g:'galaxyControls'},
+  {id:'T',label:'Time window',min:6,max:10.14,step:.01,val:9,fmt:function(v){return fy(Math.pow(10,v));},hint:'Births are spread at random over this span. The Milky Way is about 13.6 Gyr old.'},
+  {id:'D',label:'Galaxy diameter',min:20000,max:120000,step:1000,val:100000,lin:true,fmt:function(v){return fly(+v);},hint:'The Milky Way disk is about 100,000 light-years across.'},
+  {sel:'dist',label:'Where civilizations appear',opts:[['uniform','Uniformly across the disk'],['exp','Concentrated toward the center'],['ring','In a ring (galactic habitable zone)']]},
+  {id:'reach',label:'Signal reach',min:2,max:5.4,step:.01,val:5.4,fmt:function(v){var d=+els.D.value;return Math.pow(10,v)>=d?'unlimited':fly(Math.pow(10,v));},hint:'Farthest distance a signal can be noticed. Our radio bubble is about 100 light-years wide.'},
+  {sel:'mode',label:'What counts as contact',opts:[['two','Conversation: a reply gets back'],['one','Message received (sender may be gone)']]},
+  {id:'q',label:'Chance a possible link is noticed',min:-3,max:0,step:.01,val:0,fmt:function(v){return v>-0.005?'100%':pct(Math.pow(10,v));},hint:'Right star, right frequency, right time. 100% gives the physical upper limit.'},
+  {g:'sunControls'},
+  {id:'obsW',label:'Observation period for the Sun',min:0,max:6,step:.01,val:2,fmt:function(v){return fy(Math.pow(10,v));},hint:'Length of the period over which we ask whether a signal reaches the Sun (default: 100 years).'},
+  {chk:'us',label:'Include the Sun as one more civilization',hint:'We are placed 0.54 of the way to the edge, as in the real Milky Way, and awaken at the moment you choose.'},
+  {id:'usT',label:'We awaken at',min:0,max:100,step:1,val:50,fmt:function(v){return v+'% of the window ('+fy(Math.pow(10,+els.T.value)*v/100)+')';},hint:'Moment inside the time window when our civilization starts to communicate.'},
+  {id:'usL',label:'How long we last',min:1,max:10,step:.01,val:4,fmt:function(v){var years=Math.pow(10,v);return momentLabel(years,years/1000);},hint:'Our own lifetime as a communicating civilization (fixed, not random).'},
+];
+var parameterFields;
+defs.forEach(function(d){
+  if(d.g){
+    parameterFields=document.getElementById(d.g);
+    return;
+  }
+  var w=document.createElement('div');w.className='ctl';
+  if(d.chk){
+    w.innerHTML='<label style="display:flex;gap:8px;align-items:center;font-weight:600;font-size:14px"><input type="checkbox" id="c_'+d.chk+'" checked> '+d.label+'</label><div class="hint">'+d.hint+'</div>';
+    parameterFields.appendChild(w);els[d.chk]=w.querySelector('input');els[d.chk].addEventListener('change',schedule);
+  }else if(d.sel){
+    w.innerHTML='<div class="row"><label for="c_'+d.sel+'">'+d.label+'</label></div><select id="c_'+d.sel+'"></select>';
+    parameterFields.appendChild(w);
+    var s=w.querySelector('select');
+    d.opts.forEach(function(o){var op=document.createElement('option');op.value=o[0];op.textContent=o[1];s.appendChild(op);});
+    els[d.sel]=s;s.addEventListener('change',schedule);
+  }else{
+    w.innerHTML='<div class="row"><label for="c_'+d.id+'">'+d.label+'</label><output id="o_'+d.id+'"></output></div>'+
+      '<input id="c_'+d.id+'" type="range" min="'+d.min+'" max="'+d.max+'" step="'+d.step+'" value="'+d.val+'"><div class="hint">'+d.hint+'</div>';
+    parameterFields.appendChild(w);
+    var inp=w.querySelector('input');els[d.id]=inp;d.out=w.querySelector('output');
+    inp.addEventListener('input',schedule);
+  }
+});
+function refreshLabels(){defs.forEach(function(d){if(d.id)d.out.textContent=d.fmt(+els[d.id].value);});}
+
+function params(){
+  var g=function(id){return +els[id].value;};
+  var reachRaw=Math.pow(10,g('reach'));
+  return {N:Math.round(Math.pow(10,g('N'))),T:Math.pow(10,g('T')),L:Math.pow(10,g('L')),f:g('f')/100,Lm:Math.pow(10,g('Lm')),
+    D:g('D'),reach:reachRaw>=g('D')?Infinity:reachRaw,q:g('q')>-0.005?1:Math.pow(10,g('q')),
+    shape:els.shape.value,dist:els.dist.value,mode:els.mode.value,
+    us:els.us.checked,usT:Math.pow(10,g('T'))*g('usT')/100,usL:Math.pow(10,g('usL')),obsW:Math.pow(10,g('obsW'))};
+}
+
+var presets=[
+  {name:'Short lives (1,000 years)',v:{N:Math.log10(300),T:9,L:3,f:0,Lm:9,D:100000,reach:5.4,q:0,shape:'exp',dist:'uniform',mode:'two'}},
+  {name:'Machines endure',v:{N:Math.log10(300),T:9,L:3,f:5,Lm:9,D:100000,reach:5.4,q:0,shape:'exp',dist:'uniform',mode:'two'}},
+  {name:'Long lives (10 million years)',v:{N:Math.log10(300),T:9,L:7,f:0,Lm:9,D:100000,reach:5.4,q:0,shape:'exp',dist:'uniform',mode:'two'}},
+  {name:'Crowded but brief',v:{N:3.699,T:7,L:4,f:0,Lm:9,D:100000,reach:5.4,q:0,shape:'exp',dist:'uniform',mode:'two'}},
+  {name:'Only our radio bubble (100 ly)',v:{N:Math.log10(300),T:9,L:7,f:0,Lm:9,D:100000,reach:2,q:0,shape:'exp',dist:'uniform',mode:'two'}},
+  {name:'Watch the light bubbles',v:{N:Math.log10(200),T:6,L:4.7,f:0,Lm:9,D:100000,reach:5.4,q:0,shape:'exp',dist:'uniform',mode:'one'}},
+  {name:'Sparse: dots sometimes connect',v:{N:Math.log10(300),T:6,L:4.301,f:0,Lm:9,D:100000,reach:4.301,q:0,shape:'exp',dist:'uniform',mode:'one'}},
+];
+var pBox=document.getElementById('presets');
+var scenarioMenu=document.getElementById('scenarioMenu'),scenarioButton=document.getElementById('scenarioMenuButton');
+presets.forEach(function(pr){
+  var b=document.createElement('button');b.type='button';b.textContent=pr.name;
+  b.addEventListener('click',function(){
+    for(var k in pr.v)els[k].value=pr.v[k];
+    scenarioMenu.open=false;
+    scenarioButton.focus();
+    schedule(0);
+  });
+  pBox.appendChild(b);
+});
+
+/* ---------- state ---------- */
+var token=0,timer=null,seed=20240611,real=null,order=null,stats=null,sweep=null,decor=null;
+var tSlider=document.getElementById('tSlider'),playing=false,lastTs=0,playFrame=0;
+var btnPlay=document.getElementById('btnPlay'),btnContact=document.getElementById('btnContact');
+var btnPrevEvent=document.getElementById('btnPrevEvent'),btnNextEvent=document.getElementById('btnNextEvent');
+var eventCaption=document.getElementById('eventCaption'),timeReadout=document.getElementById('timeReadout');
+var chkArr=document.getElementById('chkArr'),chkBub=document.getElementById('chkBub'),zoomSel=document.getElementById('zoomSel');
+var zoomW=0,zoomStart=0,sunFocus=false,caseMode=false,randomView=null;
+var posRow=document.getElementById('posRow'),posSlider=document.getElementById('posSlider');
+var btnExplore=document.getElementById('btnExplore');
+var toolTabs=['parametersTab','statisticsTab'].map(function(id){return document.getElementById(id);});
+var toolPanels=toolTabs.map(function(tab){return document.getElementById(tab.getAttribute('aria-controls'));});
+var statisticsPanel=toolPanels[1];
+
+function showTool(index){
+  toolTabs.forEach(function(tab,i){
+    var selected=i===index;
+    tab.setAttribute('aria-selected',String(selected));
+    tab.tabIndex=selected?0:-1;
+    toolPanels[i].hidden=!selected;
+  });
+  if(index===1)drawSweep();
+}
+toolTabs.forEach(function(tab,index){
+  tab.addEventListener('click',function(){showTool(index);});
+  tab.addEventListener('keydown',function(event){
+    var next={ArrowLeft:1-index,ArrowRight:1-index,Home:0,End:1}[event.key];
+    if(next===undefined)return;
+    event.preventDefault();
+    showTool(next);
+    toolTabs[next].focus();
+  });
+});
+var arrivals=[],arrivalCursor=-1,selectedArrival=null,events=[];
+var ZOOMS=[];
+for(var decade=10;decade<=1e10;decade*=10){
+  ZOOMS.push(decade,2*decade,5*decade);
+}
+
+function schedule(delay){
+  refreshLabels();
+  clearTimeout(timer);
+  timer=setTimeout(update,delay===0?0:120);
+}
+
+function update(){
+  var my=++token,p=params();
+  document.getElementById('defline').textContent=p.N.toLocaleString('en-US')+' civilizations over '+fy(p.T)+', mean lifetime '+fy(p.L)+(p.f>0?', '+Math.round(p.f*100)+'% with machine successors':'')+(p.us?', plus the Sun (awake at '+fy(p.usT)+' for '+fy(p.usL)+')':'');
+  var firstLoad=!real;
+  var previousView=caseMode?randomView:{width:zoomW,start:zoomStart,time:curTime(),sunFocus:sunFocus};
+  pause();
+  if(caseMode)leaveCase();
+  real={p:p,s:simulate(p,seed,true)};
+  order=Array.from({length:real.s.b.length},function(_,i){return i;}).sort(function(a,c){return real.s.b[a]-real.s.b[c];});
+  sweep=null;stats=null;selectedArrival=null;events=[];arrivalCursor=-1;
+  arrivals=visibleArrivals(real);
+  buildZoomOptions();
+  document.getElementById('btnUs').hidden=!p.us;
+  document.getElementById('sunBubbleKey').hidden=!p.us&&!isFinite(p.reach);
+  var sunTimeLimit=document.getElementById('sunTimeLimit');
+  sunTimeLimit.hidden=!p.us||p.usL<=p.T-p.usT;
+  sunTimeLimit.textContent=p.usT>=p.T
+    ?'The Sun awakens at the end of the timeline. Move its awakening earlier to see it active.'
+    :'The timeline ends before the Sun’s configured lifetime is over.';
+  if(p.us&&(firstLoad||previousView.sunFocus))jumpUs(firstLoad?undefined:previousView.time);
+  else setZoom(previousView.width,previousView.start,previousView.time);
+  showPendingResults(p);
+  drawAll();
+  runStats(p,my);
+}
+
+function runStats(p,my){
+  var pairs=Math.max(p.N*(p.N-1)/2,1),trials=clamp(Math.round(3e7/pairs),4,300),t=0;
+  var acc={pany:0,pciv:0,K:0,O:0,alive:0,uHear:0,uHeard:0,uK:0,pW:0,pFrac:0},key;
+  document.getElementById('rProg').textContent='Averaging over simulated galaxies…';
+  (function step(){
+    if(my!==token)return;
+    var t0=performance.now();
+    while(t<trials&&performance.now()-t0<30){
+      var r=trialStats(p,simulate(p,seed*1000+t*7919+1,false));
+      for(key in acc)acc[key]+=r[key];t++;
+    }
+    stats={n:t};for(key in acc)stats[key]=acc[key]/t;
+    if(t>0)showResults(stats,p);
+    if(t<trials)setTimeout(step,0);
+    else{document.getElementById('rProg').textContent='Averaged over '+t+' simulated galaxies.';runSweep(p,my,pairs);}
+  })();
+}
+
+function runSweep(p,my,pairs){
+  var perDec=pairs>3e6?2:3,xs=[],e;
+  for(e=1;e<=10+1e-9;e+=1/perDec)xs.push(e);
+  var trials=clamp(Math.round(6e7/(xs.length*pairs)),1,30),i=0;
+  sweep={xs:xs,pany:[],pciv:[],pus:[]};
+  (function step(){
+    if(my!==token)return;
+    var t0=performance.now();
+    while(i<xs.length&&performance.now()-t0<30){
+      var p2={};for(var k in p)p2[k]=p[k];p2.L=Math.pow(10,xs[i]);p2.skipPoint=true;
+      var a=avgStats(p2,trials,seed*1000+5);
+      sweep.pany.push(a.pany);sweep.pciv.push(a.pciv);sweep.pus.push(a.uK);i++;
+    }
+    drawSweep();
+    if(i<xs.length)setTimeout(step,0);
+  })();
+}
+
+function showPendingResults(p){
+  document.getElementById('estimateNote').textContent=(p.mode==='one'?'One-way contact':'Two-way conversation')+
+    ' · '+pct(p.q)+' chance to notice each possible link';
+  document.getElementById('sunOutcome').hidden=!p.us;
+  document.getElementById('sunSweepKey').hidden=!p.us;
+  document.getElementById('usBox').hidden=!p.us;
+  ['rP','rSun','rCiv','rK','rAlive','rSpace','rRatio','pW','pFrac','uHear','uHeard'].forEach(function(id){
+    document.getElementById(id).textContent='–';
+  });
+  var verdict=document.getElementById('rVerdict');
+  verdict.className='verdict';verdict.textContent='Computing…';
+}
+
+function showResults(s,p){
+  document.getElementById('rP').textContent=pct(s.pany);
+  if(p.us)document.getElementById('rSun').textContent=pct(s.uK);
+  document.getElementById('rCiv').textContent=pct(s.pciv);
+  document.getElementById('rK').textContent=s.K>=100?Math.round(s.K).toLocaleString('en-US'):sig(s.K);
+  document.getElementById('rAlive').textContent=s.alive>=10?Math.round(s.alive).toLocaleString('en-US'):sig(s.alive);
+  var R=p.D/2,Lmean=(1-p.f)*p.L+p.f*p.Lm,sp=document.getElementById('rSpace'),rt=document.getElementById('rRatio');
+  if(s.alive>=1.5){
+    var d=0.5*Math.sqrt(Math.PI*R*R/s.alive),ratio=2*d/Lmean;
+    sp.textContent='about '+fly(d);
+    rt.textContent=ratio>=10?Math.round(ratio).toLocaleString('en-US'):sig(ratio);
+    rt.className=ratio<1?'ok':'no';
+  }else{sp.textContent='usually alone';rt.textContent='–';rt.className='';}
+  document.getElementById('ptDt').textContent='Chance of receiving a signal in a random '+fy(p.obsW)+' period';
+  document.getElementById('pW').textContent=pct(s.pW);
+  document.getElementById('pFrac').textContent=pct(s.pFrac);
+  document.getElementById('usBox').hidden=!p.us;
+  if(p.us){
+    document.getElementById('uHear').textContent=pct(s.uHear);
+    document.getElementById('uHeard').textContent=pct(s.uHeard);
+  }
+  var v=verdict(s,p),el=document.getElementById('rVerdict');el.className='verdict '+v[0];el.textContent=v[1];
+  drawSweep();
+}
+
+function verdict(s,p){
+  var P=s.pany;
+  if(P>=0.95)return ['good','Contact is almost certain. Lifetimes are long compared with signal travel times, and civilizations overlap in time.'];
+  if(s.K>1&&P<0.5&&p.q<0.1)return ['mid','Signals can reach other civilizations, but the chance of detecting them is low.'];
+  if(s.O<1&&P<0.5)return ['bad','A timing problem: civilizations rarely exist at the same time, so most live and die alone.'];
+  if(s.O>=1&&s.K/s.O<0.3){
+    if(isFinite(p.reach)&&p.reach<0.3*p.D)return ['bad','A reach problem: signals fade out before they get to most neighbors.'];
+    return ['bad','A distance problem: civilizations do coexist, but light-travel time (and waiting for a reply) outlasts their lives.'];
+  }
+  if(P>=0.5)return ['mid','Contact is likely but not guaranteed. Timing and distance both play a part.'];
+  return ['mid','Contact is unlikely. Timing, distance, or both limit it.'];
+}
+
+/* ---------- drawing ---------- */
+function fit(c){
+  var r=c.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2),w=Math.round(r.width*dpr),h=Math.round(r.height*dpr);
+  if(c.width!==w||c.height!==h){c.width=w;c.height=h;}
+  var ctx=c.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);
+  return {ctx:ctx,w:r.width,h:r.height};
+}
+var cvClk=document.getElementById('cvClock'),clkUnitSel=document.getElementById('clkUnitSel'),cvG=document.getElementById('cvGalaxy'),cvT=document.getElementById('cvTimeline'),cvOverview=document.getElementById('cvOverview'),cvS=document.getElementById('cvSweep');
+
+function makeDecor(){
+  var rng=mulberry32(77),pts=[],i;
+  for(i=0;i<2600;i++){
+    var arm=i%2,u=rng(),r=0.04+0.96*Math.pow(u,0.8);
+    var th=2.6*Math.log(r/0.04+1)+arm*Math.PI+(rng()-.5)*(0.5+0.9*r);
+    var rr=r*(1+(rng()-.5)*0.08);
+    pts.push([rr*Math.cos(th),rr*Math.sin(th),rng()]);
+  }
+  for(i=0;i<500;i++){var r2=0.18*Math.sqrt(rng()),t2=rng()*6.2832;pts.push([r2*Math.cos(t2),r2*Math.sin(t2),rng()]);}
+  return pts;
+}
+decor=makeDecor();
+
+function span(){
+  if(!real)return [0,1];
+  return zoomW?[zoomStart,zoomW]:[0,real.p.T];
+}
+function curTime(){var sp=span();return sp[0]+(+tSlider.value/1000)*sp[1];}
+function momentLabel(time,resolution){
+  var scales=[[1e9,'Gyr'],[1e6,'Myr'],[1e3,'kyr'],[1,'yr']];
+  var unit=resolution<1?scales[3]:scales.find(function(scale){return time>=scale[0]&&resolution>=scale[0]/1e6;});
+  unit=unit||scales[3];
+  var digits=clamp(Math.ceil(Math.log10(unit[0]/resolution)),0,6);
+  return (time/unit[0]).toLocaleString('en-US',{maximumFractionDigits:digits})+' '+unit[1];
+}
+function buildZoomOptions(){
+  var p=real.p,html='<option value="0">Whole history ('+fy(p.T)+')</option>';
+  if(p.us)html+='<option value="sun">Sun’s lifetime</option>';
+  ZOOMS.forEach(function(z){if(z<p.T)html+='<option value="'+z+'">'+fy(z)+' window</option>';});
+  zoomSel.innerHTML=html;
+}
+function setZoom(W,start,time,focusSun){
+  var T=real.p.T;
+  zoomW=W&&W<T?W:0;
+  zoomStart=zoomW?clamp(start,0,T-zoomW):0;
+  sunFocus=!!focusSun;
+  zoomSel.value=sunFocus?'sun':String(zoomW);
+  tSlider.value=clamp((time-zoomStart)/(zoomW||T)*1000,0,1000);
+  posRow.hidden=cvOverview.hidden=!zoomW;
+  if(zoomW){
+    var startLabel=momentLabel(zoomStart,zoomW/1000);
+    posSlider.value=zoomStart/(T-zoomW)*1000;
+    posSlider.setAttribute('aria-valuetext',startLabel);
+    document.getElementById('windowStart').textContent='Starts at '+startLabel;
+  }
+}
+function jumpUs(time){
+  var p=real.p,visibleLife=Math.min(p.usL,p.T-p.usT);
+  var desiredWidth=Math.max(10,visibleLife*1.2);
+  var width=ZOOMS.find(function(w){return w>=desiredWidth&&w<p.T;})||p.T;
+  var lead=Math.min(width/5,(width-visibleLife)/2);
+  var start=clamp(p.usT-lead,0,p.T-width);
+  if(!(time>=start&&time<=start+width))time=p.usT;
+  if(!caseMode){
+    selectedArrival=null;
+    var lifetime='Its configured lifetime is '+fy(p.usL)+'.';
+    if(visibleLife<p.usL)lifetime+=' The timeline ends before shutdown.';
+    events=[{t:p.usT,l:'Sun awakens',x:lifetime}];
+    if(p.usL<=p.T-p.usT){
+      events.push({t:p.usT+p.usL,l:'Sun shuts down',x:'Its previously emitted signals continue traveling.'});
+    }
+  }
+  setZoom(width,start,time,true);
+}
+function signalDistance(s,sender,receiver){
+  return Math.hypot(s.x[sender]-s.x[receiver],s.y[sender]-s.y[receiver],s.z[sender]-s.z[receiver]);
+}
+function canReply(s,sender,receiver,time,distance){
+  return !(s.sil&&s.sil[receiver])&&time+distance<s.e[sender];
+}
+function visibleArrivals(scene){
+  var s=scene.s,list=[];
+  for(var k=0;k<s.hear.length;k+=4){
+    if(s.hear[k+2]>scene.p.T)continue;
+    var i=s.hear[k],j=s.hear[k+1],d=signalDistance(s,i,j);
+    list.push({sender:i,receiver:j,start:s.hear[k+2],end:s.hear[k+3],distance:d});
+  }
+  return list.sort(function(a,b){return a.start-b.start;});
+}
+function nodeName(i){
+  var p=real.p,s=real.s;
+  if(p.us&&i===p.N)return 'the Sun';
+  return s.lab&&s.lab[i]?s.lab[i]:(s.mach[i]?'Machine civilization ':'Civilization ')+(i+1);
+}
+function arrivalDescription(link){
+  var s=real.s,from=nodeName(link.sender),to=nodeName(link.receiver);
+  var text=from+' → '+to+' · '+fly(link.distance)+' apart · '+fy(link.distance)+' of signal travel.';
+  if(s.e[link.sender]<=link.start)text+=' The sender has already shut down.';
+  return text;
+}
+function arrivalEvents(link){
+  var s=real.s,i=link.sender,j=link.receiver;
+  var marks=[
+    {t:s.b[i],l:'Sender awakens',x:nodeName(i)+' starts transmitting.'},
+    {t:s.b[j],l:'Receiver awakens',x:nodeName(j)+' becomes able to listen.'},
+    {t:link.start,l:'Reception begins',x:arrivalDescription(link)},
+    {t:link.end,l:'Reception ends',x:nodeName(j)+' stops receiving this signal.'}
+  ];
+  var reply=link.start+link.distance;
+  if(canReply(s,i,j,link.start,link.distance)){
+    marks.push({t:reply,l:'Earliest possible reply',x:'An immediate reply could now reach '+nodeName(i)+'.'});
+  }
+  return marks.filter(function(m){return m.t<=real.p.T;}).sort(function(a,b){return a.t-b.t;});
+}
+function showContact(){
+  if(!arrivals.length)return false;
+  arrivalCursor=(arrivalCursor+1)%arrivals.length;
+  selectedArrival=arrivals[arrivalCursor];
+  var time=selectedArrival.start;
+  if(caseMode){
+    setZoom(0,0,time);
+  }else{
+    events=arrivalEvents(selectedArrival);
+    var targetWidth=Math.max(1e3,Math.min(2e6,4*selectedArrival.distance));
+    var W=ZOOMS.find(function(z){return z<real.p.T&&z>=targetWidth;})||0;
+    setZoom(W,time-0.3*W,time);
+  }
+  return true;
+}
+function timeEpsilon(){return real.p.T*Number.EPSILON*4;}
+function eventAt(time){
+  for(var i=events.length-1;i>=0;i--)if(events[i].t<=time+timeEpsilon())return i;
+  return -1;
+}
+function stepEvent(direction){
+  var t=curTime(),epsilon=timeEpsilon();
+  var mark=direction>0?events.find(function(m){return m.t>t+epsilon;}):
+    events.slice().reverse().find(function(m){return m.t<t-epsilon;});
+  if(mark)gotoEvent(mark);
+}
+function updateEventDisplay(time){
+  var epsilon=timeEpsilon(),idx=eventAt(time),mark=events[idx];
+  var date=momentLabel(time,span()[1]/1000);
+  timeReadout.textContent='t = '+date;
+  if(selectedArrival&&Math.abs(time-selectedArrival.start)<=epsilon){
+    eventCaption.textContent=arrivalDescription(selectedArrival);
+  }else if(!events.length){
+    eventCaption.textContent=arrivals.length?'Follow a signal arrival to see who sent it and who receives it.':'No signal arrives in this galaxy. Try longer lifetimes or greater signal reach.';
+  }else if(!mark){
+    eventCaption.textContent='Coming up · '+events[0].l+' at '+fy(events[0].t)+'.';
+  }else{
+    eventCaption.textContent=mark.l+' · '+mark.x;
+  }
+  tSlider.setAttribute('aria-valuetext',date);
+  var contactLabel=selectedArrival&&arrivals.length>1?'Next signal arrival':'Jump to signal arrival';
+  if(btnContact.textContent!==contactLabel)btnContact.textContent=contactLabel;
+  btnContact.disabled=!arrivals.length;
+  btnPrevEvent.disabled=!events.length||time<=events[0].t+epsilon;
+  btnNextEvent.disabled=!events.length||time>=events[events.length-1].t-epsilon;
+  document.querySelectorAll('.mk').forEach(function(button,i){
+    var current=i===idx;
+    button.classList.toggle('on',current);
+    if(current)button.setAttribute('aria-current','step');
+    else button.removeAttribute('aria-current');
+  });
+}
+function gotoEvent(mark){
+  var sp=span(),start=sp[0];
+  pause();
+  var inWindow=mark.t>=start&&mark.t<=start+sp[1];
+  if(!inWindow)start=mark.t-sp[1]*0.3;
+  setZoom(zoomW,start,mark.t,sunFocus&&inWindow);
+  drawGalaxy();drawTimeline();
+  announceEvent();
+}
+function announceEvent(){
+  document.getElementById('eventAnnouncement').textContent=timeReadout.textContent+'. '+eventCaption.textContent;
+}
+
+function drawSun(ctx,x,y,active){
+  var radius=active?6:5;
+  ctx.beginPath();ctx.moveTo(x,y-radius);ctx.lineTo(x+radius,y);ctx.lineTo(x,y+radius);ctx.lineTo(x-radius,y);ctx.closePath();
+  ctx.fillStyle=active?'#f4f7ff':'#070b17';
+  ctx.strokeStyle=active?'#070b17':'#d1dbf0';
+  ctx.lineWidth=1.4;
+  ctx.fill();ctx.stroke();
+}
+
+function drawGalaxy(){
+  var f=fit(cvG),ctx=f.ctx,w=f.w,h=f.h,TAU=6.2832;
+  ctx.fillStyle='#070b17';ctx.fillRect(0,0,w,h);
+  var cx=w/2,cy=h/2,half=Math.min(w,h)/2*0.93;
+  var gr=ctx.createRadialGradient(cx,cy,0,cx,cy,half);
+  gr.addColorStop(0,'rgba(120,130,190,.30)');gr.addColorStop(.45,'rgba(60,70,130,.12)');gr.addColorStop(1,'rgba(20,25,60,0)');
+  ctx.fillStyle=gr;ctx.beginPath();ctx.arc(cx,cy,half,0,TAU);ctx.fill();
+  for(var q=0;q<decor.length;q++){var d0=decor[q];ctx.fillStyle='rgba(190,200,240,'+(0.06+0.14*d0[2])+')';ctx.fillRect(cx+d0[0]*half,cy+d0[1]*half,1.2,1.2);}
+  if(!real)return;
+  var p=real.p,s=real.s,R=p.D/2,sc=half/R,t=curTime(),N=s.b.length,usI=p.us?p.N:-1,i;
+  var showBub=chkBub.checked,showArrivals=chkArr.checked,nFill=0,nRing=0,epsilon=timeEpsilon();
+  var visibleSource=new Uint8Array(N);
+  // Sun and our radio bubble
+  var sx=cx+0.54*half,sy=cy;
+  if(!s.cs&&isFinite(p.reach)&&p.reach<p.D){
+    ctx.strokeStyle='rgba(255,223,85,.7)';ctx.setLineDash([4,4]);ctx.beginPath();ctx.arc(sx,sy,Math.max(p.reach*sc,2),0,TAU);ctx.stroke();ctx.setLineDash([]);
+  }
+  // light bubbles: ring between last-contact surface (inner) and first-contact surface (outer)
+  if(showBub){
+    ctx.save();ctx.beginPath();ctx.arc(cx,cy,half,0,TAU);ctx.clip();
+    for(i=0;i<N;i++){
+      if(nRing>=250&&i!==usI)continue;
+      if(s.b[i]>t||(s.sil&&s.sil[i]))continue;
+      var rOut=Math.min(t-s.b[i],p.reach),rIn=Math.max(0,t-s.e[i]);
+      if(rIn>=rOut)continue;
+      var far=Math.sqrt(s.x[i]*s.x[i]+s.y[i]*s.y[i])+R;
+      if(rIn>far)continue;
+      if(rIn===0&&rOut>=far){nFill++;continue;}
+      nRing++;
+      visibleSource[i]=1;
+      var solar=i===usI,px=cx+s.x[i]*sc,py=cy+s.y[i]*sc;
+      var col=solar?'255,223,85':(s.mach[i]?'242,184,75':'79,209,224');
+      ctx.beginPath();ctx.arc(px,py,rOut*sc,0,TAU);
+      if(rIn>0){ctx.moveTo(px+rIn*sc,py);ctx.arc(px,py,rIn*sc,0,TAU);}
+      ctx.fillStyle='rgba('+col+','+(solar ? .13 : .05)+')';ctx.fill('evenodd');
+      ctx.lineWidth=solar?2:1.4;ctx.strokeStyle='rgba('+col+',.95)';ctx.beginPath();ctx.arc(px,py,rOut*sc,0,TAU);ctx.stroke();
+      if(rIn>0){ctx.setLineDash([4,3]);ctx.strokeStyle=solar?'rgba(255,223,85,.9)':'rgba(255,255,255,.8)';ctx.beginPath();ctx.arc(px,py,rIn*sc,0,TAU);ctx.stroke();ctx.setLineDash([]);}
+    }
+    ctx.restore();
+  }
+  // Signal arrivals, styled by whether the receiver can reply in time.
+  var H=s.hear,act=0,listening=new Uint8Array(N),heardSoFar=new Uint8Array(N),nNow=0,nSoFar=0,heardUs=0,ev;
+  for(ev=0;ev<H.length;ev+=4){
+    if(H[ev+2]>t+epsilon)continue;
+    var sender=H[ev],receiver=H[ev+1];
+    heardSoFar[receiver]=1;
+    if(receiver===usI)heardUs++;
+    if(t<H[ev+3]-epsilon){
+      act++;listening[receiver]=1;
+      if(showArrivals){
+        visibleSource[sender]=1;
+        var ex=cx+s.x[sender]*sc,ey=cy+s.y[sender]*sc,lx=cx+s.x[receiver]*sc,ly=cy+s.y[receiver]*sc;
+        var featured=selectedArrival&&sender===selectedArrival.sender&&receiver===selectedArrival.receiver;
+        var twoWay=canReply(s,sender,receiver,t,signalDistance(s,sender,receiver));
+        ctx.strokeStyle=featured?'#ffe28a':'rgba(232,195,106,.75)';
+        ctx.lineWidth=featured?2.4:1;
+        ctx.setLineDash(twoWay?[]:[5,4]);
+        ctx.beginPath();ctx.moveTo(ex,ey);ctx.lineTo(lx,ly);ctx.stroke();
+        ctx.setLineDash([]);
+        var ang=Math.atan2(ly-ey,lx-ex),ax=lx-9*Math.cos(ang),ay=ly-9*Math.sin(ang);
+        ctx.fillStyle='rgba(232,195,106,.9)';ctx.beginPath();ctx.moveTo(ax+4*Math.cos(ang),ay+4*Math.sin(ang));
+        ctx.lineTo(ax-3*Math.cos(ang)+3*Math.sin(ang),ay-3*Math.sin(ang)-3*Math.cos(ang));
+        ctx.lineTo(ax-3*Math.cos(ang)-3*Math.sin(ang),ay-3*Math.sin(ang)+3*Math.cos(ang));ctx.fill();
+      }
+    }
+  }
+  ctx.strokeStyle='#ffffff';ctx.lineWidth=1.6;
+  for(i=0;i<N;i++){
+    if(heardSoFar[i])nSoFar++;
+    if(listening[i]){nNow++;if(showArrivals){ctx.beginPath();ctx.arc(cx+s.x[i]*sc,cy+s.y[i]*sc,7,0,TAU);ctx.stroke();}}
+  }
+  // Paint the source and receiver markers over the shells and arrows.
+  var alive=0,born=0;
+  for(i=0;i<N;i++){
+    var qx=cx+s.x[i]*sc,qy=cy+s.y[i]*sc;
+    var bornYet=s.b[i]<=t+epsilon,active=bornYet&&t<s.e[i]-epsilon;
+    if(bornYet)born++;
+    if(active)alive++;
+    if(i===usI){
+      drawSun(ctx,qx,qy,active);
+      continue;
+    }
+    if(!bornYet){
+      if(s.cs){
+        ctx.strokeStyle='rgba(180,190,225,.5)';ctx.lineWidth=1;ctx.setLineDash([2,2]);
+        ctx.beginPath();ctx.arc(qx,qy,4,0,TAU);ctx.stroke();ctx.setLineDash([]);
+      }
+      continue;
+    }
+    if(!active){
+      if(visibleSource[i]||s.cs){
+        ctx.fillStyle='#070b17';
+        ctx.strokeStyle=visibleSource[i]?(s.mach[i]?'#f2b84b':'#83dce7'):'#a0a9c7';
+        ctx.lineWidth=1.4;
+        ctx.beginPath();ctx.arc(qx,qy,3.6,0,TAU);ctx.fill();ctx.stroke();
+      }else{
+        ctx.fillStyle='rgba(120,130,165,.22)';ctx.fillRect(qx-1,qy-1,2,2);
+      }
+      continue;
+    }
+    if(showBub&&t-s.b[i]<0.03*span()[1]){
+      ctx.fillStyle='rgba(255,255,255,.35)';ctx.beginPath();ctx.arc(qx,qy,11,0,TAU);ctx.fill();
+    }
+    var silent=s.sil&&s.sil[i],machine=s.mach[i];
+    ctx.fillStyle=silent?'rgba(230,235,250,.22)':(machine?'rgba(242,184,75,.25)':'rgba(79,209,224,.25)');
+    ctx.beginPath();ctx.arc(qx,qy,6,0,TAU);ctx.fill();
+    ctx.fillStyle=silent?'#e6ebfa':(machine?'#f2b84b':'#4fd1e0');
+    ctx.strokeStyle='#070b17';ctx.lineWidth=1.2;
+    ctx.beginPath();ctx.arc(qx,qy,3,0,TAU);ctx.fill();ctx.stroke();
+  }
+  if(!p.us&&!s.cs)drawSun(ctx,sx,sy,false);
+  ctx.font='12px system-ui,sans-serif';ctx.fillStyle='#f4f7ff';
+  if(!s.cs||p.us)ctx.fillText('Sun',sx+9,sy-8);
+  if(s.cs&&s.lab){
+    ctx.font='bold 13px system-ui,sans-serif';
+    for(i=0;i<N;i++){if(s.lab[i])ctx.fillText(s.lab[i],cx+s.x[i]*sc+8,cy+s.y[i]*sc-8);}
+  }
+  // scale bar
+  var bars=[1e3,2e3,5e3,1e4,2e4,5e4],len=bars[0];
+  bars.forEach(function(v){if(v<=0.35*p.D)len=v;});
+  ctx.strokeStyle='rgba(220,226,245,.85)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(14,h-16);ctx.lineTo(14+len*sc,h-16);ctx.stroke();
+  ctx.fillStyle='rgba(220,226,245,.85)';ctx.font='11px system-ui,sans-serif';ctx.fillText(fly(len),14,h-22);
+  // status
+  var sp=span(),txt;
+  if(zoomW&&zoomW<p.T){var off=t-sp[0];txt='zoom window starts at '+fy(sp[0])+', now +'+(off<1?'0 yr':fy(off));}
+  else txt='t = '+fy(t);
+  txt+='  |  '+alive.toLocaleString('en-US')+' alive  |  '+nNow+' listening now ('+act+' one-way link'+(act===1?'':'s')+')  |  '+nSoFar+' have heard someone so far';
+  if(p.us){var ui=s.b.length-1;txt+='  |  Sun: '+(t+epsilon<s.b[ui]?'not yet awake':(t<s.e[ui]-epsilon?(listening[ui]?'awake, hearing a signal':'awake'):'extinct'));}
+  if(showBub){
+    txt+='  |  '+nRing+' bubble'+(nRing===1?'':'s')+' with a visible edge';
+    if(nFill)txt+=', '+nFill+' filling the whole galaxy';
+  }
+  document.getElementById('status').textContent=txt;
+  updateInstruments({p:p,s:s,t:t,sp:sp,alive:alive,born:born,nNow:nNow,act:act,nSoFar:nSoFar,nRing:nRing,nFill:nFill,earthYears:(p.us?Math.max(0,Math.min(t,s.e[usI])-s.b[usI]):0),heardUs:heardUs,sunHears:p.us&&listening[s.b.length-1],epsilon:epsilon});
+  updateEventDisplay(t);
+  document.getElementById('timeHint').textContent=zoomW
+    ?fy(sp[1])+' window. Select the overview below the timeline to move the window.'
+    :'Each bar runs from awakening to shutdown. Select the timeline to move the white time marker.';
+}
+
+function drawTimeline(){
+  var sp=span();
+  drawLifetimeTimeline(cvT,sp[0],sp[1],false);
+  if(zoomW)drawLifetimeTimeline(cvOverview,0,real.p.T,true);
+}
+
+function drawLifetimeTimeline(canvas,start,width,overview){
+  var f=fit(canvas),ctx=f.ctx,w=f.w,h=f.h;
+  ctx.fillStyle='#070b17';ctx.fillRect(0,0,w,h);
+  if(!real)return;
+  var p=real.p,s=real.s,N=s.b.length,pad=6,H=h-2*pad-14,W=w-2*pad,end=start+width;
+  var solarLane=p.us&&!overview?8:0;
+  var rowH=(H-solarLane)/Math.max(N-(solarLane?1:0),1),lw=Math.max(1,Math.min(s.cs?9:3,rowH));
+  var xAt=function(t){return pad+(t-start)/width*W;};
+  var pass,i;
+  for(pass=0;pass<2;pass++){
+    for(var r=0,nonSolar=0;r<N;r++){
+      i=order[r];
+      var us=p.us&&i===p.N,has=s.k[i]>0||us;
+      var y=us&&solarLane?pad+H-4:pad+(nonSolar++ + 0.5)*rowH;
+      if((pass===0)===has||s.b[i]>end||s.e[i]<start)continue;
+      var x0=xAt(Math.max(s.b[i],start)),x1=xAt(Math.min(s.e[i],end));
+      ctx.fillStyle=us?'#f4f7ff':(has?(s.mach[i]?'#f2b84b':'#4fd1e0'):'rgba(212,96,74,.85)');
+      var hh=us?4:lw,minWidth=us?3:1.5;
+      ctx.fillRect(Math.min(x0,w-pad-minWidth),y-hh/2,Math.max(minWidth,x1-x0),hh);
+      if(!overview&&s.cs&&s.lab&&s.lab[i]){
+        ctx.fillStyle='rgba(255,255,255,.92)';ctx.font='bold 11px system-ui,sans-serif';
+        ctx.fillText(s.lab[i],Math.min(x0+3,w-pad-16),y-hh/2-3);
+      }
+    }
+  }
+  if(overview){
+    ctx.fillStyle='rgba(255,255,255,.20)';
+    ctx.fillRect(Math.min(xAt(zoomStart),w-pad-2),2,Math.max(2,zoomW/width*W),H+6);
+  }else{
+    events.forEach(function(mark){
+      if(mark.t<start||mark.t>end)return;
+      var x=xAt(mark.t);
+      ctx.fillStyle='#f2b84b';ctx.beginPath();ctx.moveTo(x-3,2);ctx.lineTo(x+3,2);ctx.lineTo(x,7);ctx.fill();
+    });
+  }
+  var xt=xAt(curTime());
+  ctx.strokeStyle='#ffffff';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(xt,2);ctx.lineTo(xt,pad+H+2);ctx.stroke();
+  ctx.fillStyle='rgba(200,208,235,.8)';ctx.font='11px system-ui,sans-serif';
+  ctx.textAlign='left';ctx.fillText(momentLabel(start,width/1000),pad,h-3);
+  if(overview){ctx.textAlign='center';ctx.fillText('Whole history',w/2,h-3);}
+  ctx.textAlign='right';ctx.fillText(momentLabel(end,width/1000),w-pad,h-3);ctx.textAlign='left';
+}
+
+function drawSweep(){
+  if(caseMode||statisticsPanel.hidden)return;
+  var f=fit(cvS),ctx=f.ctx,w=f.w,h=f.h;
+  ctx.fillStyle='#070b17';ctx.fillRect(0,0,w,h);
+  var l=44,r=12,t=14,b=34,pw=w-l-r,ph=h-t-b;
+  var X=function(e){return l+(e-1)/9*pw;},Y=function(v){return t+(1-v)*ph;};
+  ctx.font='11px system-ui,sans-serif';ctx.fillStyle='rgba(200,208,235,.8)';ctx.strokeStyle='rgba(120,135,180,.25)';ctx.lineWidth=1;
+  [0,.25,.5,.75,1].forEach(function(v){ctx.beginPath();ctx.moveTo(l,Y(v));ctx.lineTo(w-r,Y(v));ctx.stroke();ctx.textAlign='right';ctx.fillText(Math.round(v*100)+'%',l-6,Y(v)+4);});
+  for(var e=1;e<=10;e++){
+    ctx.beginPath();ctx.moveTo(X(e),t);ctx.lineTo(X(e),t+ph);ctx.stroke();
+    if(e===1||e===3||e===6||e===9||e===10){ctx.textAlign=(e===10?'right':'center');ctx.fillText(fy(Math.pow(10,e)),X(e)+(e===10?4:0),h-16);}
+  }
+  ctx.textAlign='center';ctx.fillText('mean lifetime of a civilization',l+pw/2,h-3);
+  // our age
+  ctx.strokeStyle='rgba(255,226,138,.7)';ctx.setLineDash([3,4]);ctx.beginPath();ctx.moveTo(X(2),t);ctx.lineTo(X(2),t+ph);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='rgba(255,226,138,.9)';ctx.textAlign='left';ctx.fillText('our radio age',X(2)+4,t+12);
+  if(real){
+    var cl=Math.log10(real.p.L);
+    ctx.strokeStyle='#ffffff';ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(X(cl),t);ctx.lineTo(X(cl),t+ph);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#ffffff';ctx.textAlign=cl>7?'right':'left';ctx.fillText('current setting',X(cl)+(cl>7?-4:4),t+ph-6);
+  }
+  if(sweep&&sweep.pany.length>1){
+    var line=function(arr,col,dash){
+      ctx.strokeStyle=col;ctx.lineWidth=2;ctx.setLineDash(dash||[]);ctx.beginPath();
+      arr.forEach(function(v,i){var x=X(sweep.xs[i]),y=Y(v);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});
+      ctx.stroke();ctx.setLineDash([]);
+    };
+    line(sweep.pciv,'#f08068',[6,3]);
+    if(real&&real.p.us&&sweep.pus.length>1)line(sweep.pus,'#ffe28a',[2,3]);
+    line(sweep.pany,'#4fd1e0');
+  }
+  if(stats&&real){
+    var cx2=X(Math.log10(real.p.L));
+    ctx.fillStyle='#4fd1e0';ctx.beginPath();ctx.arc(cx2,Y(stats.pany),4,0,6.2832);ctx.fill();
+    ctx.fillStyle='#f08068';ctx.beginPath();ctx.arc(cx2,Y(stats.pciv),4,0,6.2832);ctx.fill();
+    if(real.p.us){ctx.fillStyle='#ffe28a';ctx.beginPath();ctx.arc(cx2,Y(stats.uK),4,0,6.2832);ctx.fill();}
+  }
+}
+
+/* ---------- instrument panel ---------- */
+var gauges={},tweening=false,reduceMotion=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function renderGauge(g){
+  var v=Math.round(g.cur);
+  if(g.fmt){g.el.innerHTML=g.fmt(v);return;}
+  var str=String(v),pad=Math.max(0,4-str.length);
+  g.el.innerHTML='<span class="z">'+'0'.repeat(pad)+'</span>'+str;
+}
+function stepTween(){
+  var busy=false,k;
+  for(k in gauges){
+    var g=gauges[k],d=g.target-g.cur;
+    if(Math.abs(d)<0.5)g.cur=g.target;else{g.cur+=d*0.3;busy=true;}
+    renderGauge(g);
+  }
+  if(busy)requestAnimationFrame(stepTween);else tweening=false;
+}
+function setGauge(id,val,frac,fmt){
+  var g=gauges[id];
+  if(!g){g=gauges[id]={cur:0,target:0,el:document.getElementById(id),bar:document.getElementById('b_'+id)};renderGauge(g);}
+  g.target=val;g.fmt=fmt||null;
+  if(reduceMotion)g.cur=val;
+  if(g.bar)g.bar.style.width=(clamp(frac,0,1)*100)+'%';
+  if(!tweening){tweening=true;requestAnimationFrame(stepTween);}
+}
+function drawClock(o){
+  var f=fit(cvClk),ctx=f.ctx,w=f.w,h=f.h,cx=w/2,cy=h/2,r=Math.min(w,h)/2-4,k,TAU=6.2832,a0=-Math.PI/2;
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle='#070b17';ctx.beginPath();ctx.arc(cx,cy,r,0,TAU);ctx.fill();
+  ctx.strokeStyle='#26304d';ctx.lineWidth=2;ctx.stroke();
+  for(k=0;k<60;k++){
+    var a=a0+k/60*TAU,len=k%5===0?9:4;
+    ctx.strokeStyle=k%5===0?'rgba(210,218,240,.85)':'rgba(160,172,205,.4)';ctx.lineWidth=k%5===0?1.5:1;
+    ctx.beginPath();ctx.moveTo(cx+Math.cos(a)*(r-len-1),cy+Math.sin(a)*(r-len-1));ctx.lineTo(cx+Math.cos(a)*(r-1),cy+Math.sin(a)*(r-1));ctx.stroke();
+  }
+  var T=o.p.T,rr=r-17,sp=o.sp;
+  ctx.strokeStyle='rgba(120,135,180,.35)';ctx.lineWidth=4;ctx.beginPath();ctx.arc(cx,cy,rr,0,TAU);ctx.stroke();
+  if(sp[1]<T){
+    ctx.strokeStyle='#4fd1e0';ctx.lineWidth=4;ctx.beginPath();
+    ctx.arc(cx,cy,rr,a0+sp[0]/T*TAU,a0+Math.max(sp[0]/T*TAU+0.04,(sp[0]+sp[1])/T*TAU));ctx.stroke();
+  }
+  var am=a0+clamp(o.t/T,0,1)*TAU;
+  ctx.lineCap='round';
+  /* short thick hand: large-scale time (the whole history) */
+  ctx.strokeStyle='#4fd1e0';ctx.lineWidth=4.5;
+  ctx.beginPath();ctx.moveTo(cx-Math.cos(am)*6,cy-Math.sin(am)*6);ctx.lineTo(cx+Math.cos(am)*(rr*0.55),cy+Math.sin(am)*(rr*0.55));ctx.stroke();
+  ctx.fillStyle='#4fd1e0';ctx.beginPath();ctx.arc(cx+Math.cos(am)*rr,cy+Math.sin(am)*rr,3.4,0,TAU);ctx.fill();
+  /* long thin hand: small-scale time (inside the visible window) */
+  var fr=clamp((o.t-sp[0])/sp[1],0,1),an=a0+fr*TAU;
+  ctx.strokeStyle='#ffd479';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx-Math.cos(an)*10,cy-Math.sin(an)*10);ctx.lineTo(cx+Math.cos(an)*(r-8),cy+Math.sin(an)*(r-8));ctx.stroke();
+  ctx.lineCap='butt';
+  ctx.fillStyle='#ffd479';ctx.beginPath();ctx.arc(cx,cy,3,0,TAU);ctx.fill();
+}
+function updateInstruments(o){
+  var p=o.p,t=o.t,sp=o.sp,unit=clkUnitSel.value;
+  var resolution=sp[1]/1000,value;
+  if(unit==='auto'){
+    var reading=momentLabel(t,resolution).split(' ');
+    value=reading[0];unit=reading[1];
+  }else{
+    var div={yr:1,kyr:1e3,Myr:1e6,Gyr:1e9}[unit];
+    var digits=clamp(Math.ceil(Math.log10(div/resolution)),0,12);
+    value=(t/div).toLocaleString('en-US',{maximumFractionDigits:digits});
+  }
+  document.getElementById('clkVal').textContent=value;
+  document.getElementById('clkUnit').textContent=unit;
+  var zoomed=sp[1]<p.T;
+  document.getElementById('clkSub').textContent=zoomed
+    ?'+'+momentLabel(t-sp[0],resolution)+' into '+fy(sp[1])+' window'
+    :'whole history: '+fy(p.T);
+  var N=o.s.b.length;
+  setGauge('gAlive',o.alive,o.alive/Math.max(o.born,1));
+  setGauge('gListen',o.nNow,o.nNow/Math.max(o.alive,1));
+  setGauge('gLinks',o.act,o.act/Math.max(o.alive*(o.alive-1),1));
+  setGauge('gHeard',o.nSoFar,o.nSoFar/Math.max(o.born,1));
+  setGauge('gEarth',o.earthYears,p.us?o.earthYears/Math.max(p.usL,1):0,function(v){
+    if(v>=1e5)return fy(v);
+    var s=String(v);return '<span class="z">'+'0'.repeat(Math.max(0,4-s.length))+'</span>'+s;
+  });
+  setGauge('gHeardUs',o.heardUs,o.heardUs/Math.max(o.born-1,1));
+  var dot=document.getElementById('lampDot'),txt=document.getElementById('lampTxt'),col='#394261',msg='Sun: not included';
+  if(p.us){
+    var ui=N-1;
+    if(t+o.epsilon<o.s.b[ui]){col='#6b6a58';msg='Sun: not yet awake';}
+    else if(t<o.s.e[ui]-o.epsilon){if(o.sunHears){col='#ffffff';msg='Sun: awake, hearing a signal';}else{col='#ffd479';msg='Sun: awake';}}
+    else{col='#c0432f';msg='Sun: extinct';}
+  }
+  dot.style.background=col;dot.style.boxShadow=(col==='#ffffff'||col==='#ffd479')?'0 0 9px '+col:'none';
+  txt.textContent=msg;
+  drawClock(o);
+}
+clkUnitSel.addEventListener('change',function(){drawGalaxy();});
+function drawAll(){drawGalaxy();drawTimeline();drawSweep();}
+
+/* ---------- special cases ---------- */
+var INF=1e9;
+function V(n,x,y,b,e,sil){return {n:n,x:x,y:y,b:b,e:e,s:!!sil};}
+var CASES=[
+ {grp:'Civilizations',title:'A civilization awakens',T:50000,civs:[V('A',-20000,0,8000,INF)],start:1,
+  text:'A new dot lights up. At that precise moment a bubble starts to grow from it at the speed of light: the surface of first contact.',
+  look:'Look at: the flash when A awakens, and how the radius grows by 1 light-year every year.',
+  marks:[{t:5000,l:'before',x:'Before 8 kyr nothing has happened: A is only a faint circle, a civilization that does not exist yet.'},
+         {t:9000,l:'A awakens',x:'The dot is lit. The surface of first contact has just started: its radius is about 1,000 ly (1 kyr x 1 ly/yr).'},
+         {t:28000,l:'+20 kyr',x:'Twenty thousand years after awakening, the surface has radius 20,000 ly. Radius = speed of light x time since awakening.'},
+         {t:48000,l:'+40 kyr',x:'The surface has radius 40,000 ly and covers most of the disk. Any living dot inside it can hear A.'}]},
+ {grp:'Civilizations',title:'A civilization ends',T:60000,civs:[V('A',-15000,0,5000,25000)],start:1,
+  text:'A lives for 20,000 years. When its dot goes out, a second surface (dashed) starts to grow from the same place: the surface of last contact.',
+  look:'Look at: the dot changing to a hollow ring, and the dashed surface appearing at A\u2019s position.',
+  marks:[{t:20000,l:'A alive',x:'A is lit. Only the first-contact surface exists (radius 15,000 ly). There is no inner surface because A is still sending.'},
+         {t:25500,l:'A ends',x:'The dot goes out. From this moment a dashed surface of last contact grows from A\u2019s position. Signals sent before this are still on their way.'},
+         {t:45000,l:'+20 kyr',x:'Outer surface: radius 40,000 ly. Inner dashed surface: radius 20,000 ly. The ring between them is 20,000 ly wide, equal to A\u2019s lifetime in years.'}]},
+ {grp:'Surfaces',title:'Surfaces of first and last contact: who can hear A?',T:70000,
+  civs:[V('A',0,0,5000,20000),V('B1',28000,0,0,INF,true),V('B2',-6000,10392,0,INF,true),V('B3',-31820,-31820,0,INF,true)],start:2,
+  text:'A lived from 5 to 20 kyr. Three silent listeners (white dots, awake the whole time, drawn without bubbles to keep the picture clean) are at different distances: B1 28,000 ly, B2 12,000 ly, B3 45,000 ly.',
+  look:'Look at: which listeners are inside the ring (white halo and arrow) and which are not.',
+  marks:[{t:17200,l:'B2 starts',x:'The first-contact surface reaches B2, the nearest listener. B2 starts hearing A.'},
+         {t:32200,l:'B2 ends',x:'The last-contact surface passes B2: A\u2019s final signal has gone by. B2 heard A for exactly as long as A lived (15 kyr).'},
+         {t:40000,l:'snapshot',x:'B1 sits between the two surfaces and is hearing A now. B2 has been passed (contact over). B3 has not been reached yet.'},
+         {t:50200,l:'B3 starts',x:'The surface of first contact finally reaches B3, 45,000 ly away.'}]},
+ {grp:'Contacts',title:'A contact starts',T:65000,civs:[V('A',-15000,0,5000,INF),V('B',15000,0,20000,INF)],start:2,
+  text:'A awakens first. B awakens 15,000 years later, 30,000 ly away. A contact starts when a first-contact surface reaches a living dot.',
+  look:'Look at: the arrow appearing at the exact moment the bubble touches the other dot.',
+  marks:[{t:5200,l:'A awakens',x:'A\u2019s bubble starts to grow. B does not exist yet.'},
+         {t:20200,l:'B awakens',x:'B lights up and starts its own bubble. A\u2019s bubble is still 15,000 ly from B.'},
+         {t:35200,l:'contact starts',x:'A\u2019s surface of first contact reaches B (30,000 ly after 30,000 years): B hears A. The arrow A to B appears.'},
+         {t:50200,l:'reverse contact',x:'B\u2019s surface now reaches A: A hears B. Two one-way contacts, 15 kyr apart.'}]},
+ {grp:'Contacts',title:'A contact ends: the last-contact surface passes the listener',T:75000,civs:[V('A',-15000,0,5000,20000),V('B',15000,0,0,INF)],start:2,
+  text:'A speaks for 15,000 years, then goes silent. B is 30,000 ly away and awake all along.',
+  look:'Look at: the arrow disappearing when the dashed surface crosses B, even though both dots may still be alive.',
+  marks:[{t:20200,l:'A ends',x:'A\u2019s dot goes out. B has not heard anything yet: the signals are 30,000 ly away.'},
+         {t:35200,l:'contact starts',x:'The first-contact surface reaches B. B hears A, who has been silent for 15 kyr.'},
+         {t:42000,l:'in progress',x:'B is between the two surfaces: it is still receiving A\u2019s signals from long ago.'},
+         {t:50200,l:'contact ends',x:'The last-contact surface passes B: the final signal A sent has gone by. The contact is over.'}]},
+ {grp:'Contacts',title:'A contact ends: the listener dies',T:70000,civs:[V('A',-15000,0,5000,INF),V('B',10000,0,0,40000)],start:2,
+  text:'This time A keeps sending. B (25,000 ly away) is the one that ends, at t = 40 kyr.',
+  look:'Look at: B\u2019s dot going out, and the arrow into B disappearing while the arrow into A keeps going.',
+  marks:[{t:25200,l:'A hears B',x:'B\u2019s first-contact surface reaches A (25,000 ly). A has been awake since 5 kyr, so A hears B.'},
+         {t:30200,l:'B hears A',x:'A\u2019s surface reaches B. B hears A.'},
+         {t:40200,l:'B ends',x:'B\u2019s dot goes out. B can no longer listen, so the contact A to B ends. The surface of last contact starts growing from B.'},
+         {t:55000,l:'A still hears B',x:'A is inside the ring B left behind, so A keeps receiving B\u2019s old signals until the dashed surface arrives (65 kyr).'}]},
+ {grp:'Further situations',title:'A message from a vanished civilization',T:75000,civs:[V('A',-18000,0,3000,13000)],sun:{b:20000,e:INF},start:2,
+  text:'A lives for only 10,000 years. The Sun (us) is 45,000 ly away and awakens at 20 kyr, 7,000 years after A has ended.',
+  look:'Look at: the gold arrow into the Sun although A\u2019s dot is already out.',
+  marks:[{t:13200,l:'A ends',x:'A\u2019s dot goes out at 13 kyr. Its signals are still traveling.'},
+         {t:20200,l:'Sun awakens',x:'We light up. A has been dead for 7 kyr. We know nothing yet.'},
+         {t:44000,l:'Signal approaching',x:'The first signal is 4,000 light-years from the Sun. Play to watch it arrive.'},
+         {t:48000,l:'Signal arrives',x:'A’s first signal reaches the Sun after 45,000 years of travel. A has already shut down.'},
+         {t:58000,l:'Reception ends',x:'A’s last signal passes the Sun.'}]},
+ {grp:'Further situations',title:'Too late: the signal passed before B awakened',T:70000,civs:[V('A',-15000,0,3000,13000),V('B',15000,0,50000,INF)],start:2,
+  text:'A speaks from 3 to 13 kyr. B is 30,000 ly away but does not awaken until 50 kyr.',
+  look:'Look at: the ring passing over B\u2019s empty position, with nobody awake to hear it.',
+  marks:[{t:33200,l:'first surface',x:'The first-contact surface passes B\u2019s position. B is only a dashed circle: not awake.'},
+         {t:43200,l:'last surface',x:'The last-contact surface passes B\u2019s position. Every signal A ever sent has gone by.'},
+         {t:50200,l:'B awakens',x:'B awakens, but A\u2019s signals are already beyond it. Contact is impossible: no arrow will ever appear.'}]},
+ {grp:'Further situations',title:'Two civilizations hear each other (and a conversation)',T:75000,civs:[V('A',-15000,0,2000,INF),V('B',15000,0,6000,INF)],start:3,
+  text:'A and B stay awake for the whole period, 30,000 ly apart. Each hears the other, 4 kyr apart.',
+  look:'Look at: the time for a question and an answer: 2 x 30,000 years.',
+  marks:[{t:2200,l:'A awakens',x:'A\u2019s bubble starts at t = 2 kyr.'},
+         {t:6200,l:'B awakens',x:'B\u2019s bubble starts at t = 6 kyr.'},
+         {t:32200,l:'B hears A',x:'A\u2019s first signal (sent at 2 kyr) arrives at B after 30 kyr.'},
+         {t:36200,l:'A hears B',x:'B\u2019s first signal arrives at A.'},
+         {t:62200,l:'reply arrives',x:'If B had answered the moment it heard A (32 kyr), the answer reaches A now: 62 kyr. A conversation needs 2 x distance = 60,000 years for one question and one answer.'}]},
+ {grp:'Further situations',title:'Limited reach: the signal fades before it gets there',T:50000,reach:15000,civs:[V('A',0,0,2000,INF),V('B',10000,0,0,INF),V('C',-20000,0,0,INF)],start:1,
+  text:'Here signals can only be noticed up to 15,000 ly. B is 10,000 ly from A, C is 20,000 ly away.',
+  look:'Look at: the first-contact surface stopping at 15,000 ly and never reaching C.',
+  marks:[{t:12200,l:'A reaches B',x:'A\u2019s surface reaches B (10,000 ly): B hears A.'},
+         {t:17200,l:'surface stops',x:'After 15 kyr the surface reaches the reach limit and stops growing. It never gets to C.'},
+         {t:45000,l:'much later',x:'C is still in the dark: waiting longer does not help, because the signal has faded. This is the radio-bubble problem.'}]}
+];
+function leaveCase(){
+  caseMode=false;
+  document.getElementById('cardResults').hidden=false;
+  document.getElementById('parameterControls').hidden=false;
+  document.getElementById('randomStatistics').hidden=false;
+  document.getElementById('exampleStatistics').hidden=true;
+  document.getElementById('caseBox').hidden=true;
+  document.getElementById('caseResults').hidden=true;
+  document.getElementById('silentKey').hidden=true;
+  btnExplore.classList.add('current');
+  btnExplore.setAttribute('aria-current','true');
+  scenarioButton.classList.remove('current');
+  document.getElementById('mapTitle').textContent='The galaxy through time';
+  document.getElementById('statsTitle').textContent='Contact estimates across simulations';
+  chkBub.checked=randomView.bubbles;
+  chkArr.checked=randomView.arrows;
+  document.querySelectorAll('.cb').forEach(function(button){button.classList.remove('on');button.removeAttribute('aria-current');});
+}
+function loadCase(ci){
+  var c=CASES[ci];
+  token++;clearTimeout(timer);pause();
+  if(!caseMode){
+    randomView={width:zoomW,start:zoomStart,time:curTime(),sunFocus:sunFocus,bubbles:chkBub.checked,arrows:chkArr.checked};
+  }
+  var n=c.civs.length,tot=n+(c.sun?1:0),R=50000,i,j;
+  var b=new Float64Array(tot),e=new Float64Array(tot),x=new Float64Array(tot),y=new Float64Array(tot),z=new Float64Array(tot);
+  var mach=new Uint8Array(tot),k=new Int32Array(tot),sil=new Uint8Array(tot),lab=[],hear=[],K=0,reach=c.reach||Infinity;
+  c.civs.forEach(function(v,q){b[q]=v.b;e[q]=v.e;x[q]=v.x;y[q]=v.y;sil[q]=v.s?1:0;lab.push(v.n);});
+  if(c.sun){b[n]=c.sun.b;e[n]=c.sun.e;x[n]=0.54*R;mach[n]=2;lab.push('');}
+  for(i=0;i<tot-1;i++)for(j=i+1;j<tot;j++){
+    var d=Math.sqrt((x[i]-x[j])*(x[i]-x[j])+(y[i]-y[j])*(y[i]-y[j])),ok=false;
+    if(d>reach)continue;
+    var ts=Math.max(b[i]+d,b[j]),te=Math.min(e[i]+d,e[j]);
+    if(!sil[i]&&ts<te){hear.push(i,j,ts,te);ok=true;}
+    ts=Math.max(b[j]+d,b[i]);te=Math.min(e[j]+d,e[i]);
+    if(!sil[j]&&ts<te){hear.push(j,i,ts,te);ok=true;}
+    if(ok){K++;k[i]++;k[j]++;}
+  }
+  var p={N:n,T:c.T,L:1,f:0,Lm:1,D:100000,reach:reach,q:1,shape:'fixed',dist:'uniform',mode:'one',
+         us:!!c.sun,usT:c.sun?c.sun.b:0,usL:c.sun?c.sun.e-c.sun.b:0};
+  real={p:p,s:{b:b,e:e,x:x,y:y,z:z,mach:mach,k:k,K:K,O:0,links:[],hear:hear,alive:0,cs:true,lab:lab,sil:sil}};
+  order=Array.from({length:tot},function(_,q){return q;}).sort(function(a,d2){return b[a]-b[d2];});
+  stats=null;sweep=null;caseMode=true;sunFocus=false;zoomW=0;zoomStart=0;
+  arrivals=visibleArrivals(real);arrivalCursor=-1;selectedArrival=null;events=c.marks;
+  buildZoomOptions();
+  chkBub.checked=true;chkArr.checked=true;
+  document.getElementById('cardResults').hidden=true;
+  document.getElementById('parameterControls').hidden=true;
+  document.getElementById('randomStatistics').hidden=true;
+  document.getElementById('exampleStatistics').hidden=false;
+  document.getElementById('caseResults').hidden=false;
+  document.getElementById('caseCivs').textContent=tot;
+  document.getElementById('caseArrivals').textContent=arrivals.length;
+  document.getElementById('caseListeners').textContent=new Set(arrivals.map(function(link){return link.receiver;})).size;
+  document.getElementById('silentKey').hidden=!sil.some(Boolean);
+  btnExplore.classList.remove('current');
+  btnExplore.removeAttribute('aria-current');
+  scenarioButton.classList.add('current');
+  document.getElementById('btnUs').hidden=!p.us;
+  document.getElementById('sunBubbleKey').hidden=!p.us;
+  document.getElementById('mapTitle').textContent=c.title;
+  document.getElementById('statsTitle').textContent='Across this worked example';
+  document.querySelectorAll('.cb').forEach(function(button,q){
+    button.classList.toggle('on',q===ci);
+    if(q===ci)button.setAttribute('aria-current','true');
+    else button.removeAttribute('aria-current');
+  });
+  document.getElementById('caseBox').hidden=false;
+  document.getElementById('caseText').textContent=c.text;
+  document.getElementById('caseLook').textContent=c.look;
+  var mk=document.getElementById('caseMarks');mk.innerHTML='';
+  c.marks.forEach(function(m){
+    var btn=document.createElement('button');btn.type='button';btn.className='mk';btn.textContent=m.l;
+    btn.addEventListener('click',function(){gotoEvent(m);});mk.appendChild(btn);
+  });
+  var arrivalList=document.getElementById('caseArrivalList');
+  arrivalList.textContent='';
+  document.getElementById('caseArrivalNote').textContent=arrivals.length
+    ?'Select an arrival to see it on the map.'
+    :'No signal reaches a receiver during this example.';
+  arrivals.forEach(function(link,index){
+    var item=document.createElement('li'),button=document.createElement('button');
+    button.type='button';
+    button.textContent=fy(link.start)+' · '+nodeName(link.sender)+' → '+nodeName(link.receiver)+' · '+fly(link.distance);
+    button.addEventListener('click',function(){
+      chkArr.checked=true;
+      arrivalCursor=index;
+      selectedArrival=link;
+      gotoEvent({t:link.start});
+    });
+    item.appendChild(button);
+    arrivalList.appendChild(item);
+  });
+  showTool(0);
+  toolPanels[0].scrollTop=0;
+  statisticsPanel.scrollTop=0;
+  gotoEvent(c.marks[c.start]);
+}
+(function buildCaseList(){
+  var box=document.getElementById('caseList'),last='';
+  CASES.forEach(function(c,ci){
+    if(c.grp!==last){var h=document.createElement('div');h.className='cg';h.textContent=c.grp;box.appendChild(h);last=c.grp;}
+    var btn=document.createElement('button');btn.type='button';btn.className='cb';btn.textContent=c.title;
+    btn.addEventListener('click',function(){
+      scenarioMenu.open=false;
+      loadCase(ci);
+      document.getElementById('mapTitle').focus();
+    });
+    box.appendChild(btn);
+  });
+})();
+
+/* ---------- time controls ---------- */
+function redrawTime(){drawGalaxy();drawTimeline();}
+function pause(){
+  playing=false;
+  cancelAnimationFrame(playFrame);
+  btnPlay.textContent='Play';
+}
+tSlider.addEventListener('input',function(){pause();redrawTime();});
+tSlider.addEventListener('keydown',function(event){
+  var steps={ArrowLeft:-1,ArrowDown:-1,ArrowRight:1,ArrowUp:1,PageDown:-50,PageUp:50};
+  if(!(event.key in steps))return;
+  event.preventDefault();
+  pause();tSlider.value=clamp(+tSlider.value+steps[event.key],0,1000);redrawTime();
+});
+btnPlay.addEventListener('click',function(){
+  if(playing){pause();return;}
+  playing=true;btnPlay.textContent='Pause';
+  if(+tSlider.value>=1000)tSlider.value=0;
+  lastTs=performance.now();
+  playFrame=requestAnimationFrame(tick);
+});
+function tick(ts){
+  if(!playing)return;
+  var value=+tSlider.value+(ts-lastTs)/14;
+  lastTs=ts;tSlider.value=Math.min(1000,value);
+  redrawTime();
+  if(value>=1000)pause();
+  else playFrame=requestAnimationFrame(tick);
+}
+btnExplore.addEventListener('click',function(){
+  scenarioMenu.open=false;
+  if(caseMode)update();
+  document.getElementById('mapTitle').focus();
+});
+document.getElementById('btnConfigure').addEventListener('click',function(){
+  update();
+  toolTabs[0].focus();
+});
+document.addEventListener('click',function(event){
+  if(scenarioMenu.open&&!scenarioMenu.contains(event.target))scenarioMenu.open=false;
+});
+scenarioMenu.addEventListener('keydown',function(event){
+  if(event.key==='Escape'&&scenarioMenu.open){
+    scenarioMenu.open=false;
+    scenarioButton.focus();
+  }
+});
+document.getElementById('btnUs').addEventListener('click',function(){
+  if(!real||!real.p.us)return;
+  pause();jumpUs();redrawTime();announceEvent();
+});
+chkBub.addEventListener('change',drawGalaxy);
+chkArr.addEventListener('change',drawGalaxy);
+posSlider.addEventListener('input',function(){
+  var start=+posSlider.value/1000*(real.p.T-zoomW);
+  pause();
+  setZoom(zoomW,start,start+(curTime()-zoomStart));
+  redrawTime();
+});
+zoomSel.addEventListener('change',function(){
+  if(!real)return;
+  var time=curTime();
+  pause();
+  if(zoomSel.value==='sun')jumpUs();
+  else{
+    var W=+zoomSel.value;
+    setZoom(W,time-W/2,time);
+  }
+  redrawTime();
+});
+function timelineFraction(canvas,event){
+  var rect=canvas.getBoundingClientRect();
+  return clamp((event.clientX-rect.left-6)/(rect.width-12),0,1);
+}
+cvT.addEventListener('click',function(event){
+  var sp=span(),time=sp[0]+timelineFraction(cvT,event)*sp[1];
+  pause();setZoom(zoomW,sp[0],time,sunFocus);redrawTime();
+});
+cvOverview.addEventListener('click',function(event){
+  var time=timelineFraction(cvOverview,event)*real.p.T;
+  pause();setZoom(zoomW,time-zoomW/2,time);redrawTime();
+});
+btnPrevEvent.addEventListener('click',function(){stepEvent(-1);});
+btnNextEvent.addEventListener('click',function(){stepEvent(1);});
+btnContact.addEventListener('click',function(){
+  pause();
+  if(showContact()){
+    chkArr.checked=true;
+    redrawTime();
+  }else eventCaption.textContent='No arrival in this view. Try another scenario, longer lifetimes, or greater signal reach.';
+  announceEvent();
+});
+window.addEventListener('resize',function(){drawAll();});
+
+refreshLabels();
+update();
+</script>
+</body>
+</html>
